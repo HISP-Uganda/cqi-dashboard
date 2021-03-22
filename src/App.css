@@ -1,0 +1,16 @@
+.even {
+  background-color: #f5f5f5;
+  cursor: pointer;
+}
+
+.odd {
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+
+.ant-table-thead > tr.ant-table-row-hover:not(.ant-table-expanded-row) > td,
+.ant-table-tbody > tr.ant-table-row-hover:not(.ant-table-expanded-row) > td,
+.ant-table-thead > tr:hover:not(.ant-table-expanded-row) > td,
+.ant-table-tbody > tr:hover:not(.ant-table-expanded-row) > td {
+  background: #e6f7ff;
+}
