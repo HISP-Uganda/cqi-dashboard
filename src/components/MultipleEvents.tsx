@@ -53,15 +53,15 @@ const MultipleEvents = () => {
       { ...data[row], [key]: e.target.value },
       ...data.slice(row + 1)
     ];
-    console.log(e.target.value)
+
     const numerator = data[0][key]
     const denominator = data[1][key]
 
     if (numerator && denominator) {
       console.log(numerator,denominator)
-      // const indicator = numerator * 100 / denominator;
-      // const newIndicatorValue = { ...data[2], [key]: indicator };
-      // newState = [...data.slice(0, 2), newIndicatorValue]
+      const indicator = numerator * 100 / denominator;
+      const newIndicatorValue = { ...data[2], [key]: indicator };
+      newState = [...data.slice(0, 2), newIndicatorValue]
     }
 
     setData(newState);
@@ -163,7 +163,7 @@ const MultipleEvents = () => {
 
   return (
     <div>
-      <div style={{ height: 700, marginBottom: 20, paddingLeft: 60 }}>
+      <div style={{ height: 300, marginBottom: 20, paddingLeft: 60 }}>
         <Plot
           data={[
             {

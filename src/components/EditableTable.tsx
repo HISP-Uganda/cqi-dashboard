@@ -1,17 +1,16 @@
 import { Button, Form, Popconfirm, Table, Typography } from 'antd';
 import { fromPairs } from 'lodash';
 import { FC, useEffect, useState } from 'react';
-import { useQuery } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useLocation } from 'react-router-dom';
+import moment from 'moment';
 import { useD2 } from '../Context';
 import { getField } from '../utils/common';
 import { generateUid } from '../utils/uid';
 
 interface Item {
+  [key: string]: any;
   key: string;
-  name: string;
-  age: number;
-  address: string;
 }
 
 interface TableProps {
@@ -60,7 +59,7 @@ const EditableCell: React.FC<EditableCellProps> = ({
           {inputNode}
         </Form.Item>
       ) : (
-        children
+        inputType === 'DATE' ? moment(record[dataIndex]).format('YYYY-MM-DD') : children
       )}
     </td>
   );
@@ -74,15 +73,17 @@ const EditableTable: FC<TableProps> = ({ columns, tei, stage }) => {
   const [editingKey, setEditingKey] = useState('');
   const { search } = useLocation();
   const params = new URLSearchParams(search);
+  const queryClient = useQueryClient();
 
   const isEditing = (record: Item) => record.key === editingKey;
 
   const edit = (record: Partial<Item> & { key: React.Key }) => {
-    form.setFieldsValue({ ...record });
+    form.setFieldsValue({ ...record, eventDate: moment(record.eventDate) });
     setEditingKey(record.key);
   };
 
-  const { isLoading,
+  const {
+    isLoading,
     isError,
     error,
     data: fetchedData
@@ -102,18 +103,44 @@ const EditableTable: FC<TableProps> = ({ columns, tei, stage }) => {
     });
   }
 
+  const addEvent = async (event: any) => {
+    return await api.post(`events.json`, event);
+  }
+
+  const { mutateAsync } = useMutation(addEvent, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(["events", stage, tei])
+    },
+  })
+
+
   const save = async (key: React.Key) => {
     try {
       const row = (await form.validateFields()) as Item;
       const newData = [...data];
       const index = newData.findIndex(item => key === item.key);
       if (index > -1) {
-        const item = newData[index];
-        newData.splice(index, 1, {
-          ...item,
+        const item = {
+          ...newData[index],
           ...row,
+        }
+
+        const { eventDate, ...withValues }: any = Object.entries(item).reduce((a, [k, v]) => (v == null ? a : (a[k] = v, a)), {});
+        let event = Object.entries(withValues).reduce((a, [k, v]) => (columns.findIndex((c: any) => c.key === k) > -1 ? a : (a[k] = v, a)), {});
+        const dataElements = Object.entries(withValues).reduce((a, [k, v]) => (columns.findIndex((c: any) => c.key === k) === -1 ? a : (a[k] = v, a)), {});
+
+        const dataValues = Object.entries(dataElements).map(([dataElement, value]) => {
+          return {
+            dataElement,
+            value
+          }
         });
-        setData(newData);
+        event = { ...event, dataValues, eventDate };
+        // console.log(event);
+        // console.log(dataValues);
+        // newData.splice(index, 1, item);
+        // setData(newData);
+        await mutateAsync(event);
         setEditingKey('');
       } else {
         newData.push(row);
@@ -182,7 +209,7 @@ const EditableTable: FC<TableProps> = ({ columns, tei, stage }) => {
       trackedEntityInstance: tei,
       program: params.get('program'),
       orgUnit: params.get('ou'),
-      ...fromPairs(columns.map((c: any) => [c.dataIndex, '']))
+      ...fromPairs(columns.map((c: any) => [c.dataIndex, undefined])),
     }
     setData([...data, record]);
     edit(record)

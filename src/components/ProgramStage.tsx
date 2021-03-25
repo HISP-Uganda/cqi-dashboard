@@ -49,7 +49,17 @@ const ProgramStage: FC<ProgramStageProps> = ({ stage, tei }) => {
           options: optionSetValue ? optionSet.options : null
         }
       });
-      setColumns(processedColumns);
+      setColumns([{
+        title: 'Event Date',
+        dataIndex: 'eventDate',
+        key: 'eventDate',
+        editable: true,
+        inputType: 'DATE',
+        optionSetValue: false,
+        compulsory: true,
+        rules: [{ required: true, type: 'date', message: `Please Input event date!`, }],
+        options: null
+      }, ...processedColumns]);
 
     }
   }, [data])
@@ -63,8 +73,8 @@ const ProgramStage: FC<ProgramStageProps> = ({ stage, tei }) => {
   }
 
   return (
-    // <EditableTable columns={columns} tei={tei} stage={stage} />
-    <MultipleEvents />
+    <EditableTable columns={columns} tei={tei} stage={stage} />
+    // <MultipleEvents />
   )
 }
 

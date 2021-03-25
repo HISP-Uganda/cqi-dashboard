@@ -25,6 +25,7 @@
     "antd-form-builder": "^2.1.2",
     "d2": "^31.9.0",
     "lodash": "^4.17.21",
+    "moment": "^2.29.1",
     "plotly.js": "^1.58.4",
     "react-plotly.js": "^2.5.1",
     "react-query": "^3.12.0",
