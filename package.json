@@ -11,24 +11,29 @@
     "deploy": "d2-app-scripts deploy"
   },
   "devDependencies": {
-    "@dhis2/cli-app-scripts": "^5.7.3",
+    "@dhis2/cli-app-scripts": "^6.0.1",
+    "@types/jest": "^26.0.22",
     "@types/lodash": "^4.14.168",
-    "@types/react-router-dom": "^5.1.7"
+    "@types/node": "^14.14.37",
+    "@types/react": "^17.0.3",
+    "@types/react-dom": "^17.0.3",
+    "@types/react-router-dom": "^5.1.7",
+    "typescript": "^4.2.3"
   },
   "dependencies": {
     "@ant-design/colors": "^6.0.0",
-    "@ant-design/icons": "^4.5.0",
-    "@dhis2/app-runtime": "^2.7.1",
+    "@ant-design/icons": "^4.6.2",
+    "@dhis2/app-runtime": "^2.8.0",
     "@dhis2/app-runtime-adapter-d2": "^1.0.2",
     "@types/react-plotly.js": "^2.2.4",
-    "antd": "^4.13.0",
+    "antd": "^4.15.0",
     "antd-form-builder": "^2.1.2",
-    "d2": "^31.9.0",
+    "d2": "^31.9.3",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "plotly.js": "^1.58.4",
     "react-plotly.js": "^2.5.1",
-    "react-query": "^3.12.0",
+    "react-query": "^3.13.0",
     "react-router-dom": "^5.2.0"
   }
 }

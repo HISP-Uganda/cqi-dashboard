@@ -1,10 +1,11 @@
 import { Button, Form, Popconfirm, Table, Typography } from 'antd';
 import { fromPairs } from 'lodash';
-import { FC, useEffect, useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { useLocation } from 'react-router-dom';
 import moment from 'moment';
+import { FC, useEffect, useState } from 'react';
+import { useMutation, useQueryClient } from 'react-query';
+import { useLocation } from 'react-router-dom';
 import { useD2 } from '../Context';
+import { useEvents } from '../Queries';
 import { getField } from '../utils/common';
 import { generateUid } from '../utils/uid';
 
@@ -51,7 +52,14 @@ const EditableCell: React.FC<EditableCellProps> = ({
   return (
     <td {...restProps}>
       {editing ? (
-        <Form.Item
+        inputType === 'BOOLEAN' ? <Form.Item
+          valuePropName="checked"
+          name={dataIndex}
+          style={{ margin: 0 }}
+          rules={rules}
+        >
+          {inputNode}
+        </Form.Item> : <Form.Item
           name={dataIndex}
           style={{ margin: 0 }}
           rules={rules}
@@ -78,8 +86,14 @@ const EditableTable: FC<TableProps> = ({ columns, tei, stage }) => {
   const isEditing = (record: Item) => record.key === editingKey;
 
   const edit = (record: Partial<Item> & { key: React.Key }) => {
-    form.setFieldsValue({ ...record, eventDate: moment(record.eventDate) });
-    setEditingKey(record.key);
+    let modifiedRecord = { ...record, eventDate: moment(record.eventDate) };
+    columns.forEach((column: any) => {
+      if (column.inputType === 'DATE' && record[column.key]) {
+        modifiedRecord = { ...modifiedRecord, [column.key]: moment(record[column.key]) }
+      }
+    })
+    form.setFieldsValue(modifiedRecord);
+    setEditingKey(modifiedRecord.key);
   };
 
   const {
@@ -87,21 +101,11 @@ const EditableTable: FC<TableProps> = ({ columns, tei, stage }) => {
     isError,
     error,
     data: fetchedData
-  } = useQuery<any, Error>(
-    ["events", stage, tei],
-    () => fetchEvents(),
-  );
+  } = useEvents(d2, stage, tei);
 
   const cancel = () => {
     setEditingKey('');
   };
-
-  const fetchEvents = async () => {
-    return await api.get(`events.json`, {
-      programStage: stage,
-      trackedEntityInstance: tei
-    });
-  }
 
   const addEvent = async (event: any) => {
     return await api.post(`events.json`, event);
@@ -136,10 +140,6 @@ const EditableTable: FC<TableProps> = ({ columns, tei, stage }) => {
           }
         });
         event = { ...event, dataValues, eventDate };
-        // console.log(event);
-        // console.log(dataValues);
-        // newData.splice(index, 1, item);
-        // setData(newData);
         await mutateAsync(event);
         setEditingKey('');
       } else {
@@ -196,9 +196,9 @@ const EditableTable: FC<TableProps> = ({ columns, tei, stage }) => {
     };
   });
 
-  const handleDelete = (key: React.Key) => {
-    setData(data.filter(item => item.key !== key))
-  };
+  // const handleDelete = (key: React.Key) => {
+  //   setData(data.filter(item => item.key !== key))
+  // };
 
   const handleAdd = () => {
     const event = generateUid();
@@ -227,13 +227,14 @@ const EditableTable: FC<TableProps> = ({ columns, tei, stage }) => {
     }
   }, [fetchedData])
 
+  if (isError) {
+    return <div>{JSON.stringify(error)}</div>
+  }
+
   if (isLoading) {
     return <div>Is Loading</div>
   }
 
-  if (isError) {
-    return <div>{JSON.stringify(error)}</div>
-  }
 
   return (
     <Form form={form} component={false}>

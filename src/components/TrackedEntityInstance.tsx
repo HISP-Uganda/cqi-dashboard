@@ -25,30 +25,35 @@ const TrackedEntityInstance = () => {
   );
 
   const fetchProgramStages = async () => {
-    return await api.get(`programs/${params.get('program')}.json`, {
+    const data = await api.get(`programs/${params.get('program')}.json`, {
       fields: "programStages[id,name]"
     });
+    return data;
   }
 
+
+
+  if (isError) {
+    return <div>{JSON.stringify(error)}</div>
+  }
 
   if (isLoading) {
     return <div>Is Loading</div>
-  }
-  if (isError) {
-    return <div>{JSON.stringify(error)}</div>
   }
 
   return (
     <div>
       <Card title="">
-        <Tabs tabPosition="left">
+        {data && data.programStages && <Tabs tabPosition="left">
           {data.programStages.map((stage: any) => <TabPane tab={stage.name} key={stage.id}>
             <ProgramStage stage={stage.id} tei={tei} />
           </TabPane>)}
-        </Tabs>
+        </Tabs>}
       </Card>
     </div>
   )
+
+
 }
 
 export default TrackedEntityInstance

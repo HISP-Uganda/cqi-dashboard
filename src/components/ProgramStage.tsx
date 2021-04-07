@@ -4,6 +4,7 @@ import { useD2 } from "../Context";
 import { getRule } from "../utils/common";
 import EditableTable from "./EditableTable";
 import MultipleEvents from "./MultipleEvents";
+import NormalForm from "./NormalForm";
 
 type ProgramStageProps = {
   stage: string;
@@ -25,7 +26,7 @@ const ProgramStage: FC<ProgramStageProps> = ({ stage, tei }) => {
 
   const fetchStage = async () => {
     return await api.get(`programStages/${stage}.json`, {
-      fields: "programStageDataElements[compulsory,dataElement[id,name,formName,optionSetValue,valueType,optionSet[options[code,name]]]]"
+      fields: "sortOrder,programStageDataElements[compulsory,dataElement[id,name,formName,optionSetValue,valueType,optionSet[options[code,name]]]]"
     });
   }
 
@@ -64,18 +65,23 @@ const ProgramStage: FC<ProgramStageProps> = ({ stage, tei }) => {
     }
   }, [data])
 
-  if (isLoading) {
-    return <div>Is Loading</div>
-  }
-
   if (isError) {
     return <div>{JSON.stringify(error)}</div>
   }
 
-  return (
-    <EditableTable columns={columns} tei={tei} stage={stage} />
-    // <MultipleEvents />
-  )
+  if (isLoading) {
+    return <div>Is Loading</div>
+  }
+
+  if (data && data.sortOrder === 1) {
+    return <EditableTable columns={columns} tei={tei} stage={stage} />
+  }
+
+  if (data && data.sortOrder === 2) {
+    return <MultipleEvents stage={stage} tei={tei} />
+  }
+
+  return <NormalForm />
 }
 
 export default ProgramStage

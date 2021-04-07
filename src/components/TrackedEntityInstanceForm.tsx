@@ -1,20 +1,24 @@
 import { Button, Form } from 'antd';
 import FormBuilder from 'antd-form-builder';
-import { fromPairs } from "lodash";
+import { add, fromPairs } from "lodash";
+import moment from 'moment';
 import { useEffect, useState } from "react";
-import { useQuery } from "react-query";
-import { useLocation } from "react-router-dom";
-import { getFieldType } from '../utils/common';
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useHistory, useLocation } from "react-router-dom";
 import { useD2 } from "../Context";
+import { getFieldType } from '../utils/common';
 
 const TrackedEntityInstanceForm = () => {
   const d2 = useD2()
   const { search } = useLocation();
+  const history = useHistory();
   const params = new URLSearchParams(search);
   const [form] = Form.useForm();
   const [formMetadata, setFormMetadata] = useState<any>();
   const forceUpdate = FormBuilder.useForceUpdate();
   const [generatedIds, setGeneratedIds] = useState<any>();
+  const queryClient = useQueryClient();
+
   const api = d2.Api.getApi();
   const { isLoading,
     isError,
@@ -26,10 +30,44 @@ const TrackedEntityInstanceForm = () => {
     () => fetchProgramAttributes(),
     { keepPreviousData: true }
   );
-  const handleFinish = (values: any) => {
-    console.log('Submit: ', values)
+
+  const addTrackedEntityInstance = async (instance: any) => {
+    return await api.post(`trackedEntityInstances.json`, instance);
   }
 
+  const { mutateAsync } = useMutation(addTrackedEntityInstance, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(["trackedEntityInstances", 1, params.get('ou'), params.get('program'), 10])
+    },
+  })
+
+  const handleFinish = async (values: any) => {
+    const { enrollmentDate, incidentDate, ...withValues }: any = Object.entries(values).reduce((a, [k, v]) => (v == null ? a : (a[k] = v, a)), {});
+    const attributes = Object.entries(withValues).map(([attribute, v]) => {
+      let value = v;
+      if (v instanceof moment) {
+        value = moment(v).format('YYYY-MM-DD')
+      }
+      return {
+        attribute,
+        value
+      }
+    });
+
+    const trackedEntityInstance = {
+      orgUnit: params.get('ou'),
+      trackedEntityType: 'KSy4dEvpMWi',
+      attributes,
+      enrollments: [{
+        orgUnit: params.get('ou'),
+        program: params.get('program'),
+        enrollmentDate: enrollmentDate.format('YYYY-MM-DD'),
+        incidentDate: incidentDate.format('YYYY-MM-DD'),
+      }]
+    }
+    await mutateAsync(trackedEntityInstance);
+    history.push({ search: params.toString(), pathname: '/tracker' })
+  }
 
   const fetchProgramAttributes = async () => {
     return await api.get(`programs/${params.get('program')}.json`, {
@@ -86,23 +124,27 @@ const TrackedEntityInstanceForm = () => {
         }
       },
     ]
-    const other = currentData.programTrackedEntityAttributes.map((pTea: any) => {
-      const { mandatory, trackedEntityAttribute: { optionSetValue, optionSet, generated, orgunitScope, id }, valueType } = pTea;
-      let field: any = {
-        key: pTea.trackedEntityAttribute.id,
-        label: pTea.trackedEntityAttribute.displayFormName,
-        required: mandatory,
-        widget: getFieldType(valueType, optionSetValue)
-      }
 
-      if (optionSetValue) {
-        field = { ...field, options: optionSet.options.map((o: any) => [o.code, o.name]) }
-      }
-      if (generated) {
-        field = { ...field, disabled: true }
-      }
-      return field;
-    });
+    let other = []
+    if (currentData && currentData.programTrackedEntityAttributes) {
+      other = currentData.programTrackedEntityAttributes.map((pTea: any) => {
+        const { mandatory, trackedEntityAttribute: { optionSetValue, optionSet, generated, orgunitScope, id }, valueType } = pTea;
+        let field: any = {
+          key: pTea.trackedEntityAttribute.id,
+          label: pTea.trackedEntityAttribute.displayFormName,
+          required: mandatory,
+          widget: getFieldType(valueType, optionSetValue)
+        }
+
+        if (optionSetValue) {
+          field = { ...field, options: optionSet.options.map((o: any) => [o.code, o.name]) }
+        }
+        if (generated) {
+          field = { ...field, disabled: true }
+        }
+        return field;
+      });
+    }
 
     fields = [...fields, ...other]
 
@@ -112,11 +154,14 @@ const TrackedEntityInstanceForm = () => {
       colon: true,
       fields
     }
+
   }
 
   const generateData = async (program: any) => {
-    const uniques = program.programTrackedEntityAttributes.filter((a: any) => a.trackedEntityAttribute.generated).map(({ trackedEntityAttribute: { id } }: any) => api.get(`trackedEntityAttributes/${id}/generate`));
-    setGeneratedIds(fromPairs((await Promise.all(uniques)).map((res: any) => [res.ownerUid, res.value])));
+    if (program && program.programTrackedEntityAttributes) {
+      const uniques = program.programTrackedEntityAttributes.filter((a: any) => a.trackedEntityAttribute.generated).map(({ trackedEntityAttribute: { id } }: any) => api.get(`trackedEntityAttributes/${id}/generate`));
+      setGeneratedIds(fromPairs((await Promise.all(uniques)).map((res: any) => [res.ownerUid, res.value])));
+    }
   }
 
   useEffect(() => {
@@ -134,20 +179,19 @@ const TrackedEntityInstanceForm = () => {
 
 
 
-  if (isLoading) {
-    return <div>Is Loading</div>
-  }
   if (isError) {
     return <div>{JSON.stringify(error)}</div>
+  }
+
+  if (isLoading) {
+    return <div>Is Loading</div>
   }
 
   return (
     <Form form={form} onFinish={handleFinish} onValuesChange={forceUpdate} layout="vertical" style={{ padding: 10 }}>
       <FormBuilder meta={formMetadata} form={form} />
       <Form.Item>
-        <Button htmlType="submit" type="primary">
-          Submit
-          </Button>
+        <Button htmlType="submit" type="primary">Submit</Button>
       </Form.Item>
     </Form>
   )

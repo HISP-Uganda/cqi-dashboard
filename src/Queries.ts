@@ -13,10 +13,6 @@ export function useUserOrgUnit(d2: any) {
     });
   });
 }
-export function useTrackedEntityInstances(d2: any, program: string, ou: string, page: number = 1) {
-  const api = d2.Api.getApi();
-  return []
-}
 
 export function usePrograms(d2: any) {
   const api = d2.Api.getApi();
@@ -32,4 +28,15 @@ export function usePrograms(d2: any) {
     },
     { retryDelay: 1000 }
   );
+}
+
+
+export function useEvents(d2: any, stage: string, tei: string) {
+  const api = d2.Api.getApi();
+  return useQuery<any, Error>(["events", stage, tei], async () => {
+    return await api.get(`events.json`, {
+      programStage: stage,
+      trackedEntityInstance: tei
+    });
+  });
 }

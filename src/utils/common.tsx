@@ -1,4 +1,4 @@
-import { DatePicker, Input, InputNumber, Select } from "antd";
+import { DatePicker, Input, InputNumber, Select, Checkbox } from "antd";
 const { Option } = Select;
 
 export const getFieldType = (valueType: string, optionSetValue: boolean) => {
@@ -28,6 +28,8 @@ export const getRule = (valueType: string) => {
       return 'email'
     case 'INTEGER':
       return 'integer'
+    case 'BOOLEAN':
+      return 'boolean'
     default:
       return 'string'
   }
@@ -47,6 +49,8 @@ export const getField = (valueType: string, optionSetValue: boolean, options: an
       return <Input.TextArea />
     case 'NUMBER':
       return <InputNumber />
+    case 'BOOLEAN':
+      return <Checkbox />
     default:
       return <Input />
   }

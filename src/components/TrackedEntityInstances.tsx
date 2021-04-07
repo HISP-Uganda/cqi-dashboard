@@ -92,15 +92,17 @@ const TrackedEntityInstances = () => {
     <div style={{ width: '32%', padding: 5, marginLeft: 'auto', textAlign: 'right' }}><Button size="large" onClick={() => add()}>Add</Button></div>
   </div>
 
-  if (isLoading) {
-    return <div>Is Loading</div>
-  }
+
   if (isError) {
     return <div>
       {head}
       {error.message}
     </div>
   }
+  if (isLoading) {
+    return <div>Is Loading</div>
+  }
+
   return (
     <div>
       {head}
