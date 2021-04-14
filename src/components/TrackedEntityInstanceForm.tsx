@@ -1,6 +1,6 @@
 import { Button, Form } from 'antd';
 import FormBuilder from 'antd-form-builder';
-import { add, fromPairs } from "lodash";
+import { fromPairs } from "lodash";
 import moment from 'moment';
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
@@ -189,7 +189,7 @@ const TrackedEntityInstanceForm = () => {
 
   return (
     <Form form={form} onFinish={handleFinish} onValuesChange={forceUpdate} layout="vertical" style={{ padding: 10 }}>
-      <FormBuilder meta={formMetadata} form={form} />
+      <FormBuilder meta={formMetadata} />
       <Form.Item>
         <Button htmlType="submit" type="primary">Submit</Button>
       </Form.Item>

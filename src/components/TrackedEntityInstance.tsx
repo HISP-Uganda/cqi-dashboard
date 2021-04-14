@@ -1,6 +1,6 @@
+import { Tabs } from 'antd';
 import { useQuery } from "react-query";
-import { useParams, useLocation } from "react-router-dom";
-import { Card, Tabs } from 'antd'
+import { useLocation, useParams } from "react-router-dom";
 import { useD2 } from "../Context";
 import ProgramStage from "./ProgramStage";
 interface ParamTypes {
@@ -14,12 +14,12 @@ const TrackedEntityInstance = () => {
   const { search } = useLocation();
   const params = new URLSearchParams(search);
 
-
   const { isLoading,
     isError,
     error,
+    isSuccess,
     data,
-  } = useQuery(
+  } = useQuery<any, Error>(
     ["programs", params.get('program')],
     () => fetchProgramStages(),
   );
@@ -31,26 +31,18 @@ const TrackedEntityInstance = () => {
     return data;
   }
 
-
-
-  if (isError) {
-    return <div>{JSON.stringify(error)}</div>
-  }
-
-  if (isLoading) {
-    return <div>Is Loading</div>
-  }
-
   return (
-    <div>
-      <Card title="">
-        {data && data.programStages && <Tabs tabPosition="left">
+    <>
+      {isLoading && <div>Loading</div>}
+      {isSuccess && <div>
+        {data && data.programStages && <Tabs type="card">
           {data.programStages.map((stage: any) => <TabPane tab={stage.name} key={stage.id}>
             <ProgramStage stage={stage.id} tei={tei} />
           </TabPane>)}
         </Tabs>}
-      </Card>
-    </div>
+      </div>}
+      {isError && <div>{error.message}</div>}
+    </>
   )
 
 

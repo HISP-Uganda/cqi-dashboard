@@ -83,13 +83,13 @@ const TrackedEntityInstances = () => {
   }
 
   const head = <div style={{ display: 'flex' }}>
-    <div style={{ width: '34%', padding: 5 }}>
+    <div style={{ width: '34%' }}>
       <OrgUnitTreeSelect selectedOrgUnit={orgUnit} setSelectedOrgUnit={handleOrgUnitChange} />
     </div>
-    <div style={{ width: '34%', padding: 5 }}>
+    <div style={{ width: '34%', paddingLeft: 5, paddingRight: 5 }}>
       <ProgramSelect selectedValue={program} handleChange={handleChange} />
     </div>
-    <div style={{ width: '32%', padding: 5, marginLeft: 'auto', textAlign: 'right' }}><Button size="large" onClick={() => add()}>Add</Button></div>
+    <div style={{ width: '32%', marginLeft: 'auto', textAlign: 'right' }}><Button size="large" onClick={() => add()}>Add</Button></div>
   </div>
 
 
@@ -106,7 +106,7 @@ const TrackedEntityInstances = () => {
   return (
     <div>
       {head}
-      {data && <div style={{ padding: 5 }}>
+      {data && <div style={{ paddingTop: 5 }}>
         <Card title="Tracked Entity Instances" extra={<ColumnDrawer program={program} setColumns={setColumns} headers={data.headers} />} bodyStyle={{ padding: 0 }}>
           <Table
             tableLayout="auto"
@@ -125,7 +125,7 @@ const TrackedEntityInstances = () => {
             }}
           />
         </Card>
-        <div style={{ padding: 5, textAlign: 'right' }}><Pagination current={page} onChange={onChange} total={data.metaData.pager.total} pageSize={pageSize} showSizeChanger={true} /></div>
+        <div style={{ textAlign: 'right', marginTop: 10 }}><Pagination current={page} onChange={onChange} total={data.metaData.pager.total} pageSize={pageSize} showSizeChanger={true} /></div>
       </div>}
     </div>
   )

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { flatten } from 'lodash'
 import { useD2 } from "../Context";
 import { useUserOrgUnit } from "../Queries";
+import { useQueryClient } from "react-query";
 type Unit = {
   id: string;
   name: string;
@@ -16,7 +17,7 @@ type Response = {
   organisationUnits: Array<Organisation>
 }
 const OrgUnitTreeSelect = ({ selectedOrgUnit, setSelectedOrgUnit }) => {
-  const [units, setUnits] = useState([]);
+  const [units, setUnits] = useState<any[]>([]);
   const d2 = useD2();
   const { data, isError, isLoading, error } = useUserOrgUnit(d2);
   const onLoadData = async (parent: any) => {
@@ -49,6 +50,10 @@ const OrgUnitTreeSelect = ({ selectedOrgUnit, setSelectedOrgUnit }) => {
           });
         });
       setUnits([...units, ...flatten(found)]);
+      // queryClient.setQueryData('units', (prevData: any) => {
+      //   console.log(prevData)
+      //   return units;
+      // })
     } catch (e) {
       console.log(e);
     }

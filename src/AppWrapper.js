@@ -1,10 +1,11 @@
 import { D2Shim } from "@dhis2/app-runtime-adapter-d2";
 import { QueryClient, QueryClientProvider } from "react-query";
+import { ChakraProvider } from "@chakra-ui/react";
 import App from "./components/App";
 import { D2Context } from "./Context";
 
 import "antd/dist/antd.css";
-import './App.css'
+import "./App.css";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -25,7 +26,9 @@ const AppWrapper = () => (
       return (
         <QueryClientProvider client={queryClient}>
           <D2Context.Provider value={d2}>
-            <App />
+            <ChakraProvider>
+              <App />
+            </ChakraProvider>
           </D2Context.Provider>
         </QueryClientProvider>
       );
