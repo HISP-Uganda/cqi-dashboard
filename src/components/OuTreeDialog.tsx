@@ -59,6 +59,7 @@ const OuTreeDialog = () => {
             <OrgUnitDimension
               onSelect={onSelectItems}
               onDeselect={onDeselectItems}
+              displayNameProperty="name"
               onReorder={onReorderItems}
               ouItems={filters}
               d2={d2}

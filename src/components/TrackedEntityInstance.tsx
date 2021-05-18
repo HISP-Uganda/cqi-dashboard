@@ -1,3 +1,4 @@
+import { Box } from '@chakra-ui/layout';
 import { Tabs } from 'antd';
 import { useQuery } from "react-query";
 import { useLocation, useParams } from "react-router-dom";
@@ -32,7 +33,7 @@ const TrackedEntityInstance = () => {
   }
 
   return (
-    <>
+    <Box bg="white" p="10px">
       {isLoading && <div>Loading</div>}
       {isSuccess && <div>
         {data && data.programStages && <Tabs type="card">
@@ -42,10 +43,8 @@ const TrackedEntityInstance = () => {
         </Tabs>}
       </div>}
       {isError && <div>{error.message}</div>}
-    </>
+    </Box>
   )
-
-
 }
 
 export default TrackedEntityInstance

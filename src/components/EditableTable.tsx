@@ -32,6 +32,7 @@ interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
   options?: any[];
   rules: any[];
   compulsory: boolean,
+  otherOptions: any,
   children: React.ReactNode;
 }
 
@@ -45,30 +46,21 @@ const EditableCell: React.FC<EditableCellProps> = ({
   compulsory,
   children,
   options,
+  otherOptions,
   rules,
   ...restProps
 }) => {
-  const inputNode = getField(inputType, optionSetValue, options);
+  const inputNode = getField(inputType, optionSetValue, options, otherOptions);
   return (
     <td {...restProps}>
-      {editing ? (
-        inputType === 'BOOLEAN' ? <Form.Item
-          valuePropName="checked"
-          name={dataIndex}
-          style={{ margin: 0 }}
-          rules={rules}
-        >
-          {inputNode}
-        </Form.Item> : <Form.Item
-          name={dataIndex}
-          style={{ margin: 0 }}
-          rules={rules}
-        >
-          {inputNode}
-        </Form.Item>
-      ) : (
-        inputType === 'DATE' ? moment(record[dataIndex]).format('YYYY-MM-DD') : children
-      )}
+      {editing ? <Form.Item
+        name={dataIndex}
+        style={{ margin: 0 }}
+        rules={rules}
+      >
+        {inputNode}
+      </Form.Item> : inputType === 'DATE' ? moment(record[dataIndex]).format('YYYY-MM-DD') : children
+      }
     </td>
   );
 };
@@ -84,7 +76,6 @@ const EditableTable: FC<TableProps> = ({ columns, tei, stage }) => {
   const queryClient = useQueryClient();
 
   const isEditing = (record: Item) => record.key === editingKey;
-
   const edit = (record: Partial<Item> & { key: React.Key }) => {
     let modifiedRecord = { ...record, eventDate: moment(record.eventDate) };
     columns.forEach((column: any) => {
@@ -177,9 +168,30 @@ const EditableTable: FC<TableProps> = ({ columns, tei, stage }) => {
   ];
 
   const mergedColumns = allColumns.map(col => {
+    let otherOptions = {}
     if (!col.editable) {
       return col;
     }
+
+    if (col.dataIndex === 'megrn75m57y') {
+      otherOptions = {
+        ...otherOptions,
+        disabledDate: (currentDate: moment.Moment) => {
+          return currentDate.isBefore(form.getFieldValue('TY4BoFr95UI'))
+        }
+      }
+    }
+
+    if (col.dataIndex === 'TY4BoFr95UI') {
+      otherOptions = {
+        ...otherOptions,
+        onChange: () => {
+          form.setFieldsValue({ megrn75m57y: undefined })
+        }
+      }
+    }
+
+
     return {
       ...col,
       onCell: (record: Item) => ({
@@ -192,6 +204,7 @@ const EditableTable: FC<TableProps> = ({ columns, tei, stage }) => {
         title: col.title,
         rules: col.rules,
         editing: isEditing(record),
+        otherOptions
       }),
     };
   });

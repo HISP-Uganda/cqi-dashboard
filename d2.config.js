@@ -1,9 +1,10 @@
 const config = {
-    type: 'app',
+  type: "app",
+  name: "cqi-app",
+  title: "Continuous Quality Improvement",
+  entryPoints: {
+    app: "./src/AppWrapper",
+  },
+};
 
-    entryPoints: {
-        app: './src/AppWrapper',
-    },
-}
-
-module.exports = config
+module.exports = config;

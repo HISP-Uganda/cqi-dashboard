@@ -20,7 +20,7 @@ const PeriodDialog = () => {
   const [selectedPeriods, setSelectedPeriods] = useState<any[]>(store.period);
   const { isOpen, onOpen, onClose } = useDisclosure()
   const onOk = () => {
-    changePeriod(selectedPeriods.map((i: any) => i.id));
+    changePeriod(selectedPeriods);
     onClose()
   };
 
@@ -57,5 +57,4 @@ const PeriodDialog = () => {
     </>
   );
 };
-
 export default PeriodDialog;

@@ -1,3 +1,4 @@
+import { Box } from '@chakra-ui/layout';
 import { Button, Card, Pagination, Table } from 'antd';
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -7,6 +8,7 @@ import { useD2 } from "../Context";
 import ColumnDrawer from './ColumnDrawer';
 import OrgUnitTreeSelect from './OrgUnitTreeSelect';
 import ProgramSelect from './ProgramSelect';
+import { changeCurrentProject } from '../Events'
 
 const TrackedEntityInstances = () => {
   const d2 = useD2();
@@ -18,13 +20,16 @@ const TrackedEntityInstances = () => {
   const [columns, setColumns] = useState<any[]>([]);
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
+  const [indexes, setIndexes] = useState<[number, number, number]>([7, 8, 9]);
   const history = useHistory();
-  const { isLoading,
+  const {
+    isLoading,
     isError,
     error,
     data,
     isFetching,
-    isPreviousData
+    isPreviousData,
+    isSuccess
   } = useQuery<any, Error>(
     ["trackedEntityInstances", page, orgUnit, program, pageSize],
     () => fetchInstances(page, orgUnit, program, pageSize),
@@ -50,6 +55,15 @@ const TrackedEntityInstances = () => {
     }
     history.push({ search: params.toString(), pathname: `${url}/add` })
   }
+
+  useEffect(() => {
+    if (data) {
+      const startDateIndex = data.headers.findIndex((h: any) => h.name === 'y3hJLGjctPk');
+      const endDateIndex = data.headers.findIndex((h: any) => h.name === 'iInAQ40vDGZ');
+      const frequencyIndex = data.headers.findIndex((h: any) => h.name === 'WQcY6nfPouv');
+      setIndexes([startDateIndex, endDateIndex, frequencyIndex]);
+    }
+  }, [data])
 
   const handleChange = async (value: string) => {
     setColumns([]);
@@ -104,9 +118,9 @@ const TrackedEntityInstances = () => {
   }
 
   return (
-    <div>
+    <Box m="5px" bg="white" p="10px">
       {head}
-      {data && <div style={{ paddingTop: 5 }}>
+      {data && <Box mt="10px">
         <Card title="Tracked Entity Instances" extra={<ColumnDrawer program={program} setColumns={setColumns} headers={data.headers} />} bodyStyle={{ padding: 0 }}>
           <Table
             tableLayout="auto"
@@ -117,17 +131,22 @@ const TrackedEntityInstances = () => {
             pagination={false}
             rowClassName={(record, index: number) => index % 2 === 0 ? 'even' : 'odd'}
             onRow={(record: any[]) => {
+              const pms = new URLSearchParams(search);
+              pms.append('start', record[indexes[0]]);
+              pms.append('end', record[indexes[1]]);
+              pms.append('frequency', record[indexes[2]]);
               return {
                 onClick: () => {
-                  history.push({ search: params.toString(), pathname: `/instances/${record[0]}` })
+                  changeCurrentProject([record[indexes[0]], record[indexes[1]], record[indexes[2]]])
+                  history.push({ search: pms.toString(), pathname: `/instances/${record[0]}` })
                 },
               };
             }}
           />
         </Card>
-        <div style={{ textAlign: 'right', marginTop: 10 }}><Pagination current={page} onChange={onChange} total={data.metaData.pager.total} pageSize={pageSize} showSizeChanger={true} /></div>
-      </div>}
-    </div>
+        <Box m="5px"><Pagination current={page} onChange={onChange} total={data.metaData.pager.total} pageSize={pageSize} showSizeChanger={true} /></Box>
+      </Box>}
+    </Box>
   )
 }
 

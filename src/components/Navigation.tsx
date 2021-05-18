@@ -1,28 +1,46 @@
 import { Button } from '@chakra-ui/button';
-import { HStack } from '@chakra-ui/layout';
-import { FC, useState } from "react";
+import { Flex, HStack, Spacer } from '@chakra-ui/layout';
+import { useStore } from 'effector-react';
+import { FC, useEffect } from "react";
 import {
-  useHistory
+  useHistory, useLocation
 } from "react-router-dom";
 import { changeUrl } from '../Events';
+import { dashboards, maxLevel, orgUnits } from '../Store';
 import VisualizationHeader, { HeaderProps } from './VisualizationHeader';
 
 const Navigation: FC<HeaderProps> = () => {
   let history = useHistory();
-  const [current, setCurrent] = useState<string>('analytics');
+  const store = useStore(dashboards);
+  const highestLevel = useStore(maxLevel);
+  const units = useStore(orgUnits);
+  const l = useLocation();
   const handleClick = (url: string) => {
-    setCurrent(url);
     changeUrl(url);
-    history.push(url)
+    let obj: any = { pathname: url };
+    // if (url === '/layered') {
+    //   const params = new URLSearchParams();
+    //   params.append('ou', units);
+    //   params.append('level', String(highestLevel))
+    //   obj = { ...obj, search: params.toString() }
+    // }
+    history.push(obj)
   };
+  useEffect(() => {
+    history.push(l);
+    changeUrl(l.pathname);
+  }, [l])
   return (
-    <HStack>
-      <Button onClick={() => handleClick('analytics')}>Analytics</Button>
-      <Button onClick={() => handleClick('layered')}>Layered Dashboard</Button>
-      <Button onClick={() => handleClick('indicators')}>All Indicators</Button>
-      <Button onClick={() => handleClick('tracker')}>Data Entry</Button>
-      {['analytics', 'layered', 'indicators', ''].indexOf(current) !== -1 && <VisualizationHeader />}
-    </HStack>
+    <Flex p="5px" bg="blackAlpha.300" h="48px">
+      <HStack>
+        <Button onClick={() => handleClick('/')}>Analytics</Button>
+        <Button onClick={() => handleClick('/layered')}>Layered Dashboard</Button>
+        <Button onClick={() => handleClick('/indicators')}>All Indicators</Button>
+        <Button onClick={() => handleClick('/tracker')}>Data Entry</Button>
+      </HStack>
+      <Spacer />
+      {['/', '/layered', '/indicators'].indexOf(store.url) !== -1 && <VisualizationHeader />}
+    </Flex>
   )
 }
 
