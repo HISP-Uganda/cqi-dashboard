@@ -1,9 +1,8 @@
 import { TreeSelect } from "antd";
+import { flatten } from 'lodash';
 import { useEffect, useState } from "react";
-import { flatten } from 'lodash'
 import { useD2 } from "../Context";
 import { useUserOrgUnit } from "../Queries";
-import { useQueryClient } from "react-query";
 type Unit = {
   id: string;
   name: string;

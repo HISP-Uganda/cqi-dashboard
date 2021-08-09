@@ -35,7 +35,7 @@ const AllIndicators: FC<AllIndicatorsProps> = ({ rows, dataElementIndex }) => {
           <Tbody>
             {rows.map((row: any) =>
               <Tr key={row[0]} >
-                <Td>{row[dataElementIndex]}</Td>
+                <Td fontSize="md">{row[dataElementIndex]}</Td>
                 {store.filterBy === 'orgUnit' && data.metaData.dimensions.pe.map((pe: string) => <TableIndicator key={`${pe}${row[0]}`} search={row[0]} what={pe} />)}
                 {store.filterBy === 'period' && data.metaData.dimensions.ou.map((ou: string) => <TableIndicator key={`${ou}${row[0]}`} search={row[0]} what={ou} />)}
               </Tr>)}

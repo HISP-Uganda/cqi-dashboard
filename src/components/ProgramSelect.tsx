@@ -22,8 +22,8 @@ const ProgramSelect = ({ selectedValue, handleChange }) => {
       value={selectedValue}
       onChange={handleChange}
     >
-      {data.map((p) => (
-        <Option key={p.id} value={p.id}>
+      {data.map((p: any) => (
+        <Option key={`${p.trackedEntityType.id},${p.id}`} value={`${p.trackedEntityType.id},${p.id}`}>
           {p.name}
         </Option>
       ))}

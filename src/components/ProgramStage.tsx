@@ -19,9 +19,8 @@ const ProgramStage: FC<ProgramStageProps> = ({ stage, tei }) => {
     error,
     data
   } = useQuery<any, Error>(
-    ["programStages", stage],
-    () => fetchStage(),
-    { keepPreviousData: true }
+    ["programStage", stage],
+    () => fetchStage()
   );
 
   const fetchStage = async () => {
@@ -51,7 +50,7 @@ const ProgramStage: FC<ProgramStageProps> = ({ stage, tei }) => {
         }
       });
       setColumns([{
-        title: 'Event Date',
+        title: 'Registration Date',
         dataIndex: 'eventDate',
         key: 'eventDate',
         editable: true,

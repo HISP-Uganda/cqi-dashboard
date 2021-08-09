@@ -21,7 +21,6 @@ const TrackedEntityInstanceForm = () => {
   const params = new URLSearchParams(search);
   const [form] = Form.useForm();
   const [formMetadata, setFormMetadata] = useState<any>();
-  const forceUpdate = FormBuilder.useForceUpdate();
   const [generatedIds, setGeneratedIds] = useState<any>();
   const queryClient = useQueryClient();
   const indicators = useStore(indicatorForGroup);
@@ -73,7 +72,7 @@ const TrackedEntityInstanceForm = () => {
     data
   } = useQuery<any, Error>(
     ["programs", params.get('program')],
-    () => fetchProgramAttributes()
+    () => fetchProgramAttributes(params.get('program'))
   );
 
   const addTrackedEntityInstance = async (instance: any) => {
@@ -102,7 +101,7 @@ const TrackedEntityInstanceForm = () => {
 
     const trackedEntityInstance = {
       orgUnit: params.get('ou'),
-      trackedEntityType: 'KSy4dEvpMWi',
+      trackedEntityType: params.get('trackedEntityType'),
       attributes,
       enrollments: [{
         orgUnit: params.get('ou'),
@@ -115,9 +114,9 @@ const TrackedEntityInstanceForm = () => {
     history.push({ search: params.toString(), pathname: '/tracker' })
   }
 
-  const fetchProgramAttributes = async () => {
-    return await api.get(`programs/${params.get('program')}.json`, {
-      fields: "selectIncidentDatesInFuture,selectEnrollmentDatesInFuture,incidentDateLabel,enrollmentDateLabel,programTrackedEntityAttributes[id,name,mandatory,valueType,displayInList,sortOrder,allowFutureDate,trackedEntityAttribute[id,name,generated,pattern,unique,valueType,orgunitScope,optionSetValue,displayFormName,optionSet[options[code,name]]]]"
+  const fetchProgramAttributes = async (program: string) => {
+    return await api.get(`programs/${program}.json`, {
+      fields: "id,selectIncidentDatesInFuture,selectEnrollmentDatesInFuture,incidentDateLabel,enrollmentDateLabel,programTrackedEntityAttributes[id,name,mandatory,valueType,displayInList,sortOrder,allowFutureDate,trackedEntityAttribute[id,name,generated,pattern,unique,valueType,orgunitScope,optionSetValue,displayFormName,optionSet[options[code,name]]]]"
     });
   }
 
@@ -194,6 +193,15 @@ const TrackedEntityInstanceForm = () => {
       });
     }
 
+    if (currentData.id === 'T3geRmoJ9Wt') {
+      fields = [{
+        key: 'y3hJLGjctPk',
+        label: 'Plan Date',
+        required: true,
+        widget: 'date-picker'
+      }]
+    }
+
     fields = [...fields, ...other]
 
     return {
@@ -234,8 +242,8 @@ const TrackedEntityInstanceForm = () => {
 
   return (
     <Box bg="white" m="auto" p="10px">
-      <Form form={form} onFinish={handleFinish} onValuesChange={forceUpdate} layout="vertical" initialValues={{ ['TG1QzFgGTex']: store.indicatorGroup }}>
-        <FormBuilder meta={formMetadata} />
+      <Form form={form} onFinish={handleFinish} layout="vertical" initialValues={{ ['TG1QzFgGTex']: store.indicatorGroup }}>
+        <FormBuilder meta={formMetadata} form={form} />
         <Form.Item>
           <Button htmlType="submit" type="primary">Submit</Button>
         </Form.Item>

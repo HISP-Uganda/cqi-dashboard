@@ -21,7 +21,7 @@ const TrackedEntityInstance = () => {
     isSuccess,
     data,
   } = useQuery<any, Error>(
-    ["programs", params.get('program')],
+    ["programStages", params.get('program')],
     () => fetchProgramStages(),
   );
 

@@ -14,3 +14,8 @@ export interface Store {
   currentProjectEndDate?: string;
   currentProjectFrequency?: string;
 }
+
+
+export interface ProgramSetting {
+  program: string;
+}

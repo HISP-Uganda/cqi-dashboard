@@ -12,7 +12,7 @@ import {
   changePeriod,
   changeUrl
 } from "./Events";
-import { Store } from './types';
+import { Store } from './interfaces';
 
 export const dashboards = dashboardsDomain.createStore<Store>({
   url: '/analytics',
@@ -66,7 +66,6 @@ export const orgUnits = dashboards.map((state) => {
 });
 
 export const maxLevel = dashboards.map((state) => {
-  console.log(state.ou)
   if (state.ou.length > 0) {
     const ou = state.ou[state.ou.length - 1]
     return String(ou.path).split('/').length

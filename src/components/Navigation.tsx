@@ -33,10 +33,10 @@ const Navigation: FC<HeaderProps> = () => {
   return (
     <Flex p="5px" bg="blackAlpha.300" h="48px">
       <HStack>
+        <Button onClick={() => handleClick('/tracker')}>Data Entry</Button>
         <Button onClick={() => handleClick('/')}>Analytics</Button>
         <Button onClick={() => handleClick('/layered')}>Layered Dashboard</Button>
         <Button onClick={() => handleClick('/indicators')}>All Indicators</Button>
-        <Button onClick={() => handleClick('/tracker')}>Data Entry</Button>
       </HStack>
       <Spacer />
       {['/', '/layered', '/indicators'].indexOf(store.url) !== -1 && <VisualizationHeader />}

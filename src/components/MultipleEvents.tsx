@@ -1,7 +1,7 @@
 import { InputNumber, Table } from 'antd';
 import { format, isValid, parseISO } from 'date-fns';
 import { useStore } from 'effector-react';
-import { fromPairs, isEmpty, range } from 'lodash';
+import { fromPairs, range } from 'lodash';
 import { ChangeEvent, FC, useEffect, useState } from 'react';
 import Plot from "react-plotly.js";
 import { useMutation, useQueryClient } from 'react-query';
@@ -16,17 +16,17 @@ import DatePicker from './DatePicker';
 interface MultipleProps {
   tei: string;
   stage: string;
+  title?: string;
 }
 
 
-const MultipleEvents: FC<MultipleProps> = ({ tei, stage }) => {
+const MultipleEvents: FC<MultipleProps> = ({ tei, stage, title }) => {
   const d2 = useD2();
   const api = d2.Api.getApi();
   const { search } = useLocation();
   const params = new URLSearchParams(search);
   const queryClient = useQueryClient();
   const [currentData, setCurrentData] = useState<any[]>([]);
-  const store = useStore(dashboards);
   const addEvent = async (event: any) => {
     return await api.post(`events.json`, event);
   }
@@ -164,7 +164,7 @@ const MultipleEvents: FC<MultipleProps> = ({ tei, stage }) => {
     isError,
     error,
     data: fetchedData
-  } = useEvents(d2, stage, tei);
+  } = useEvents(d2, stage, tei, params.get('indicator'));
 
   useEffect(() => {
     if (fetchedData) {
@@ -219,7 +219,7 @@ const MultipleEvents: FC<MultipleProps> = ({ tei, stage }) => {
           ]}
           layout={{
             autosize: true,
-            title: "Progress",
+            title: fetchedData.title,
             legend: {
               orientation: "h",
               yanchor: "bottom",

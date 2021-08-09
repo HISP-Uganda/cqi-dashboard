@@ -26,7 +26,7 @@ const Graph: FC<GraphOptions> = ({ indicator, filterBy, title, yAxisTitle }) => 
           {
             x: Object.keys(data).map((x) => data[x].display),
             y: Object.keys(data).map((x) => data[x].indicator),
-            type: 'scatter',
+            type: 'bar',
             mode: 'lines+markers',
             marker: { color: 'red' },
           }

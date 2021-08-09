@@ -17,10 +17,11 @@ const TrackedEntityInstances = () => {
   const { url } = useRouteMatch();
   const [orgUnit, setOrgUnit] = useState<string>(params.get("ou"));
   const [program, setProgram] = useState<string>(params.get('program'));
+  const [trackedEntityType, setTrackedEntityType] = useState<string>(params.get('trackedEntityType'))
   const [columns, setColumns] = useState<any[]>([]);
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
-  const [indexes, setIndexes] = useState<[number, number, number]>([7, 8, 9]);
+  const [indexes, setIndexes] = useState<[number, number, number, number]>([7, 8, 9, 14]);
   const history = useHistory();
   const {
     isLoading,
@@ -28,12 +29,9 @@ const TrackedEntityInstances = () => {
     error,
     data,
     isFetching,
-    isPreviousData,
-    isSuccess
   } = useQuery<any, Error>(
     ["trackedEntityInstances", page, orgUnit, program, pageSize],
     () => fetchInstances(page, orgUnit, program, pageSize),
-    { keepPreviousData: true }
   );
 
   useEffect(() => {
@@ -52,22 +50,27 @@ const TrackedEntityInstances = () => {
     if (program && orgUnit) {
       params.append('program', program);
       params.append('ou', orgUnit);
+      params.append('trackedEntityType', trackedEntityType);
     }
     history.push({ search: params.toString(), pathname: `${url}/add` })
   }
 
   useEffect(() => {
-    if (data) {
+    if (data && params.get('program') === 'vMfIVFcRWlu') {
       const startDateIndex = data.headers.findIndex((h: any) => h.name === 'y3hJLGjctPk');
       const endDateIndex = data.headers.findIndex((h: any) => h.name === 'iInAQ40vDGZ');
       const frequencyIndex = data.headers.findIndex((h: any) => h.name === 'WQcY6nfPouv');
-      setIndexes([startDateIndex, endDateIndex, frequencyIndex]);
+      const indicatorIndex = data.headers.findIndex((h: any) => h.name === 'kHRn35W3Gq4');
+      console.log(indicatorIndex);
+      setIndexes([startDateIndex, endDateIndex, frequencyIndex, indicatorIndex]);
     }
   }, [data])
 
   const handleChange = async (value: string) => {
     setColumns([]);
-    setProgram(value);
+    const [trackedEntityType, program] = value.split(',');
+    setProgram(program);
+    setTrackedEntityType(trackedEntityType);
   };
 
   const handleOrgUnitChange = (unit: string) => {
@@ -101,11 +104,10 @@ const TrackedEntityInstances = () => {
       <OrgUnitTreeSelect selectedOrgUnit={orgUnit} setSelectedOrgUnit={handleOrgUnitChange} />
     </div>
     <div style={{ width: '34%', paddingLeft: 5, paddingRight: 5 }}>
-      <ProgramSelect selectedValue={program} handleChange={handleChange} />
+      <ProgramSelect selectedValue={program && trackedEntityType ? `${trackedEntityType},${program}` : ''} handleChange={handleChange} />
     </div>
     <div style={{ width: '32%', marginLeft: 'auto', textAlign: 'right' }}><Button size="large" onClick={() => add()}>Add</Button></div>
   </div>
-
 
   if (isError) {
     return <div>
@@ -121,7 +123,7 @@ const TrackedEntityInstances = () => {
     <Box m="5px" bg="white" p="10px">
       {head}
       {data && <Box mt="10px">
-        <Card title="Tracked Entity Instances" extra={<ColumnDrawer program={program} setColumns={setColumns} headers={data.headers} />} bodyStyle={{ padding: 0 }}>
+        <Card title="QI projects" extra={<ColumnDrawer program={program} setColumns={setColumns} headers={data.headers} />} bodyStyle={{ padding: 0 }}>
           <Table
             tableLayout="auto"
             loading={isFetching}
@@ -132,9 +134,12 @@ const TrackedEntityInstances = () => {
             rowClassName={(record, index: number) => index % 2 === 0 ? 'even' : 'odd'}
             onRow={(record: any[]) => {
               const pms = new URLSearchParams(search);
-              pms.append('start', record[indexes[0]]);
-              pms.append('end', record[indexes[1]]);
-              pms.append('frequency', record[indexes[2]]);
+              if (program === 'vMfIVFcRWlu') {
+                pms.append('start', record[indexes[0]]);
+                pms.append('end', record[indexes[1]]);
+                pms.append('frequency', record[indexes[2]]);
+                pms.append('indicator', record[indexes[3]]);
+              }
               return {
                 onClick: () => {
                   changeCurrentProject([record[indexes[0]], record[indexes[1]], record[indexes[2]]])

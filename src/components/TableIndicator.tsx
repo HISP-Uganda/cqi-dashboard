@@ -20,8 +20,8 @@ const TableIndicator: FC<TableIndicatorProps> = ({ search, what }) => {
   const { data, isError, isLoading, error, isSuccess } = useAnalytics(d2, "vMfIVFcRWlu", "kHRn35W3Gq4", search, "rVZlkzOwWhi", "RgNQcLejbwX", units, pes, store.filterBy)
   return (
     <>
-      {isLoading && <Td textAlign="center"><Spinner size="xs"/></Td>}
-      {isSuccess && <Td bg={colors(data[what].indicator)} textAlign="center"> {data[what].indicator} </Td>}
+      {isLoading && <Td textAlign="center"><Spinner size="xs" /></Td>}
+      {isSuccess && <Td bg={colors(data[what].indicator)} textAlign="center"> {data[what].indicator !== '-' ? `${data[what].indicator}%` : data[what].indicator} </Td>}
       {isError && <Td>{error.message}</Td>}
     </>
   )

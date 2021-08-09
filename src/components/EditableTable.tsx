@@ -82,7 +82,7 @@ const EditableTable: FC<TableProps> = ({ columns, tei, stage }) => {
       if (column.inputType === 'DATE' && record[column.key]) {
         modifiedRecord = { ...modifiedRecord, [column.key]: moment(record[column.key]) }
       }
-    })
+    });
     form.setFieldsValue(modifiedRecord);
     setEditingKey(modifiedRecord.key);
   };

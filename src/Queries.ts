@@ -23,11 +23,23 @@ export function usePrograms(d2: any) {
     async () => {
       const { programs } = await api.get("programs", {
         paging: false,
-        fields: "id,name",
+        fields: "id,name,trackedEntityType,withoutRegistration",
       });
-      return programs;
+      return programs.filter((p: any) => !p.withoutRegistration);
     },
     {}
+  );
+}
+
+export function useProgramAttributes(d2: any, program: string) {
+  const api = d2.Api.getApi();
+  return useQuery<any, Error>(
+    ["programAttributes", program],
+    async () => {
+      return await api.get(`programs/${program}.json`, {
+        fields: "selectIncidentDatesInFuture,selectEnrollmentDatesInFuture,incidentDateLabel,enrollmentDateLabel,programTrackedEntityAttributes[id,name,mandatory,valueType,displayInList,sortOrder,allowFutureDate,trackedEntityAttribute[id,name,generated,pattern,unique,valueType,orgunitScope,optionSetValue,displayFormName,optionSet[options[code,name]]]]"
+      });
+    }
   );
 }
 
@@ -67,13 +79,32 @@ export function useEventOptions(d2: any, programStage: string, dataElements: str
   );
 }
 
-export function useEvents(d2: any, stage: string, tei: string) {
+export function useEvents(d2: any, stage: string, tei: string, indicator: string = '') {
   const api = d2.Api.getApi();
-  return useQuery<any, Error>(["events", stage, tei], async () => {
-    return await api.get(`events.json`, {
-      programStage: stage,
-      trackedEntityInstance: tei
-    });
+  return useQuery<any, Error>(["events", stage, tei, indicator], async () => {
+    let requests = [
+      api.get(`events.json`, {
+        programStage: stage,
+        trackedEntityInstance: tei
+      }),
+    ]
+
+    if (indicator) {
+      requests = [
+        ...requests,
+        api.get(`events/${indicator}.json`, {
+          programStage: stage,
+          trackedEntityInstance: tei
+        }),
+      ]
+    }
+    if (indicator) {
+      const [events, indicatorInfo] = await Promise.all(requests);
+      const de = indicatorInfo.dataValues.find((dv: any) => dv.dataElement === 'kToJ1rk0fwY');
+      return { ...events, title: de?.value }
+    }
+    const [events] = await Promise.all(requests);
+    return events;
   });
 }
 
@@ -230,8 +261,9 @@ export function useAnalytics(
       });
       return fromPairs(processed);
     } else {
-      const groupedNumerator = fromPairs(numerator.rows.map((r: any[]) => [r[0], { [r[1]]: r[2] }]));
-      const groupedDenominator = fromPairs(denominator.rows.map((r: any[]) => [r[0], { [r[1]]: r[2] }]));
+      const groupedNumerator = fromPairs(numerator.rows.map((r: any[]) => [`${r[0]}${r[1]}`, r[2]]));
+      const groupedDenominator = fromPairs(denominator.rows.map((r: any[]) => [`${r[0]}${r[1]}`, r[2]]));
+
       const ous = numerator.metaData.dimensions.ou.map((ou: string) => {
         return {
           id: ou,
@@ -245,13 +277,13 @@ export function useAnalytics(
           id: pe,
           name: numerator.metaData.items[pe].name
         }
-      })
+      });
       let all = [];
       for (const ou of numerator.metaData.dimensions.ou) {
         let obj = {}
         for (const pe of numerator.metaData.dimensions.pe) {
-          const num = groupedNumerator[ou] ? groupedNumerator[ou][pe] : groupedNumerator[pe] ? groupedNumerator[pe][ou] : '-';
-          const den = groupedDenominator[ou] ? groupedDenominator[ou][pe] : groupedDenominator[pe] ? groupedDenominator[pe][ou] : '-';
+          const num = groupedNumerator[`${ou}${pe}`] || '-';
+          const den = groupedDenominator[`${ou}${pe}`] || '-';
           let ind = '-';
           if (den === undefined || num === undefined) {
             ind = '-';

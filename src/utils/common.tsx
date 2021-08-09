@@ -43,9 +43,8 @@ const getInput = (valueType: string, otherOptions: any = {}) => {
     LONG_TEXT: <Input.TextArea {...otherOptions} />,
     NUMBER: <InputNumber {...otherOptions} />,
     BOOLEAN: <Checkbox {...otherOptions} />,
-    DEFAULT: <Input {...otherOptions} />
   }
-  return Opts[valueType]
+  return Opts[valueType] || <Input {...otherOptions} />
 }
 
 export const getField = (valueType: string, optionSetValue: boolean, options: any[] = [], otherOptions: any = {}) => {
@@ -79,18 +78,27 @@ export const reviewPeriodString = (frequency: string) => {
 
 export const colors = (value: string) => {
   if (value === '-') {
-    return 'none';
-  }
-  if (value >= '0' && value < '50') {
-    return 'red.300';
+    return 'none'
   }
 
-  if (value >= '50' && value < '75') {
-    return 'yellow.300';
-  }
-  if (value >= '75') {
-    return 'green.300';
+  const valueFloat = parseFloat(value)
+
+  if (valueFloat >= 0 && valueFloat < 50) {
+    return '#A42626';
   }
 
-  return 'red.400'
+  if (valueFloat >= 50 && valueFloat < 70) {
+    return '#CC0000';
+  }
+  if (valueFloat >= 70 && valueFloat < 90) {
+    return '#FFFF01';
+  }
+  if (valueFloat >= 90 && valueFloat < 95) {
+    return '#62F091';
+  }
+  if (valueFloat >= 95 && valueFloat <= 100) {
+    return '#109909';
+  }
+
+  return 'none'
 }
