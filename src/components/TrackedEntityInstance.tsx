@@ -1,50 +1,31 @@
-import { Box } from '@chakra-ui/layout';
-import { Tabs } from 'antd';
-import { useQuery } from "react-query";
-import { useLocation, useParams } from "react-router-dom";
-import { useD2 } from "../Context";
+import { Box } from "@chakra-ui/layout";
+import { Tabs } from "antd";
+import { useStore } from "effector-react";
+import { useProgramStages } from "../Queries";
+import { dashboards } from "../Store";
 import ProgramStage from "./ProgramStage";
-interface ParamTypes {
-  tei: string,
-}
-const { TabPane } = Tabs
+
+const { TabPane } = Tabs;
 const TrackedEntityInstance = () => {
-  const { tei } = useParams<ParamTypes>();
-  const d2 = useD2();
-  const api = d2.Api.getApi();
-  const { search } = useLocation();
-  const params = new URLSearchParams(search);
-
-  const { isLoading,
-    isError,
-    error,
-    isSuccess,
-    data,
-  } = useQuery<any, Error>(
-    ["programStages", params.get('program')],
-    () => fetchProgramStages(),
+  const store = useStore(dashboards);
+  const { isLoading, isError, error, isSuccess, data } = useProgramStages(
+    store.program
   );
-
-  const fetchProgramStages = async () => {
-    const data = await api.get(`programs/${params.get('program')}.json`, {
-      fields: "programStages[id,name]"
-    });
-    return data;
-  }
-
   return (
-    <Box bg="white" p="10px">
+    <Box>
       {isLoading && <div>Loading</div>}
-      {isSuccess && <div>
-        {data && data.programStages && <Tabs type="card">
-          {data.programStages.map((stage: any) => <TabPane tab={stage.name} key={stage.id}>
-            <ProgramStage stage={stage.id} tei={tei} />
-          </TabPane>)}
-        </Tabs>}
-      </div>}
+      {isSuccess && (
+        <Tabs type="card">
+          {data.map((stage: any) => (
+            <TabPane tab={stage.name} key={stage.id}>
+              <ProgramStage stage={stage.id} tei={store.instance} />
+            </TabPane>
+          ))}
+        </Tabs>
+      )}
       {isError && <div>{error.message}</div>}
     </Box>
-  )
-}
+  );
+};
 
-export default TrackedEntityInstance
+export default TrackedEntityInstance;

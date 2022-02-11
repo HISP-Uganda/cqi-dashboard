@@ -1,36 +1,36 @@
+import { useDataEngine } from "@dhis2/app-runtime";
 import { TreeSelect } from "antd";
-import { flatten } from 'lodash';
-import { useEffect, useState } from "react";
-import { useD2 } from "../Context";
-import { useUserOrgUnit } from "../Queries";
-type Unit = {
-  id: string;
-  name: string;
-  path: string;
-  leaf: boolean;
-}
-type Organisation = {
-  children: Array<Unit>
-}
-type Response = {
-  organisationUnits: Array<Organisation>
-}
-const OrgUnitTreeSelect = ({ selectedOrgUnit, setSelectedOrgUnit }) => {
-  const [units, setUnits] = useState<any[]>([]);
-  const d2 = useD2();
-  const { data, isError, isLoading, error } = useUserOrgUnit(d2);
+import { useStore } from "effector-react";
+import { flatten, uniqBy } from "lodash";
+import { FC } from "react";
+import { changeInitialUnits, changeOu } from "../Events";
+import { dashboards } from "../Store";
+
+const OrgUnitTreeSelect: FC<{
+  multiple?: boolean;
+  value: any;
+  onChange: (value: any) => void;
+}> = ({ multiple = false, value, onChange }) => {
+  const store = useStore(dashboards);
+  const engine = useDataEngine();
   const onLoadData = async (parent: any) => {
     try {
-      const api = d2.Api.getApi();
-      const { organisationUnits }: Response = await api.get("organisationUnits", {
-        filter: `id:in:[${parent.id}]`,
-        paging: "false",
-        order: 'shortName:desc',
-        fields: "children[id,name,path,leaf]",
+      const {
+        units: { organisationUnits },
+      }: any = await engine.query({
+        units: {
+          resource: "organisationUnits.json",
+          params: {
+            filter: `id:in:[${parent.id}]`,
+            paging: "false",
+            order: "shortName:desc",
+            fields: "children[id,name,path,leaf]",
+          },
+        },
       });
-      const found = organisationUnits
-        .map((unit: Organisation) => {
-          return unit.children.map((child: Unit) => {
+      const found = organisationUnits.map((unit: any) => {
+        return unit.children
+          .map((child: any) => {
             return {
               id: child.id,
               pId: parent.id,
@@ -38,7 +38,8 @@ const OrgUnitTreeSelect = ({ selectedOrgUnit, setSelectedOrgUnit }) => {
               title: child.name,
               isLeaf: child.leaf,
             };
-          }).sort((a, b) => {
+          })
+          .sort((a: any, b: any) => {
             if (a.title > b.title) {
               return 1;
             }
@@ -47,43 +48,28 @@ const OrgUnitTreeSelect = ({ selectedOrgUnit, setSelectedOrgUnit }) => {
             }
             return 0;
           });
-        });
-      setUnits([...units, ...flatten(found)]);
-      // queryClient.setQueryData('units', (prevData: any) => {
-      //   console.log(prevData)
-      //   return units;
-      // })
+      });
+      changeInitialUnits(
+        uniqBy([...store.organisations, ...flatten(found)], "id")
+      );
     } catch (e) {
       console.log(e);
     }
   };
 
-  useEffect(() => {
-    if (data && units.length === 0) {
-      setUnits(data);
-    }
-  }, [data, units]);
-
-  if (isLoading) {
-    return <div>Loading</div>;
-  }
-
-  if (isError) {
-    return <div>{error.message}</div>;
-  }
-
   return (
     <TreeSelect
       allowClear={true}
       treeDataSimpleMode
+      multiple={multiple}
       size="large"
       style={{ width: "100%" }}
-      value={selectedOrgUnit}
-      dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
+      value={value}
+      dropdownStyle={{ maxHeight: 400, overflow: "inherit" }}
       placeholder="Please select health centre"
-      onChange={setSelectedOrgUnit}
+      onChange={onChange}
       loadData={onLoadData}
-      treeData={units}
+      treeData={store.organisations}
     />
   );
 };

@@ -5,53 +5,54 @@ import {
   DrawerContent,
   DrawerOverlay,
   HStack,
-  useDisclosure
+  useDisclosure,
+  Select,
 } from "@chakra-ui/react";
 import { useStore } from "effector-react";
 import { ChangeEvent, FC } from "react";
-import { changeFilterBy, changeIndicator, changeIndicatorGroup } from "../Events";
+import {
+  changeFilterBy,
+  changeIndicator,
+  changeIndicatorGroup,
+  changeLevel,
+  changeOus,
+} from "../Events";
 import { dashboards, indicatorForGroup } from "../Store";
 import Indicator from "./Indicator";
 import IndicatorGroup from "./IndicatorGroup";
+import OrgUnitTreeSelect from "./OrgUnitTreeSelect";
 import OuTreeDialog from "./OuTreeDialog";
 import PeriodDialog from "./PeriodDialog";
-export interface HeaderProps {
-}
+export interface HeaderProps {}
 const VisualizationHeader: FC<HeaderProps> = () => {
   const store = useStore(dashboards);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const indicators = useStore(indicatorForGroup)
+  const indicators = useStore(indicatorForGroup);
   const onIndicatorGroupChange = (e: ChangeEvent<HTMLSelectElement>) => {
     changeIndicatorGroup(e.target.value);
-    changeIndicator(indicators[0][0])
-  }
+    changeIndicator(indicators[0][0]);
+  };
+
+  const onLevelChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    changeLevel(e.target.value);
+  };
   return (
     <>
-      <Button onClick={onOpen}>
-        Filters
-      </Button>
-      <Drawer placement="top" onClose={onClose} isOpen={isOpen}>
+      <Button onClick={onOpen}>Filters</Button>
+      {/* <Drawer placement="top" onClose={onClose} isOpen={isOpen}>
         <DrawerOverlay>
           <DrawerContent>
-            <DrawerBody>
-              <HStack>
-                {store.url !== '/indicators' && store.url !== '/' && <>
-                  <IndicatorGroup value={store.indicatorGroup} onChange={onIndicatorGroupChange} />
-                  <Indicator />
-                </>}
-                {store.url === '/indicators' && <>
-                  {store.filterBy === 'period' ? <Button onClick={() => changeFilterBy('orgUnit')}>Filter By OrgUnits</Button> : <Button onClick={() => changeFilterBy('period')}>Filter By Period</Button>}
-                </>}
-                <OuTreeDialog />
-                <PeriodDialog />
-              </HStack>
+            <DrawerBody px="3px" py="10px" m="0">
+              
             </DrawerBody>
           </DrawerContent>
         </DrawerOverlay>
-      </Drawer>
-    </>
-  )
-}
+      </Drawer> */}
 
-export default VisualizationHeader
+      
+    </>
+  );
+};
+
+export default VisualizationHeader;

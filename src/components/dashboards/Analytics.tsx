@@ -1,65 +1,64 @@
-import { Box } from '@chakra-ui/react';
-import { useStore } from "effector-react";
+import { Box } from "@chakra-ui/react";
 import { Responsive, WidthProvider } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
-import { dashboards } from "../../Store";
 import Graph from "../Graph";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const layouts = [
   {
-    i: 'a',
+    i: "a",
     x: 0,
     y: 0,
     w: 6,
     h: 11,
     static: true,
-    filterBy: 'orgUnit',
-    indicator: 'lxDACmdTDsX',
-    title: '% of Modification of anesthesia plan (after pre anesthesia assessment)',
-    yAxisTitle: 'Modification of anesthesia plan(%)'
+    filterBy: "orgUnit",
+    indicator: "lxDACmdTDsX",
+    title:
+      "% of Modification of anesthesia plan (after pre anesthesia assessment)",
+    yAxisTitle: "Modification of anesthesia plan(%)",
   },
   {
-    i: 'b',
+    i: "b",
     x: 6,
     y: 0,
     w: 6,
     h: 11,
     static: true,
-    filterBy: 'period',
-    indicator: 'ugfHTZ1AJyw',
-    title: '% of clients who report having received the prescribed service package',
-    yAxisTitle: 'Clients prescribed to service package(%)'
+    filterBy: "period",
+    indicator: "ugfHTZ1AJyw",
+    title:
+      "% of clients who report having received the prescribed service package",
+    yAxisTitle: "Clients prescribed to service package(%)",
   },
   {
-    i: 'c',
+    i: "c",
     x: 0,
     y: 11,
     w: 6,
     h: 11,
     static: true,
-    filterBy: 'orgUnit',
-    indicator: 'VK1uxyAT5EU',
-    title: '% of clients failing on treatment',
-    yAxisTitle: 'Clients failing on treatment(%)'
+    filterBy: "orgUnit",
+    indicator: "VK1uxyAT5EU",
+    title: "% of clients failing on treatment",
+    yAxisTitle: "Clients failing on treatment(%)",
   },
   {
-    i: 'd',
+    i: "d",
     x: 11,
     y: 11,
     w: 6,
     h: 11,
     static: true,
-    filterBy: 'period',
-    indicator: 'Number of dashboards',
-    title: '% of dashboards',
-    yAxisTitle: 'Dashboards(%)'
+    filterBy: "period",
+    indicator: "Number of dashboards",
+    title: "% of dashboards",
+    yAxisTitle: "Dashboards(%)",
   },
 ];
 const Analytics = () => {
-  const store = useStore(dashboards);
   return (
     <ResponsiveGridLayout
       isDraggable={false}
@@ -73,12 +72,19 @@ const Analytics = () => {
       className="layout"
     >
       {layouts.map((l: any) => {
-        return <Box key={l.i} overflow="auto">
-          <Graph indicator={l.indicator} filterBy={l.filterBy} title={l.title} yAxisTitle={l.yAxisTitle} />
-        </Box>
+        return (
+          <Box key={l.i}>
+            <Graph
+              indicator={l.indicator}
+              filterBy={l.filterBy}
+              title={l.title}
+              yAxisTitle={l.yAxisTitle}
+            />
+          </Box>
+        );
       })}
     </ResponsiveGridLayout>
-  )
-}
+  );
+};
 
-export default Analytics
+export default Analytics;

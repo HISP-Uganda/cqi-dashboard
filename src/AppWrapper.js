@@ -1,11 +1,10 @@
-import { D2Shim } from "@dhis2/app-runtime-adapter-d2";
-import { QueryClient, QueryClientProvider } from "react-query";
 import { ChakraProvider } from "@chakra-ui/react";
+import { D2Shim } from "@dhis2/app-runtime-adapter-d2";
+import "antd/dist/antd.css";
+import { QueryClient, QueryClientProvider } from "react-query";
 import App from "./components/App";
 import { D2Context } from "./Context";
 
-import "antd/dist/antd.css";
-import "./App.css";
 
 const queryClient = new QueryClient({
   defaultOptions: {
