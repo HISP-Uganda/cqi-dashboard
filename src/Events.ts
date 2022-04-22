@@ -1,12 +1,26 @@
-import { dashboardsDomain } from './Domains';
-export const changePeriod = dashboardsDomain.createEvent<any[]>("change period");
-export const changeIndicator = dashboardsDomain.createEvent<string>('set current indicator');
-export const changeIndicatorGroup = dashboardsDomain.createEvent<string>('set current indicator group');
-export const changeUrl = dashboardsDomain.createEvent<string>('url');
-export const changeFilterBy = dashboardsDomain.createEvent<string>('filterBy');
-export const changeOu = dashboardsDomain.createEvent<any[]>("change ou");
-export const changeIndicators = dashboardsDomain.createEvent<any[]>('change current indicators')
-export const changeIndicatorGroups = dashboardsDomain.createEvent<any[]>('change current indicators groups')
-export const changeIndicatorIndex = dashboardsDomain.createEvent<number>('change current indicators index')
-export const changeIndicatorGroupIndex = dashboardsDomain.createEvent<number>('change current indicator group index')
-export const changeCurrentProject = dashboardsDomain.createEvent<[string, string, string]>('change current indicator group index')
+import { domain } from "./Domains";
+import { ColumnProps, Project } from "./interfaces";
+export const changePeriod = domain.createEvent<any[]>();
+export const changeIndicator = domain.createEvent<string>();
+export const changeIndicatorGroup = domain.createEvent<string>();
+export const changeUrl = domain.createEvent<string>();
+export const changeDataEntryPage = domain.createEvent<string>();
+export const changeProgramEntity = domain.createEvent<string>();
+export const changeFilterBy = domain.createEvent<string>();
+export const changeOu = domain.createEvent<string>();
+export const changeProgram = domain.createEvent<string>();
+export const changeTrackedEntityType = domain.createEvent<string>();
+export const changeIndicators = domain.createEvent<any[]>();
+export const changeIndicatorGroups = domain.createEvent<any[]>();
+export const changeIndicatorIndex = domain.createEvent<number>();
+export const changeIndicatorGroupIndex = domain.createEvent<number>();
+export const changeProject = domain.createEvent<Project>();
+export const addRemoveColumn = domain.createEvent<ColumnProps>();
+export const changeColumns = domain.createEvent<any[]>();
+export const changeTotal = domain.createEvent<number>();
+export const changeInitialUnits = domain.createEvent<any[]>();
+export const changeInitialPrograms = domain.createEvent<any[]>();
+export const changeInstance = domain.createEvent<string>();
+export const changeOus = domain.createEvent<any>();
+export const changeLevels = domain.createEvent<any[]>();
+export const changeLevel = domain.createEvent<string>();

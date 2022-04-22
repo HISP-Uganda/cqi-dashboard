@@ -1,13 +1,12 @@
-import { useStore } from "effector-react";
 import {
   Center,
   Spinner,
   Table, Tbody, Td, Th, Thead, Tr, VStack
 } from "@chakra-ui/react";
-import { useD2 } from "../Context"
+import { useStore } from "effector-react";
+import { FC } from "react";
 import { useAnalyticsStructure } from "../Queries";
 import { dashboards, orgUnits, periods } from "../Store";
-import { FC } from "react";
 import TableIndicator from "./TableIndicator";
 interface AllIndicatorsProps {
   rows: any[];
@@ -15,11 +14,10 @@ interface AllIndicatorsProps {
 }
 
 const AllIndicators: FC<AllIndicatorsProps> = ({ rows, dataElementIndex }) => {
-  const d2 = useD2();
   const store = useStore(dashboards)
   const units = useStore(orgUnits);
   const pes = useStore(periods)
-  const { data, isError, isLoading, error, isSuccess } = useAnalyticsStructure(d2, units, pes);
+  const { data, isError, isLoading, error, isSuccess } = useAnalyticsStructure(units, pes);
   return (
     <div>
       {isLoading && <Center className="biggest-height"><Spinner /></Center>}

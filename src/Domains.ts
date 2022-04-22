@@ -1,3 +1,3 @@
 import { createDomain } from "effector";
 
-export const dashboardsDomain = createDomain("dashboards");
+export const domain = createDomain();
