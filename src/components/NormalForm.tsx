@@ -49,7 +49,7 @@ const NormalForm: FC<TableProps> = ({ tei, stage }) => {
     },
   });
 
-  useEffect(() => {
+  useEffect(() => { 
     if (data && data.events.length > 0) {
       setEvent({
         ...event,
