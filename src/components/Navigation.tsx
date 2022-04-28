@@ -47,6 +47,7 @@ const Navigation: FC<HeaderProps> = () => {
         h="48px"
         px="5px"
       >
+        <Button onClick={() => handleClick("analytics")} colorScheme="blue">Home</Button>
         <Button onClick={() => handleClick("dataEntry")}>Data Entry</Button>
         <Button onClick={() => handleClick("analytics")}>Analytics</Button>
         <Button onClick={() => handleClick("layered")}>

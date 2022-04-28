@@ -29,7 +29,7 @@ import { Store } from "./interfaces";
 
 export const dashboards = domain
   .createStore<Store>({
-    url: "dataEntry",
+    url: "analytics",
     filterBy: "period",
     indicator: "",
     ou: "",

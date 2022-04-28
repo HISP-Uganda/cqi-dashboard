@@ -30,6 +30,7 @@ import {
   changeInstance,
   changeOu,
   changeProject,
+  changeUrl
 } from "../Events";
 import { useInstances } from "../Queries";
 import { $withOptionSet, dashboards } from "../Store";
@@ -42,6 +43,8 @@ import ProgramSelect from "./ProgramSelect";
 
 const OUTER_LIMIT = 4;
 const INNER_LIMIT = 4;
+
+
 
 const TrackedEntityInstances = () => {
   const store = useStore(dashboards);
@@ -113,6 +116,9 @@ const TrackedEntityInstances = () => {
     });
     changeInstance(instance.instance);
     changeDataEntryPage("instance");
+  };
+  const handleClick = (url: string) => {
+    changeUrl(url);
   };
 
   return (

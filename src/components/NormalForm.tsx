@@ -1,6 +1,6 @@
 import { Input } from "antd";
 import { Form, Space } from "antd";
-import { Textarea, Stack, Flex, Button, Text, Box } from "@chakra-ui/react";
+import { Textarea, Stack, Flex, Button, Text, Box, Center } from "@chakra-ui/react";
 import React, { FC, useEffect, useState } from "react";
 import { useEvents } from "../Queries";
 import { useMutation, useQueryClient } from "react-query";
@@ -9,6 +9,17 @@ import moment from "moment";
 import { generateUid } from "../utils/uid";
 import { useStore } from "effector-react";
 import { dashboards } from "../Store";
+import {
+  Table,
+  Thead,
+  Tbody,
+  Tfoot,
+  Tr,
+  Th,
+  Td,
+  TableCaption,
+  TableContainer,
+} from "@chakra-ui/react";
 
 interface TableProps {
   tei: string;
@@ -49,7 +60,7 @@ const NormalForm: FC<TableProps> = ({ tei, stage }) => {
     },
   });
 
-  useEffect(() => { 
+  useEffect(() => {
     if (data && data.events.length > 0) {
       setEvent({
         ...event,
@@ -88,30 +99,30 @@ const NormalForm: FC<TableProps> = ({ tei, stage }) => {
       {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
       <Stack direction="row" spacing={50} mb="30px" width="100%">
         <Box width="100%">
-      <Text fontSize='xl'>Other Observed Effects</Text>
-        <Textarea
-          rows={8}
-          mb="48px"
-          placeholder="Enter Observed Effects Here"
-          size="sm"
-          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-            setObservedEffects(e.target.value)
-          }
-          value={observedEffects}
-        />
+          <Text fontSize="xl">Other Observed Effects</Text>
+          <Textarea
+            rows={8}
+            mb="48px"
+            placeholder="Enter Observed Effects Here"
+            size="sm"
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+              setObservedEffects(e.target.value)
+            }
+            value={observedEffects}
+          />
         </Box>
         <Box width="100%">
-        <Text fontSize='xl'>Performance Trends</Text>
-        <Textarea
-          rows={8}
-          mb="48px"
-          placeholder="Enter Performance Trends Here"
-          size="sm"
-          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-            setPerformanceTrends(e.target.value)
-          }
-          value={performanceTrends}
-        />
+          <Text fontSize="xl">Performance Trends</Text>
+          <Textarea
+            rows={8}
+            mb="48px"
+            placeholder="Enter Performance Trends Here"
+            size="sm"
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+              setPerformanceTrends(e.target.value)
+            }
+            value={performanceTrends}
+          />
         </Box>
       </Stack>
       <Stack direction="row" spacing={12} mb="60px">
@@ -126,8 +137,31 @@ const NormalForm: FC<TableProps> = ({ tei, stage }) => {
           Cancel
         </Button>
       </Stack>
-
-      <Text>{display ? <h1>{data}</h1> : null}</Text>
+      <Center><Text fontSize='lg'>Summary Observations</Text></Center>
+      <TableContainer>
+        <Table variant="simple">
+          <Thead>
+            <Tr>
+              <Th>Other Observed Effects</Th>
+              <Th>Performance Trends</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            <Tr>
+              <Td>inches</Td>
+              <Td >kjrnkjrkjrkj</Td>
+            </Tr>
+            <Tr>
+              <Td>feet</Td>
+              <Td >30.48</Td>
+            </Tr>
+            <Tr>
+              <Td>yards</Td>
+              <Td >0.91444</Td>
+            </Tr>
+          </Tbody>
+        </Table>
+      </TableContainer>
     </Box>
   );
 };
