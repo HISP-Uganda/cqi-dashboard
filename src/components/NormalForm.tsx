@@ -132,7 +132,6 @@ const NormalForm: FC<TableProps> = ({ tei, stage }) => {
         <Button
           colorScheme="red"
           variant="solid"
-          //  onClick={() => setDisplay(false)}
         >
           Cancel
         </Button>
