@@ -10,7 +10,7 @@ type ProgramStageProps = {
   tei: string;
 };
 
-const ProgramStage: FC<ProgramStageProps> = ({ stage, tei }) => {
+const ProgramStage = ({ stage, tei }: ProgramStageProps) => {
   const { isLoading, isError, isSuccess, error, data } = useStage(stage);
 
   const findDisplay = ({ columns, sortOrder }: any) => {
@@ -21,7 +21,7 @@ const ProgramStage: FC<ProgramStageProps> = ({ stage, tei }) => {
       return <MultipleEvents stage={stage} tei={tei} />;
     }
 
-    return <NormalForm />;
+    return <NormalForm stage={stage} tei={tei} />;
   };
 
   return (

@@ -6,7 +6,7 @@ import {
   PaginationPageGroup,
   PaginationPrevious,
   PaginationSeparator,
-  usePagination,
+  usePagination
 } from "@ajna/pagination";
 import {
   Box,
@@ -22,14 +22,15 @@ import {
   Text,
   Th,
   Thead,
-  Tr,
+  Tr
 } from "@chakra-ui/react";
+import { useNavigate } from "@tanstack/react-location";
 import { useStore } from "effector-react";
+
 import {
-  changeDataEntryPage,
   changeInstance,
   changeOu,
-  changeProject,
+  changeProject
 } from "../Events";
 import { useInstances } from "../Queries";
 import { $withOptionSet, dashboards } from "../Store";
@@ -44,6 +45,7 @@ const OUTER_LIMIT = 4;
 const INNER_LIMIT = 4;
 
 const TrackedEntityInstances = () => {
+  const navigate = useNavigate();
   const store = useStore(dashboards);
   const withOptionSet = useStore($withOptionSet);
   const {
@@ -101,7 +103,8 @@ const TrackedEntityInstances = () => {
   };
 
   const add = () => {
-    changeDataEntryPage("form");
+    // changeDataEntryPage("form");
+    navigate({ to: "/data-entry/tracked-entity-form" });
   };
 
   const onRowClick = (instance: any) => {
@@ -112,7 +115,8 @@ const TrackedEntityInstances = () => {
       indicator: instance.kHRn35W3Gq4,
     });
     changeInstance(instance.instance);
-    changeDataEntryPage("instance");
+    // changeDataEntryPage("instance");
+    navigate({ to: "/data-entry/tracked-entity-instance" });
   };
 
   return (

@@ -34,6 +34,7 @@
     "@dhis2/app-runtime-adapter-d2": "^1.0.2",
     "@emotion/react": "^11.1.5",
     "@emotion/styled": "^11.3.0",
+    "@tanstack/react-location": "^3.7.4",
     "@types/react-plotly.js": "^2.2.4",
     "antd": "^4.15.1",
     "antd-form-builder": "^2.1.2",
