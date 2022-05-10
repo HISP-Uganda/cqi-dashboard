@@ -35,10 +35,7 @@ const ColumnDrawer = () => {
       {isLoading && <Spinner />}
       {isSuccess && (
         <>
-          <Button
-            leftIcon={<MdFilterList />}
-            onClick={onOpen}
-          >
+          <Button leftIcon={<MdFilterList />} onClick={onOpen}>
             Show columns
           </Button>
           <Drawer
