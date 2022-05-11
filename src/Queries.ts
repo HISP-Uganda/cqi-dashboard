@@ -327,6 +327,8 @@ export function useUserUnits() {
         ouMode: "ALL",
         dataElement: "kToJ1rk0fwY,kuVtv8R9n8q",
         programStage: "vPQxfsUQLEy",
+        includeAllDataElements: "true",
+        skipPaging: "true",
       },
     },
     levels: {
@@ -334,7 +336,6 @@ export function useUserUnits() {
       params: {
         fields: "id,name,level",
         order: "level:asc",
-        paging: "false",
       },
     },
     options: {
@@ -394,7 +395,7 @@ export function useUserUnits() {
     if (currentIndicator) {
       changeIndicator(currentIndicator[0]);
     }
-    return [];
+    return true;
   });
 }
 

@@ -1,12 +1,9 @@
 import { Select } from "antd";
 import { useStore } from "effector-react";
-import { FC } from "react";
 import { changeIndicator } from "../Events";
 import { dashboards, indicatorForGroup } from "../Store";
 
-interface IndicatorProps {}
-
-const Indicator: FC<IndicatorProps> = () => {
+const Indicator = () => {
   const store = useStore(dashboards);
   const indicator4Group = useStore(indicatorForGroup);
   const onIndicatorChange = (value: string) => {
@@ -16,11 +13,11 @@ const Indicator: FC<IndicatorProps> = () => {
   const { Option } = Select;
 
   return (
-    <Select value={store.indicator} onChange={onIndicatorChange} size="large">
+    <Select value={store.indicator} onChange={onIndicatorChange} >
       {indicator4Group.map((row: any) => (
-        <option key={row[0]} value={row[0]}>
+        <Option key={row[0]} value={row[0]}>
           {row[1]}
-        </option>
+        </Option>
       ))}
     </Select>
   );

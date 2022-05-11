@@ -20,7 +20,6 @@ const ProgramSelect = () => {
   };
   return (
     <Select
-      size="large"
       style={{ width: "100%" }}
       value={store.programEntity}
       onChange={handleChange}

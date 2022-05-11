@@ -31,7 +31,7 @@ const PeriodDialog = () => {
   return (
     <>
       <Box style={{ paddingRight: 10 }}>
-        <Button onClick={onOpen}>
+        <Button onClick={onOpen} size="sm">
           Select period
         </Button>
       </Box>

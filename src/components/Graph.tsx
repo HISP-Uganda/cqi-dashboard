@@ -72,7 +72,7 @@ const Graph: FC<GraphOptions> = ({
             yaxis: {
               automargin: true,
               rangemode: "tozero",
-              title: yAxisTitle,
+              title: "Value",
             },
             margin: {
               pad: 0,

@@ -62,7 +62,6 @@ const OrgUnitTreeSelect: FC<{
       allowClear={true}
       treeDataSimpleMode
       multiple={multiple}
-      size="large"
       style={{ width: "100%" }}
       value={value}
       listHeight={700}

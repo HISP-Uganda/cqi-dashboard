@@ -272,7 +272,7 @@ const TrackedEntityInstanceForm = () => {
   }, [generatedIds]);
 
   return (
-    <Box bg="white" m="auto" p="10px">
+    <Box bg="white" m="auto">
       {isLoading && <Spinner />}
       {isSuccess && (
         <Form

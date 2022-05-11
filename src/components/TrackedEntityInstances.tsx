@@ -6,7 +6,7 @@ import {
   PaginationPageGroup,
   PaginationPrevious,
   PaginationSeparator,
-  usePagination
+  usePagination,
 } from "@ajna/pagination";
 import {
   Box,
@@ -22,16 +22,12 @@ import {
   Text,
   Th,
   Thead,
-  Tr
+  Tr,
 } from "@chakra-ui/react";
 import { useNavigate } from "@tanstack/react-location";
 import { useStore } from "effector-react";
 
-import {
-  changeInstance,
-  changeOu,
-  changeProject
-} from "../Events";
+import { changeInstance, changeOu, changeProject } from "../Events";
 import { useInstances } from "../Queries";
 import { $withOptionSet, dashboards } from "../Store";
 import { withAttributesAsEvent } from "../utils/common";
@@ -43,8 +39,6 @@ import ProgramSelect from "./ProgramSelect";
 
 const OUTER_LIMIT = 4;
 const INNER_LIMIT = 4;
-
-
 
 const TrackedEntityInstances = () => {
   const navigate = useNavigate();
@@ -122,7 +116,7 @@ const TrackedEntityInstances = () => {
   };
 
   return (
-    <Stack p="5px">
+    <Stack bg="white" p="5px">
       <Stack h="48px" direction="row">
         <Box w="34%">
           <OrgUnitTreeSelect

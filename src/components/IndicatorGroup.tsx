@@ -16,7 +16,6 @@ const IndicatorGroup: FC<IndicatorGroupProps> = ({ value, onChange }) => {
       style={{ width: "100%" }}
       value={value}
       onChange={onChange}
-      size="large"
     >
       {store.indicatorGroups.map((option: any) => (
         <Option key={option.id} value={option.code}>

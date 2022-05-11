@@ -31,7 +31,7 @@ const location = new ReactLocation<LocationGenerics>({
 const App = () => {
   const { isError, isLoading, error, isSuccess } = useUserUnits();
   return (
-    <Stack p="10px">
+    <Stack p="10px" bg="gray.200">
       {isLoading && (
         <Flex
           w="100%"
@@ -44,7 +44,7 @@ const App = () => {
       )}
       {isSuccess && (
         <Router location={location} routes={routes}>
-          <Stack h="calc(100vh - 48px)">
+          <Stack h="calc(100vh - 68px)">
             <Menus />
             <Outlet />
           </Stack>
