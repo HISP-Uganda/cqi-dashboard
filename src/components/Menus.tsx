@@ -58,11 +58,18 @@ const Menus = () => {
         >
           Layered Dashboard
         </Button>
+
         <Button
           onClick={() => handleClick("/indicators")}
           colorScheme={store.url === "/indicators" ? "blue" : "gray"}
         >
           All Indicators
+        </Button>
+        <Button
+          onClick={() => handleClick("/projects")}
+          colorScheme={store.url === "/projects" ? "blue" : "gray"}
+        >
+          Projects
         </Button>
         <Spacer />
         {["/", "/analytics", "/layered-dashboard", "/indicators"].indexOf(
@@ -75,7 +82,7 @@ const Menus = () => {
       </Stack>
       {isOpen && store.url !== "/data-entry" && (
         <HStack spacing="20px">
-          {store.url !== "/indicators" && (
+          {store.url !== "/indicators" && store.url !== "/" && (
             <>
               <IndicatorGroup
                 value={store.indicatorGroup}

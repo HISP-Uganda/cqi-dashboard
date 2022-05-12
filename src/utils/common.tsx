@@ -81,8 +81,6 @@ export const calculateEventDays = (
     Weekly: differenceInWeeks(parseISO(endDate), parseISO(startDate)),
     Monthly: differenceInMonths(parseISO(endDate), parseISO(startDate)),
   };
-
-  console.log(Dates[frequency], startDate, endDate);
   return Dates[frequency] || Dates["Monthly"];
 };
 

@@ -12,7 +12,7 @@ const TrackedEntityInstance = () => {
     store.program
   );
   return (
-    <Box bg="white" >
+    <Box bg="white" p="10px">
       {isLoading && <div>Loading</div>}
       {isSuccess && (
         <Tabs type="card">

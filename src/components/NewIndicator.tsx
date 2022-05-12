@@ -5,7 +5,6 @@ import { FC, useCallback, useState } from "react";
 interface NewIndicatorProps {
   onInsert: (values: any) => Promise<void>;
   modalVisible: boolean;
-  indicatorGroup: string;
   setModalVisible: (val: boolean) => void;
 }
 
@@ -13,7 +12,6 @@ const NewIndicator: FC<NewIndicatorProps> = ({
   onInsert,
   modalVisible,
   setModalVisible,
-  indicatorGroup,
 }) => {
   const [form] = Form.useForm();
   const hideModal = useCallback(
@@ -32,6 +30,7 @@ const NewIndicator: FC<NewIndicatorProps> = ({
         content: "Submit success.",
         onOk: hideModal,
       });
+      form.setFieldsValue({ name: "" });
     },
     [setPending, hideModal]
   );

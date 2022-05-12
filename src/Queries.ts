@@ -255,11 +255,13 @@ export function useEventOptions(
         ouMode: "ALL",
         dataElement: `${dataElements}`,
         programStage,
+        skipPaging: "true",
       };
       if (!!search && !!dataElement) {
         params = {
           ...params,
           filter: `${dataElement}:IN:${search}`,
+          skipPaging: "true",
         };
       }
       const { events } = await engine.query({
@@ -433,8 +435,11 @@ export function useAnalyticsStructure(
   return useQuery<any, Error>(
     ["analyticsStructure", ...organisationUnits, ...periods],
     async () => {
-      const { structure }: any = await engine.query(query);
-      return structure;
+      if (organisationUnits && periods) {
+        const { structure }: any = await engine.query(query);
+        return structure;
+      }
+      return { metaData: { dimensions: { ou: [], pe: [] } } };
     }
   );
 }
@@ -570,9 +575,16 @@ export function useAnalytics(
           const processed = dimensions.map((dimension: string) => {
             const num = groupedNumerator[dimension] || "-";
             const den = groupedDenominator[dimension] || "-";
+
             let ind = "-";
             if (den !== "-" && num !== "-") {
-              ind = Number((Number(num) * 100) / Number(den)).toFixed(1);
+              const d = Number(den);
+              const n = Number(num);
+              if (d !== 0) {
+                ind = Number((n * 100) / d).toFixed(1);
+              } else {
+                ind = "0";
+              }
             }
             return [
               dimension,

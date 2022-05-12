@@ -8,21 +8,41 @@ import { colors } from "../utils/common";
 
 interface TableIndicatorProps {
   search: string;
-  what: string
+  what: string;
 }
 
 const TableIndicator: FC<TableIndicatorProps> = ({ search, what }) => {
-  const store = useStore(dashboards)
+  const store = useStore(dashboards);
   const units = useStore(orgUnits);
-  const pes = useStore(periods)
-  const { data, isError, isLoading, error, isSuccess } = useAnalytics( "vMfIVFcRWlu", "kHRn35W3Gq4", search, "rVZlkzOwWhi", "RgNQcLejbwX", units, pes, store.filterBy)
+  const pes = useStore(periods);
+  const { data, isError, isLoading, error, isSuccess } = useAnalytics(
+    "vMfIVFcRWlu",
+    "kHRn35W3Gq4",
+    search,
+    "rVZlkzOwWhi",
+    "RgNQcLejbwX",
+    units,
+    pes,
+    store.filterBy
+  );
   return (
     <>
-      {isLoading && <Td textAlign="center"><Spinner size="xs" /></Td>}
-      {isSuccess && <Td bg={colors(data[what].indicator)} textAlign="center"> {data[what].indicator !== '-' ? `${data[what].indicator}%` : data[what].indicator} </Td>}
+      {isLoading && (
+        <Td textAlign="center">
+          <Spinner size="xs" />
+        </Td>
+      )}
+      {isSuccess && (
+        <Td bg={colors(data[what].indicator)} textAlign="center">
+          {" "}
+          {data[what].indicator !== "-"
+            ? `${data[what].indicator}%`
+            : data[what].indicator}{" "}
+        </Td>
+      )}
       {isError && <Td>{error.message}</Td>}
     </>
-  )
-}
+  );
+};
 
-export default TableIndicator
+export default TableIndicator;

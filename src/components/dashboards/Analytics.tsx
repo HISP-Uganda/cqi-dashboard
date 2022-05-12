@@ -61,32 +61,29 @@ const layouts = [
 ];
 const Analytics = () => {
   return (
-    <Box w="100vw" h="calc(100vh - 96px)" overflow="auto">
-      <ResponsiveGridLayout
-        isDraggable={false}
-        isResizable={false}
-        autoSize={false}
-        rowHeight={40}
-        cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
-        containerPadding={[5, 5]}
-        margin={[5, 5]}
-        layouts={{ lg: layouts, md: [], sm: [], xs: [], xxs: [] }}
-        className="layout"
-      >
-        {layouts.map((l: any) => {
-          return (
-            <Box key={l.i}>
-              <Graph
-                indicator={l.indicator}
-                filterBy={l.filterBy}
-                title={l.title}
-                yAxisTitle={l.yAxisTitle}
-              />
-            </Box>
-          );
-        })}
-      </ResponsiveGridLayout>
-    </Box>
+    <ResponsiveGridLayout
+      isDraggable={false}
+      isResizable={false}
+      autoSize={false}
+      rowHeight={40}
+      cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
+      containerPadding={[5, 5]}
+      margin={[5, 5]}
+      layouts={{ lg: layouts, md: [], sm: [], xs: [], xxs: [] }}
+      className="layout"
+    >
+      {layouts.map((l: any) => {
+        return (
+          <Box key={l.i}>
+            <Graph
+              indicator={l.indicator}
+              filterBy={l.filterBy}
+              title={l.title}
+            />
+          </Box>
+        );
+      })}
+    </ResponsiveGridLayout>
   );
 };
 

@@ -2,7 +2,6 @@ import { Box } from "@chakra-ui/layout";
 import { useStore } from "effector-react";
 import { FC } from "react";
 import Plot from "react-plotly.js";
-import { useD2 } from "../Context";
 import { useAnalytics } from "../Queries";
 import { maxLevel, orgUnits, periods } from "../Store";
 
@@ -10,15 +9,12 @@ interface GraphOptions {
   indicator: string;
   filterBy: string;
   title?: string;
-  yAxisTitle?: string;
 }
 const Graph: FC<GraphOptions> = ({
   indicator,
   filterBy,
   title,
-  yAxisTitle,
 }) => {
-  const d2 = useD2();
   const periods$ = useStore(periods);
   const orgUnits$ = useStore(orgUnits);
   const maxLevel$ = useStore(maxLevel);
@@ -46,7 +42,7 @@ const Graph: FC<GraphOptions> = ({
               y: Object.keys(data).map((x) => data[x].indicator),
               type: "bar",
               mode: "lines+markers",
-              marker: { color: "red" },
+              marker: { color: "#add8e6" },
             },
           ]}
           layout={{
