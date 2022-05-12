@@ -171,6 +171,9 @@ export const dashboards = domain
   });
 
 export const orgUnits = dashboards.map((state) => {
+  if (state.level) {
+    return `${state.ous.join(";")};${state.level}`;
+  }
   return state.ous.join(";");
 });
 

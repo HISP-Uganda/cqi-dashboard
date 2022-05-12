@@ -5,7 +5,6 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import App from "./components/App";
 import { D2Context } from "./Context";
 
-
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -17,22 +16,11 @@ const queryClient = new QueryClient({
 const d2Config = {};
 
 const AppWrapper = () => (
-  <D2Shim d2Config={d2Config} i18nRoot="./i18n">
-    {({ d2 }) => {
-      if (!d2) {
-        return null;
-      }
-      return (
-        <QueryClientProvider client={queryClient}>
-          <D2Context.Provider value={d2}>
-            <ChakraProvider>
-              <App />
-            </ChakraProvider>
-          </D2Context.Provider>
-        </QueryClientProvider>
-      );
-    }}
-  </D2Shim>
+  <QueryClientProvider client={queryClient}>
+    <ChakraProvider>
+      <App />
+    </ChakraProvider>
+  </QueryClientProvider>
 );
 
 export default AppWrapper;

@@ -1,20 +1,14 @@
-import {
-  Button,
-  HStack,
-  Select,
-  Spacer,
-  Stack,
-  useDisclosure,
-} from "@chakra-ui/react";
+import { Button, HStack, Spacer, Stack, useDisclosure } from "@chakra-ui/react";
+import { Select } from "antd";
 import { useStore } from "effector-react";
-import { ChangeEvent, FC } from "react";
+import { FC } from "react";
 import {
   changeFilterBy,
   changeIndicator,
   changeIndicatorGroup,
   changeLevel,
   changeOus,
-  changeUrl,
+  changeUrl
 } from "../Events";
 import { dashboards, indicatorForGroup } from "../Store";
 import Indicator from "./Indicator";
@@ -23,17 +17,19 @@ import OrgUnitTreeSelect from "./OrgUnitTreeSelect";
 import PeriodDialog from "./PeriodDialog";
 import { HeaderProps } from "./VisualizationHeader";
 
+const { Option } = Select;
+
 const Navigation: FC<HeaderProps> = () => {
   const { isOpen, onOpen, onClose, onToggle } = useDisclosure();
   const store = useStore(dashboards);
   const indicators = useStore(indicatorForGroup);
-  const onIndicatorGroupChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    changeIndicatorGroup(e.target.value);
+  const onIndicatorGroupChange = (value: string) => {
+    changeIndicatorGroup(value);
     changeIndicator(indicators[0][0]);
   };
 
-  const onLevelChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    changeLevel(e.target.value);
+  const onLevelChange = (value: string) => {
+    changeLevel(value);
   };
   const handleClick = (url: string) => {
     changeUrl(url);
@@ -83,11 +79,12 @@ const Navigation: FC<HeaderProps> = () => {
             style={{ width: "100%" }}
             value={store.level}
             onChange={onLevelChange}
+            size="large"
           >
             {store.levels.map((level: any) => (
-              <option key={level.id} value={`LEVEL-${level.level}`}>
+              <Option key={level.id} value={`LEVEL-${level.level}`}>
                 {level.name}
-              </option>
+              </Option>
             ))}
           </Select>
           <PeriodDialog />

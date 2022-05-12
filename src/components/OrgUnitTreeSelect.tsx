@@ -3,7 +3,7 @@ import { TreeSelect } from "antd";
 import { useStore } from "effector-react";
 import { flatten, uniqBy } from "lodash";
 import { FC } from "react";
-import { changeInitialUnits, changeOu } from "../Events";
+import { changeInitialUnits } from "../Events";
 import { dashboards } from "../Store";
 
 const OrgUnitTreeSelect: FC<{
@@ -65,7 +65,8 @@ const OrgUnitTreeSelect: FC<{
       size="large"
       style={{ width: "100%" }}
       value={value}
-      dropdownStyle={{ maxHeight: 400, overflow: "inherit" }}
+      listHeight={700}
+      dropdownStyle={{ overflow: "auto" }}
       placeholder="Please select health centre"
       onChange={onChange}
       loadData={onLoadData}

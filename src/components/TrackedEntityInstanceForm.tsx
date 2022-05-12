@@ -5,6 +5,7 @@ import FormBuilder from "antd-form-builder";
 import { useStore } from "effector-react";
 import { fromPairs } from "lodash";
 import moment from "moment";
+import { useNavigate } from "@tanstack/react-location";
 import { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import { changeDataEntryPage, changeIndicatorGroup } from "../Events";
@@ -15,6 +16,7 @@ import { generateUid } from "../utils/uid";
 import NewIndicator from "./NewIndicator";
 
 const TrackedEntityInstanceForm = () => {
+  const navigate = useNavigate();
   const engine = useDataEngine();
   const [form] = Form.useForm();
   const [formMetadata, setFormMetadata] = useState<any>();
@@ -290,7 +292,7 @@ const TrackedEntityInstanceForm = () => {
               <Button
                 htmlType="button"
                 type="primary"
-                onClick={() => changeDataEntryPage("list")}
+                onClick={() => navigate({ to: "/data-entry" })}
               >
                 Cancel
               </Button>

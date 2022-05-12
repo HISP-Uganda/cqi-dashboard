@@ -1,44 +1,58 @@
-import { Box, Center, Flex, Stack } from "@chakra-ui/react";
+import { Box, Flex, Stack } from "@chakra-ui/react";
 import { Spinner } from "@chakra-ui/spinner";
-import { useStore } from "effector-react";
+import {
+  createHashHistory,
+  MakeGenerics,
+  Outlet,
+  parseSearchWith,
+  ReactLocation,
+  Router,
+  stringifySearchWith
+} from "@tanstack/react-location";
 import { useUserUnits } from "../Queries";
-import { dashboards } from "../Store";
-import Analytics from "./dashboards/Analytics";
-import Indicators from "./dashboards/Indicators";
-import Layered from "./dashboards/Layered";
-import DataEntry from "./DataEntry";
-import Navigation from "./Navigation";
 
-const pages = {
-  dataEntry: <DataEntry />,
-  layered: <Layered />,
-  indicators: <Indicators />,
-  analytics: <Analytics />,
-};
+import { routes } from "../routes";
+import { decodeFromBinary, encodeToBinary } from "../utils";
+import Menus from "./Menus";
+
+type LocationGenerics = MakeGenerics<{
+  LoaderData: {};
+}>;
+
+const history = createHashHistory();
+const location = new ReactLocation<LocationGenerics>({
+  history,
+  parseSearch: parseSearchWith((value) => JSON.parse(decodeFromBinary(value))),
+  stringifySearch: stringifySearchWith((value) =>
+    encodeToBinary(JSON.stringify(value))
+  ),
+});
 
 const App = () => {
   const { isError, isLoading, error, isSuccess } = useUserUnits();
-  const store = useStore(dashboards);
   return (
-    <Box h="calc(100vh - 48px)">
+    <Stack p="10px">
       {isLoading && (
         <Flex
-          h="calc(100vh - 48px)"
+          w="100%"
           alignItems="center"
           justifyContent="center"
-          justifyItems="center"
+          h="calc(100vh - 48px)"
         >
           <Spinner />
         </Flex>
       )}
       {isSuccess && (
-        <Stack spacing="10px">
-          <Navigation />
-          {pages[store.url]}
-        </Stack>
+        <Router location={location} routes={routes}>
+          <Stack h="calc(100vh - 48px)">
+            <Menus />
+            <Outlet />
+          </Stack>
+        </Router>
       )}
-      {isError && <Center>{error.message}</Center>}
-    </Box>
+
+      {isError && <Box>{error.message}</Box>}
+    </Stack>
   );
 };
 

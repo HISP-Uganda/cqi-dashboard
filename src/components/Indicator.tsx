@@ -1,24 +1,29 @@
-import { Select } from '@chakra-ui/react';
+import { Select } from "antd";
 import { useStore } from "effector-react";
-import { ChangeEvent, FC } from "react";
+import { FC } from "react";
 import { changeIndicator } from "../Events";
 import { dashboards, indicatorForGroup } from "../Store";
 
-interface IndicatorProps {
-}
+interface IndicatorProps {}
 
 const Indicator: FC<IndicatorProps> = () => {
   const store = useStore(dashboards);
-  const indicator4Group = useStore(indicatorForGroup)
-  const onIndicatorChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    changeIndicator(e.target.value)
-  }
+  const indicator4Group = useStore(indicatorForGroup);
+  const onIndicatorChange = (value: string) => {
+    changeIndicator(value);
+  };
+
+  const { Option } = Select;
 
   return (
-    <Select value={store.indicator} onChange={onIndicatorChange}>
-      {indicator4Group.map((row: any) => <option key={row[0]} value={row[0]}>{row[1]}</option>)}
+    <Select value={store.indicator} onChange={onIndicatorChange} size="large">
+      {indicator4Group.map((row: any) => (
+        <option key={row[0]} value={row[0]}>
+          {row[1]}
+        </option>
+      ))}
     </Select>
-  )
-}
+  );
+};
 
-export default Indicator
+export default Indicator;

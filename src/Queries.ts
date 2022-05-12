@@ -218,19 +218,21 @@ export function useOption(code: string) {
   return useQuery<any, Error>(
     ["option", code],
     async () => {
-      const {
-        option: { options },
-      }: any = await engine.query({
-        option: {
-          resource: `options`,
-          params: {
-            fields: "name",
-            filter: `code:eq:${code}`,
+      if (code) {
+        const {
+          option: { options },
+        }: any = await engine.query({
+          option: {
+            resource: "options",
+            params: {
+              fields: "name",
+              filter: `code:eq:${code}`,
+            },
           },
-        },
-      });
-      if (options.length === 1) {
-        return options[0].name;
+        });
+        if (options.length === 1) {
+          return options[0].name;
+        }
       }
       return "";
     },
@@ -281,6 +283,7 @@ export function useEvents(stage: string, tei: string, indicator: string = "") {
         params: {
           programStage: stage,
           trackedEntityInstance: tei,
+          fields: "*",
         },
       },
     };
