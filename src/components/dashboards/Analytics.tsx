@@ -28,10 +28,9 @@ const layouts = [
     h: 11,
     static: true,
     filterBy: "period",
-    indicator: "ugfHTZ1AJyw",
-    title:
-      "% of clients who report having received the prescribed service package",
-    yAxisTitle: "Clients prescribed to service package(%)",
+    indicator: "IhRCi2CtJ2o",
+    title: "% of clients attaining VL suppression",
+    yAxisTitle: "% of clients attaining VL suppression",
   },
   {
     i: "c",
@@ -53,9 +52,11 @@ const layouts = [
     h: 11,
     static: true,
     filterBy: "period",
-    indicator: "Number of dashboards",
-    title: "% of dashboards",
-    yAxisTitle: "Dashboards(%)",
+    indicator: "A64EEs9MUqf",
+    title:
+      "% of patients diagnosed with TB that were initiated on TB treatment",
+    yAxisTitle:
+      "% of patients diagnosed with TB that were initiated on TB treatment",
   },
 ];
 const Analytics = () => {
@@ -64,7 +65,7 @@ const Analytics = () => {
       isDraggable={false}
       isResizable={false}
       autoSize={false}
-      rowHeight={32}
+      rowHeight={40}
       cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
       containerPadding={[5, 5]}
       margin={[5, 5]}
@@ -78,7 +79,6 @@ const Analytics = () => {
               indicator={l.indicator}
               filterBy={l.filterBy}
               title={l.title}
-              yAxisTitle={l.yAxisTitle}
             />
           </Box>
         );

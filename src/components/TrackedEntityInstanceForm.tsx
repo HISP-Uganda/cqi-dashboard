@@ -8,7 +8,12 @@ import moment from "moment";
 import { useNavigate } from "@tanstack/react-location";
 import { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
-import { changeDataEntryPage, changeIndicatorGroup } from "../Events";
+import {
+  changeDataEntryPage,
+  changeIndicatorGroup,
+  changeInstance,
+  changeProject,
+} from "../Events";
 import { useProgramAttributes } from "../Queries";
 import { dashboards, indicatorForGroup } from "../Store";
 import { getFieldType } from "../utils/common";
@@ -23,6 +28,10 @@ const TrackedEntityInstanceForm = () => {
   const [generatedIds, setGeneratedIds] = useState<any>();
   const queryClient = useQueryClient();
   const indicators = useStore(indicatorForGroup);
+  const [allIndicators, setAllIndicators] = useState<string[][]>([
+    ...indicators,
+    ["add", "Add new indicator"],
+  ]);
   const store = useStore(dashboards);
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -70,6 +79,7 @@ const TrackedEntityInstanceForm = () => {
     };
     await insertEvent(event);
     changeIndicatorGroup(grp);
+    setAllIndicators([...allIndicators, [eventId, values.name]]);
     form.setFieldsValue({ kHRn35W3Gq4: eventId });
   };
 
@@ -99,6 +109,8 @@ const TrackedEntityInstanceForm = () => {
   });
 
   const handleFinish = async (values: any) => {
+    const instance = generateUid();
+
     const withValues: any = Object.entries(values).reduce(
       (a, [k, v]) => (v == null ? a : ((a[k] = v), a)),
       {}
@@ -116,6 +128,7 @@ const TrackedEntityInstanceForm = () => {
     });
 
     const trackedEntityInstance = {
+      trackedEntityInstance: instance,
       orgUnit: store.ou,
       trackedEntityType: store.trackedEntityType,
       attributes,
@@ -129,8 +142,14 @@ const TrackedEntityInstanceForm = () => {
       ],
     };
     await mutateAsync(trackedEntityInstance);
-    changeDataEntryPage("list");
-    // history.push({ pathname: "/tracker" });
+    changeProject({
+      startDate: values.y3hJLGjctPk.format("YYYY-MM-DD"),
+      endDate: values.iInAQ40vDGZ.format("YYYY-MM-DD"),
+      frequency: values.WQcY6nfPouv,
+      indicator: values.kHRn35W3Gq4,
+    });
+    changeInstance(instance);
+    navigate({ to: "/data-entry/tracked-entity-instance" });
   };
 
   const generateFormFields = (currentData: any) => {
@@ -159,7 +178,7 @@ const TrackedEntityInstanceForm = () => {
         if (id === "kHRn35W3Gq4") {
           field = {
             ...field,
-            options: [...indicators, ["add", "Add new indicator"]],
+            options: allIndicators,
             widget: "select",
             dynamic: true,
             widgetProps: {
@@ -263,7 +282,7 @@ const TrackedEntityInstanceForm = () => {
       setFormMetadata(generateFormFields(data));
       generateData(data);
     }
-  }, [data, store.indicatorGroup, currentGroup]);
+  }, [data, store.indicatorGroup, currentGroup, allIndicators]);
 
   useEffect(() => {
     if (generatedIds) {
@@ -272,7 +291,7 @@ const TrackedEntityInstanceForm = () => {
   }, [generatedIds]);
 
   return (
-    <Box bg="white" m="auto" p="10px">
+    <Box bg="white" m="auto">
       {isLoading && <Spinner />}
       {isSuccess && (
         <Form
@@ -302,7 +321,6 @@ const TrackedEntityInstanceForm = () => {
             onInsert={onInsert}
             modalVisible={modalVisible}
             setModalVisible={setModalVisible}
-            indicatorGroup={currentGroup}
           />
         </Form>
       )}

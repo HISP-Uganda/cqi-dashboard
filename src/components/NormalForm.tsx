@@ -17,6 +17,7 @@ import {
 import { fromPairs } from "lodash";
 import { useDataEngine } from "@dhis2/app-runtime";
 import { useStore } from "effector-react";
+import { useNavigate } from "@tanstack/react-location";
 import moment from "moment";
 import React, { FC, useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
@@ -28,6 +29,7 @@ interface TableProps {
   stage: string;
 }
 const NormalForm: FC<TableProps> = ({ tei, stage }) => {
+  const navigate = useNavigate();
   const store = useStore(dashboards);
   const [event, setEvent] = useState<{
     eventDate: string;
@@ -111,7 +113,11 @@ const NormalForm: FC<TableProps> = ({ tei, stage }) => {
         <Button onClick={() => save()} colorScheme="blue" variant="solid">
           Save
         </Button>
-        <Button colorScheme="red" variant="solid">
+        <Button
+          colorScheme="red"
+          variant="solid"
+          onClick={() => navigate({ to: "/data-entry" })}
+        >
           Cancel
         </Button>
       </Stack>

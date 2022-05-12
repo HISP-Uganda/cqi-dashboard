@@ -1,19 +1,17 @@
 import {
   Button,
+  Checkbox,
   Drawer,
   DrawerBody,
   DrawerCloseButton,
   DrawerContent,
   DrawerHeader,
   DrawerOverlay,
+  List,
+  ListItem,
   Spinner,
   Stack,
   useDisclosure,
-  List,
-  ListItem,
-  Spacer,
-  Checkbox,
-  Text,
 } from "@chakra-ui/react";
 import { useStore } from "effector-react";
 import { ChangeEvent, useRef } from "react";

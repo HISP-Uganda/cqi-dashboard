@@ -12,7 +12,6 @@ import { calculateEventDays, reviewPeriodString } from "../utils/common";
 import { generateUid } from "../utils/uid";
 import DatePicker from "./DatePicker";
 
-
 interface MultipleProps {
   tei: string;
   stage: string;
@@ -38,7 +37,6 @@ const MultipleEvents: FC<MultipleProps> = ({ tei, stage, title }) => {
       queryClient.invalidateQueries(["events", stage, tei]);
     },
   });
-
   const length = calculateEventDays(
     store.project.startDate,
     store.project.endDate,

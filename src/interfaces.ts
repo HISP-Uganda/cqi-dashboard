@@ -24,6 +24,7 @@ export interface Store {
   project: Project;
   organisations: any[];
   programs: any[];
+  descendants: any[];
   dataEntryPage: string;
   programEntity: string;
   instance: string;

@@ -40,7 +40,8 @@ import ProgramSelect from "./ProgramSelect";
 const OUTER_LIMIT = 4;
 const INNER_LIMIT = 4;
 
-const TrackedEntityInstances = () => {
+
+const Projects = () => {
   const navigate = useNavigate();
   const store = useStore(dashboards);
   const withOptionSet = useStore($withOptionSet);
@@ -117,7 +118,8 @@ const TrackedEntityInstances = () => {
   };
 
   return (
-    <Stack bg="white" p="5px">
+    <>
+      <Stack bg="white" p="5px">
       <Stack h="48px" direction="row">
         <Box w="34%">
           <OrgUnitTreeSelect
@@ -249,7 +251,8 @@ const TrackedEntityInstances = () => {
         </Select>
       </Center>
     </Stack>
-  );
-};
+    </>
+  )
+}
 
-export default TrackedEntityInstances;
+export default Projects

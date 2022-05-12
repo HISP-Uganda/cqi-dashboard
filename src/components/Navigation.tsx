@@ -1,4 +1,4 @@
-import { Button, HStack, Spacer, Stack, useDisclosure } from "@chakra-ui/react";
+import { Button, HStack, Spacer, Stack, useDisclosure,Text } from "@chakra-ui/react";
 import { Select } from "antd";
 import { useStore } from "effector-react";
 import { FC } from "react";
@@ -20,7 +20,7 @@ import { HeaderProps } from "./VisualizationHeader";
 const { Option } = Select;
 
 const Navigation: FC<HeaderProps> = () => {
-  const { isOpen, onOpen, onClose, onToggle } = useDisclosure();
+  const { isOpen, onToggle } = useDisclosure();
   const store = useStore(dashboards);
   const indicators = useStore(indicatorForGroup);
   const onIndicatorGroupChange = (value: string) => {
@@ -43,7 +43,9 @@ const Navigation: FC<HeaderProps> = () => {
         h="48px"
         px="5px"
       >
-        <Button onClick={() => handleClick("analytics")} colorScheme="blue">Home</Button>
+        <Button onClick={() => handleClick("analytics")} colorScheme="blue">
+          Home
+        </Button>
         <Button onClick={() => handleClick("dataEntry")}>Data Entry</Button>
         <Button onClick={() => handleClick("analytics")}>Analytics</Button>
         <Button onClick={() => handleClick("layered")}>
@@ -70,11 +72,14 @@ const Navigation: FC<HeaderProps> = () => {
             </>
           )}
 
-          <OrgUnitTreeSelect
-            multiple={true}
-            value={store.ous}
-            onChange={changeOus}
-          />
+          <Stack direction="row">
+            <Text>Organisation</Text>
+            <OrgUnitTreeSelect
+              multiple={true}
+              value={store.ous}
+              onChange={changeOus}
+            />
+          </Stack>
           <Select
             style={{ width: "100%" }}
             value={store.level}
