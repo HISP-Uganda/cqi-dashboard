@@ -5,7 +5,6 @@ import { useProgramStages } from "../Queries";
 import { dashboards } from "../Store";
 import ProgramStage from "./ProgramStage";
 
-const { TabPane } = Tabs;
 const TrackedEntityInstance = () => {
   const store = useStore(dashboards);
   const { isLoading, isError, error, isSuccess, data } = useProgramStages(
@@ -15,13 +14,16 @@ const TrackedEntityInstance = () => {
     <Box bg="white" p="10px">
       {isLoading && <div>Loading</div>}
       {isSuccess && (
-        <Tabs type="card">
-          {data.map((stage: any) => (
-            <TabPane tab={stage.name} key={stage.id}>
-              <ProgramStage stage={stage.id} tei={store.instance} />
-            </TabPane>
-          ))}
-        </Tabs>
+        <Tabs
+          type="card"
+          items={data.map((stage: any) => {
+            return {
+              label: stage.name,
+              key: stage.id,
+              children: <ProgramStage stage={stage.id} tei={store.instance} />,
+            };
+          })}
+        />
       )}
       {isError && <div>{error.message}</div>}
     </Box>

@@ -1,41 +1,75 @@
-import { Button, HStack, Spacer, Stack, useDisclosure } from "@chakra-ui/react";
+import {
+  Button,
+  Drawer,
+  DrawerBody,
+  DrawerCloseButton,
+  DrawerContent,
+  DrawerHeader,
+  DrawerOverlay,
+  HStack,
+  Spacer,
+  Stack,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { useNavigate } from "@tanstack/react-location";
 import { Select } from "antd";
 import { useStore } from "effector-react";
+import { useState } from "react";
 import {
   changeFilterBy,
   changeIndicator,
   changeIndicatorGroup,
   changeLevel,
   changeOus,
+  changePeriod,
   changeUrl,
 } from "../Events";
 import { dashboards, indicatorForGroup } from "../Store";
 
+import { LocationGenerics } from "../interfaces";
 import Indicator from "./Indicator";
 import IndicatorGroup from "./IndicatorGroup";
 import OrgUnitTreeSelect from "./OrgUnitTreeSelect";
-import PeriodDialog from "./PeriodDialog";
+import PeriodPicker from "./PeriodPicker";
 
 const { Option } = Select;
 
 const Menus = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate<LocationGenerics>();
 
-  const { isOpen, onToggle } = useDisclosure();
+  const { isOpen, onToggle, onClose } = useDisclosure();
   const store = useStore(dashboards);
   const indicators = useStore(indicatorForGroup);
   const onIndicatorGroupChange = (value: string) => {
     changeIndicatorGroup(value);
     changeIndicator(indicators[0][0]);
   };
+  const [selectedPeriods, setSelectedPeriods] = useState<any[]>(store.period);
+  const onOk = () => {
+    changePeriod(selectedPeriods);
+  };
 
+  const onSelect = ({ items }: any) => {
+    setSelectedPeriods(items);
+  };
   const onLevelChange = (value: string) => {
     changeLevel(value);
   };
-  const handleClick = (to: string) => {
+  const handleClick = (
+    to: string,
+    search: Partial<{
+      ou: string;
+      program: string;
+      trackedEntityType: string;
+      page: number;
+      pageSize: number;
+      ouMode: string;
+      programStartDate: string;
+      programEndDate: string;
+    }> = {}
+  ) => {
     changeUrl(to);
-    navigate({ to });
+    navigate({ to, search });
   };
   return (
     <Stack>
@@ -47,7 +81,16 @@ const Menus = () => {
           Home
         </Button>
         <Button
-          onClick={() => handleClick("/data-entry")}
+          onClick={() =>
+            handleClick("/data-entry", {
+              ou: store.ou,
+              program: "vMfIVFcRWlu",
+              trackedEntityType: "KSy4dEvpMWi",
+              page: 1,
+              pageSize: 10,
+              ouMode: "DESCENDANTS",
+            })
+          }
           colorScheme={store.url === "/data-entry" ? "blue" : "gray"}
         >
           Data Entry
@@ -66,8 +109,8 @@ const Menus = () => {
           All Indicators
         </Button>
         <Button
-          onClick={() => handleClick("/projects")}
-          colorScheme={store.url === "/projects" ? "blue" : "gray"}
+          onClick={() => handleClick("/data-entry/projects")}
+          colorScheme={store.url === "/data-entry/projects" ? "blue" : "gray"}
         >
           Projects
         </Button>
@@ -80,57 +123,73 @@ const Menus = () => {
           </Button>
         )}
       </Stack>
-      {isOpen && store.url !== "/data-entry" && (
-        <HStack spacing="20px">
-          {store.url !== "/indicators" && store.url !== "/" && (
-            <>
-              <IndicatorGroup
-                value={store.indicatorGroup}
-                onChange={onIndicatorGroupChange}
-              />
-              <Indicator />
-            </>
-          )}
 
-          <OrgUnitTreeSelect
-            multiple={true}
-            value={store.ous}
-            onChange={changeOus}
-          />
-          <Select
-            style={{ width: "100%" }}
-            value={store.level}
-            onChange={onLevelChange}
-          >
-            {store.levels.map((level: any) => (
-              <Option key={level.id} value={`LEVEL-${level.level}`}>
-                {level.name}
-              </Option>
-            ))}
-          </Select>
-          <PeriodDialog />
-          {store.url === "/indicators" && (
-            <>
-              {store.filterBy === "period" ? (
-                <Button
-                  onClick={() => changeFilterBy("orgUnit")}
-                  w="300px"
-                  size="sm"
-                >
-                  Filter By OrgUnits
-                </Button>
-              ) : (
-                <Button
-                  onClick={() => changeFilterBy("period")}
-                  w="300px"
-                  size="sm"
-                >
-                  Filter By Period
-                </Button>
+      <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="md">
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerCloseButton />
+          <DrawerHeader>Filters</DrawerHeader>
+          <DrawerBody>
+            <Stack spacing="20px">
+              {store.url !== "/indicators" && store.url !== "/" && (
+                <>
+                  <IndicatorGroup
+                    value={store.indicatorGroup}
+                    onChange={onIndicatorGroupChange}
+                  />
+                  <Indicator />
+                </>
               )}
-            </>
-          )}
-        </HStack>
+
+              <OrgUnitTreeSelect
+                multiple={true}
+                value={store.ous}
+                onChange={changeOus}
+              />
+              <Select
+                style={{ width: "100%" }}
+                value={store.level}
+                onChange={onLevelChange}
+              >
+                {store.levels.map((level: any) => (
+                  <Option key={level.id} value={`LEVEL-${level.level}`}>
+                    {level.name}
+                  </Option>
+                ))}
+              </Select>
+
+              <PeriodPicker
+                selectedPeriods={selectedPeriods}
+                onChange={onSelect}
+              />
+              {store.url === "/indicators" && (
+                <>
+                  {store.filterBy === "period" ? (
+                    <Button
+                      onClick={() => changeFilterBy("orgUnit")}
+                      w="300px"
+                      size="sm"
+                    >
+                      Filter By OrgUnits
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={() => changeFilterBy("period")}
+                      w="300px"
+                      size="sm"
+                    >
+                      Filter By Period
+                    </Button>
+                  )}
+                </>
+              )}
+            </Stack>
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
+
+      {isOpen && store.url !== "/data-entry" && (
+        <HStack spacing="20px"></HStack>
       )}
     </Stack>
   );

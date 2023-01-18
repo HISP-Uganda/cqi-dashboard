@@ -41,7 +41,7 @@ export const getRule = (valueType: string) => {
 };
 
 const getInput = (valueType: string, otherOptions: any = {}) => {
-  const Opts = {
+  const Opts: any = {
     DATE: <DatePicker {...otherOptions} />,
     DATETIME: <DatePicker {...otherOptions} />,
     LONG_TEXT: <Input.TextArea {...otherOptions} />,
@@ -72,25 +72,34 @@ export const getField = (
 };
 
 export const calculateEventDays = (
-  startDate: string,
-  endDate: string,
-  frequency: string
+  startDate: string | undefined,
+  endDate: string | undefined,
+  frequency: string | undefined
 ) => {
-  const Dates = {
-    Daily: differenceInDays(parseISO(endDate), parseISO(startDate)),
-    Weekly: differenceInWeeks(parseISO(endDate), parseISO(startDate)),
-    Monthly: differenceInMonths(parseISO(endDate), parseISO(startDate)),
-  };
-  return Dates[frequency] || Dates["Monthly"];
+  if (startDate && endDate && frequency) {
+    const Dates: { [key: string]: number } = {
+      Daily: differenceInDays(parseISO(endDate), parseISO(startDate)),
+      Weekly: differenceInWeeks(parseISO(endDate), parseISO(startDate)),
+      Monthly: differenceInMonths(parseISO(endDate), parseISO(startDate)),
+    };
+    return Dates[frequency];
+  }
+  return 0;
 };
 
-export const reviewPeriodString = (frequency: string) => {
-  const Options = {
+export const reviewPeriodString = (
+  frequency: string | undefined
+): "Day" | "Week" | "Month" => {
+  const Options: { [key: string]: "Day" | "Week" | "Month" } = {
     Daily: "Day",
     Weekly: "Week",
     Monthly: "Month",
   };
-  return Options[frequency] || Options["Monthly"];
+
+  if (frequency) {
+    return Options[frequency];
+  }
+  return "Month";
 };
 
 export const colors = (value: string) => {

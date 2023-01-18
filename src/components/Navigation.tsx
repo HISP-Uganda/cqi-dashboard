@@ -1,14 +1,21 @@
-import { Button, HStack, Spacer, Stack, useDisclosure,Text } from "@chakra-ui/react";
+import {
+  Button,
+  HStack,
+  Spacer,
+  Stack,
+  useDisclosure,
+  Text,
+} from "@chakra-ui/react";
 import { Select } from "antd";
 import { useStore } from "effector-react";
-import { FC } from "react";
+import React, { FC } from "react";
 import {
   changeFilterBy,
   changeIndicator,
   changeIndicatorGroup,
   changeLevel,
   changeOus,
-  changeUrl
+  changeUrl,
 } from "../Events";
 import { dashboards, indicatorForGroup } from "../Store";
 import Indicator from "./Indicator";

@@ -58,9 +58,9 @@ const MultipleEvents: FC<MultipleProps> = ({ tei, stage, title }) => {
     };
   });
 
-  const [data, setData] = useState([
+  const [data, setData] = useState<{ [key: string]: any }[]>([
     {
-      id: `Review ${reviewPeriodString(store.project.frequency)}`,
+      id: `Review ${reviewPeriodString(store.project?.frequency)}`,
       ...defaultValues,
     },
     {
@@ -79,8 +79,8 @@ const MultipleEvents: FC<MultipleProps> = ({ tei, stage, title }) => {
 
   const changeIndicator = (key: string, row: number) => (e: any) => {
     let eventDate = data[0];
-    let numerator = data[1];
-    let denominator = data[2];
+    let numerator: any = data[1];
+    let denominator: any = data[2];
     let indicator = data[3];
     if (row === 0) {
       eventDate = { ...eventDate, [key]: format(e, "yyyy-MM-dd") };
@@ -105,10 +105,10 @@ const MultipleEvents: FC<MultipleProps> = ({ tei, stage, title }) => {
     const x = currentData.find((pd: any) => pd.ef2RxnUK9ac === key);
     e.persist();
     let currentEventDate = data[0][key];
-    let numerator = data[1][key];
-    let denominator = data[2][key];
+    let numerator: any = data[1][key];
+    let denominator: any = data[2][key];
 
-    let event = null;
+    let event: any = null;
 
     const dataValues = [
       {
@@ -156,13 +156,15 @@ const MultipleEvents: FC<MultipleProps> = ({ tei, stage, title }) => {
 
   const display = (text: string, index: number, column: string) => {
     if (index === 0) {
-      let parsedDate = parseISO(text);
+      let parsedDate: any = parseISO(text);
       if (!isValid(parsedDate)) {
         parsedDate = undefined;
       }
       return (
         <DatePicker
-          picker={reviewPeriodString(store.project.frequency).toLowerCase()}
+          picker={
+            reviewPeriodString(store.project.frequency).toLowerCase() || "month"
+          }
           value={parsedDate}
           suffixIcon={null}
           onChange={changeIndicator(column, index)}
@@ -175,8 +177,8 @@ const MultipleEvents: FC<MultipleProps> = ({ tei, stage, title }) => {
         min="0"
         style={{ textAlign: "center" }}
         value={text}
-        onChange={index !== 3 ? changeIndicator(column, index) : null}
-        onBlur={index !== 3 ? onBlur(column) : null}
+        onChange={index !== 3 ? changeIndicator(column, index) : () => {}}
+        onBlur={index !== 3 ? onBlur(column) : () => {}}
         disabled={index === 3}
       />
     );

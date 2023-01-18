@@ -1,5 +1,7 @@
+import React from "react";
 import { Route } from "@tanstack/react-location";
 import { Analytics, Indicators, Layered } from "./components/dashboards";
+import Projects from "./components/Projects";
 import TrackedEntityInstance from "./components/TrackedEntityInstance";
 import TrackedEntityInstanceForm from "./components/TrackedEntityInstanceForm";
 import TrackedEntityInstances from "./components/TrackedEntityInstances";
@@ -45,6 +47,14 @@ export const routes: Route<any>[] = [
       {
         path: "/tracked-entity-form",
         element: <TrackedEntityInstanceForm />,
+      },
+      {
+        path: "/projects",
+        element: <Projects />,
+        loader: async ({ params: { teamId } }) => {
+          changeUrl("/data-entry/projects");
+          return {};
+        },
       },
     ],
   },

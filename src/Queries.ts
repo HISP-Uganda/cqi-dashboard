@@ -1,4 +1,4 @@
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import { fromPairs } from "lodash";
 import { useDataEngine } from "@dhis2/app-runtime";
 
@@ -18,6 +18,8 @@ import {
   changeLevels,
 } from "./Events";
 import { getRule } from "./utils/common";
+import { Column, LocationGenerics } from "./interfaces";
+import { Params, Search } from "@tanstack/react-location";
 
 export function useUserOrgUnit() {
   const engine = useDataEngine();
@@ -29,7 +31,7 @@ export function useUserOrgUnit() {
       },
     },
   };
-  return useQuery<any, Error>("userOrganisations", async () => {
+  return useQuery<any, Error>(["userOrganisations"], async () => {
     const {
       me: { organisationUnits },
     }: any = await engine.query(query);
@@ -49,7 +51,7 @@ export function useUserOrgUnit() {
 export function usePrograms() {
   const engine = useDataEngine();
   return useQuery<any, Error>(
-    "programs",
+    ["programs"],
     async () => {
       const {
         programs: { programs },
@@ -155,7 +157,7 @@ export function useStage(stage: string) {
         if (compulsory) {
           rule = { ...rule, required: true };
         }
-        return {
+        const column: Column = {
           title: formName || name,
           dataIndex: id,
           key: id,
@@ -166,6 +168,7 @@ export function useStage(stage: string) {
           rules: [rule],
           options: optionSetValue ? optionSet.options : null,
         };
+        return column;
       }
     );
     const columns = [
@@ -275,6 +278,26 @@ export function useEventOptions(
   );
 }
 
+export async function fetchTrackedEntityInstance(engine: any, tei: string) {
+  let query: any = {
+    trackedEntityInstance: {
+      resource: `trackedEntityInstances/${tei}.json`,
+      params: {
+        fields: "*",
+      },
+    },
+  };
+  const { trackedEntityInstance }: any = await engine.query(query);
+  return trackedEntityInstance;
+}
+
+export async function useTrackedEntityInstance(tei: string) {
+  const engine = useDataEngine();
+  return useQuery<any, Error>(["tracked entity instances", tei], async () => {
+    return fetchTrackedEntityInstance(engine, tei);
+  });
+}
+
 export function useEvents(stage: string, tei: string, indicator: string = "") {
   const engine = useDataEngine();
 
@@ -327,7 +350,7 @@ export function useUserUnits() {
       resource: "events/query.json",
       params: {
         ouMode: "ALL",
-        dataElement: "kToJ1rk0fwY,kuVtv8R9n8q",
+        // dataElement: "kToJ1rk0fwY,kuVtv8R9n8q",
         programStage: "vPQxfsUQLEy",
         includeAllDataElements: "true",
         skipPaging: "true",
@@ -363,6 +386,7 @@ export function useUserUnits() {
       programs: { programs },
       levels: { organisationUnitLevels },
     }: any = await engine.query(query);
+
     const index = headers.findIndex(
       (header: any) => header.name === "kToJ1rk0fwY"
     );
@@ -433,7 +457,7 @@ export function useAnalyticsStructure(
   };
 
   return useQuery<any, Error>(
-    ["analyticsStructure", ...organisationUnits, ...periods],
+    ["analyticsStructure", organisationUnits, periods],
     async () => {
       if (organisationUnits && periods) {
         const { structure }: any = await engine.query(query);
@@ -621,7 +645,7 @@ export function useAnalytics(
               name: numerator.metaData.items[pe].name,
             };
           });
-          let all = [];
+          let all: any[] = [];
           for (const ou of numerator.metaData.dimensions.ou) {
             let obj = {};
             for (const pe of numerator.metaData.dimensions.pe) {
@@ -656,46 +680,61 @@ export function useAnalytics(
   );
 }
 
+export const fetchInstances = async (
+  engine: any,
+  search: Partial<{
+    ou: string;
+    program: string;
+    page: number;
+    pageSize: number;
+    ouMode: string;
+    programStartDate: string;
+    programEndDate: string;
+    trackedEntityType: string;
+  }>
+) => {
+  if (search.ou && search.program) {
+    const { trackedEntityType, ...available } = search;
+    const {
+      instances: {
+        headers,
+        rows,
+        metaData: {
+          pager: { total },
+        },
+      },
+    }: any = await engine.query({
+      instances: {
+        resource: "trackedEntityInstances/query.json",
+        params: { ...available, totalPages: true },
+      },
+    });
+
+    changeTotal(total);
+    return rows.map((r: string[]) => {
+      return fromPairs(headers.map(({ name }: any, i: number) => [name, r[i]]));
+    });
+  }
+  return [];
+};
+
 export function useInstances(
-  descendants:any,
-  ou: string,
-  program: string,
-  page: number,
-  pageSize: number
+  search: Partial<{
+    ou: string;
+    program: string;
+    page: number;
+    pageSize: number;
+    ouMode: string;
+    programStartDate: string;
+    programEndDate: string;
+    trackedEntityType: string;
+  }>
 ) {
   const engine = useDataEngine();
   return useQuery<any, Error>(
-    ["tracked entity instances", ou, program, page, pageSize],
+    ["tracked entity instances", ...Object.values(search)],
     async () => {
-      if (program && ou) {
-        const {
-          instances: {
-            headers,
-            rows,
-            metaData: {
-              pager: { total },
-            },
-          },
-        }: any = await engine.query({
-          instances: {
-            resource: "trackedEntityInstances/query.json",
-            params: {
-              page,
-              program,
-              totalPages: true,
-              pageSize,
-              ou,
-            },
-          },
-        });
-        changeTotal(total);
-        return rows.map((r: string[]) => {
-          return fromPairs(
-            headers.map(({ name }: any, i: number) => [name, r[i]])
-          );
-        });
-      }
-      return [];
+      return fetchInstances(engine, search);
     }
   );
 }

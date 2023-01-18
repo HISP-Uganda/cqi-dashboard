@@ -15,6 +15,7 @@ import {
   Heading,
   Select,
   Spacer,
+  Spinner,
   Stack,
   Table,
   Tbody,
@@ -24,13 +25,23 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
-import { useNavigate } from "@tanstack/react-location";
+import { useNavigate, useSearch } from "@tanstack/react-location";
 import { useStore } from "effector-react";
 
-import { changeInstance, changeOu, changeProject } from "../Events";
+import {
+  changeIndicatorGroup,
+  changeInstance,
+  // changeOu,
+  changeProgram,
+  changeProgramEntity,
+  changeProject,
+  changeTrackedEntityType,
+} from "../Events";
+import { LocationGenerics } from "../interfaces";
 import { useInstances } from "../Queries";
 import { $withOptionSet, dashboards } from "../Store";
 import { withAttributesAsEvent } from "../utils/common";
+import { generateUid } from "../utils/uid";
 import ColumnDrawer from "./ColumnDrawer";
 import DisplayEvent from "./DisplayEvent";
 import OptionDisplay from "./OptionDisplay";
@@ -41,9 +52,14 @@ const OUTER_LIMIT = 4;
 const INNER_LIMIT = 4;
 
 const TrackedEntityInstances = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate<LocationGenerics>();
   const store = useStore(dashboards);
   const withOptionSet = useStore($withOptionSet);
+
+  const search = useSearch<LocationGenerics>();
+
+  const { isLoading, isError, isSuccess, error, data } = useInstances(search);
+
   const {
     pages,
     pagesCount,
@@ -60,17 +76,9 @@ const TrackedEntityInstances = () => {
     },
     initialState: {
       pageSize: 20,
-      currentPage: 1,
+      currentPage: search.page || 1,
     },
   });
-
-  const { isLoading, isError, isSuccess, error, data } = useInstances(
-    store.descendants,
-    store.ou,
-    store.program,
-    currentPage,
-    pageSize
-  );
 
   const handlePageChange = (nextPage: number) => {
     setCurrentPage(nextPage);
@@ -100,20 +108,46 @@ const TrackedEntityInstances = () => {
   };
 
   const add = () => {
-    // changeDataEntryPage("form");
+    changeProject({
+      TG1QzFgGTex: store.indicatorGroup,
+      ou: store.ou,
+      instance: generateUid(),
+    });
     navigate({ to: "/data-entry/tracked-entity-form" });
   };
 
-  const onRowClick = (instance: any) => {
-    changeProject({
-      startDate: instance.y3hJLGjctPk,
-      endDate: instance.iInAQ40vDGZ,
-      frequency: instance.WQcY6nfPouv,
-      indicator: instance.kHRn35W3Gq4,
+  const edit = (instance: any) => {
+    changeProject(instance);
+    changeIndicatorGroup(instance.TG1QzFgGTex);
+    navigate({
+      to: "/data-entry/tracked-entity-form",
+      search: { editing: true },
     });
+  };
+  const onRowClick = (instance: any) => {
+    changeProject(instance);
     changeInstance(instance.instance);
-    // changeDataEntryPage("instance");
-    navigate({ to: "/data-entry/tracked-entity-instance" });
+    navigate({ to: `/data-entry/${instance.instance}` });
+  };
+
+  const handleChange = (value: string) => {
+    changeProgramEntity(value);
+    if (value) {
+      const [trackedEntityType, program] = value.split(",");
+      changeTrackedEntityType(trackedEntityType);
+      changeProgram(program);
+      navigate({
+        search: (old) => ({ ...old, program, trackedEntityType }),
+        replace: true,
+      });
+    } else {
+      changeTrackedEntityType("");
+      changeProgram("");
+    }
+  };
+
+  const changeOu = (value: string) => {
+    console.log(value);
   };
 
   return (
@@ -122,12 +156,16 @@ const TrackedEntityInstances = () => {
         <Box w="34%">
           <OrgUnitTreeSelect
             multiple={false}
-            value={store.ou}
+            value={search.ou || ""}
             onChange={changeOu}
           />
         </Box>
         <Box w="34%">
-          <ProgramSelect />
+          <ProgramSelect
+            program={search.program || ""}
+            trackedEntityType={search.trackedEntityType || ""}
+            handleChange={handleChange}
+          />
         </Box>
         <Spacer />
         <Stack direction="row">
@@ -135,9 +173,19 @@ const TrackedEntityInstances = () => {
           <ColumnDrawer />
         </Stack>
       </Stack>
-      <Box overflow="auto" border="3px solid gray" h="800px">
-        {isLoading && <div>Is Loading</div>}
-        {isSuccess && (
+      {isLoading && (
+        <Stack
+          alignItems="center"
+          justifyItems="center"
+          justifyContent="center"
+          alignContent="center"
+        >
+          <Spinner />
+        </Stack>
+      )}
+
+      {isSuccess && (
+        <Box overflow="auto" border="3px solid gray" h="800px">
           <Table variant="striped" colorScheme="gray" textTransform="none">
             <Thead>
               <Tr py={1}>
@@ -150,11 +198,12 @@ const TrackedEntityInstances = () => {
                       </Heading>
                     </Th>
                   ))}
+                <Th></Th>
               </Tr>
             </Thead>
             <Tbody>
               {data.map((record: any) => (
-                <Tr key={record.instance} onClick={() => onRowClick(record)}>
+                <Tr key={record.instance}>
                   {store.columns
                     .filter((s: any) => s.displayInList)
                     .map((column: any) => (
@@ -166,14 +215,21 @@ const TrackedEntityInstances = () => {
                         {display(record, column.trackedEntityAttribute.id)}
                       </Td>
                     ))}
+                  <Td>
+                    <Stack direction="row">
+                      <Button onClick={() => onRowClick(record)}>
+                        Details
+                      </Button>
+                      <Button onClick={() => edit(record)}>Edit</Button>
+                    </Stack>
+                  </Td>
                 </Tr>
               ))}
             </Tbody>
           </Table>
-        )}
-        {isError && <div>{error.message}</div>}
-      </Box>
-
+        </Box>
+      )}
+      {isError && <div>{error.message}</div>}
       <Pagination
         pagesCount={pagesCount}
         currentPage={currentPage}

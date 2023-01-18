@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Center,
   Flex,
@@ -42,9 +43,10 @@ const Layered = () => {
           justifyItems="center"
           justifyContent="center"
           alignContent="center"
+          h="calc(100vh - 106px)"
         >
           <Center>
-            <Spinner size="sm" />
+            <Spinner />
           </Center>
         </Flex>
       )}

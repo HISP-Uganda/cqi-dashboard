@@ -1,4 +1,5 @@
-import { Box } from "@chakra-ui/react";
+import { Stack } from "@chakra-ui/react";
+import React from "react";
 import { Responsive, WidthProvider } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
@@ -74,13 +75,13 @@ const Analytics = () => {
     >
       {layouts.map((l: any) => {
         return (
-          <Box key={l.i}>
+          <Stack key={l.i} alignItems="center" justifyContent="center">
             <Graph
               indicator={l.indicator}
               filterBy={l.filterBy}
               title={l.title}
             />
-          </Box>
+          </Stack>
         );
       })}
     </ResponsiveGridLayout>

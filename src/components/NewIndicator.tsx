@@ -21,7 +21,7 @@ const NewIndicator: FC<NewIndicatorProps> = ({
   const [pending, setPending] = useState(false);
 
   const handleFinish = useCallback(
-    async (values) => {
+    async (values: any) => {
       setPending(true);
       await onInsert(values);
       setPending(false);
@@ -48,7 +48,7 @@ const NewIndicator: FC<NewIndicatorProps> = ({
       title="New Indicator"
       closable={!pending}
       maskClosable={!pending}
-      visible={modalVisible}
+      open={modalVisible}
       destroyOnClose
       onOk={() => form.submit()}
       onCancel={hideModal}

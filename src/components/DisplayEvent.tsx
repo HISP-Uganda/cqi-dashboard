@@ -1,5 +1,5 @@
-import { FC } from "react";
-import { Text } from "@chakra-ui/react";
+import React, { FC } from "react";
+import { Spinner, Text } from "@chakra-ui/react";
 import { useEventAndOption } from "../Queries";
 const DisplayEvent: FC<{
   dataElement: string;
@@ -13,7 +13,7 @@ const DisplayEvent: FC<{
   );
   return (
     <>
-      {isLoading && <Text></Text>}
+      {isLoading && <Spinner />}
       {isSuccess && <Text>{data}</Text>}
       {isError && <Text>{error.message}</Text>}
     </>

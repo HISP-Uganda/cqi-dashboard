@@ -24,6 +24,7 @@ import {
   changeOus,
   changeLevels,
   changeLevel,
+  addIndicator,
 } from "./Events";
 import { Store } from "./interfaces";
 
@@ -36,8 +37,8 @@ export const dashboards = domain
     ous: [],
     indicatorGroup: "",
     indicatorGroups: [],
-    program: "",
-    trackedEntityType: "",
+    program: "vMfIVFcRWlu",
+    trackedEntityType: "KSy4dEvpMWi",
     indicators: [],
     period: [{ id: "LAST_3_MONTHS", name: "Last 3 months" }],
     loading: false,
@@ -46,17 +47,22 @@ export const dashboards = domain
     programs: [],
     total: 0,
     dataEntryPage: "list",
-    programEntity: "",
+    programEntity: "KSy4dEvpMWi,vMfIVFcRWlu",
     instance: "",
     project: {},
     level: "",
     levels: [],
+    descendants: [],
+    indicatorIndex: -1,
+    indicatorGroupIndex: -1,
   })
   .on(changeIndicator, (state, indicator: string) => {
     return { ...state, indicator };
   })
-  .on(changeIndicatorGroup, (state, indicatorGroup: string) => {
-    return { ...state, indicatorGroup };
+  .on(changeIndicatorGroup, (state, indicatorGroup: string | undefined) => {
+    if (indicatorGroup) {
+      return { ...state, indicatorGroup };
+    }
   })
   .on(changePeriod, (state, period: any[]) => {
     return { ...state, period };
@@ -190,8 +196,12 @@ export const periods = dashboards.map((state) => {
 });
 
 export const allIndicators = dashboards.map((state) => {
-  if (state.indicators && state.indicatorIndex && state.indicatorIndex !== -1) {
-    return state.indicators.map((row: any) => [
+  if (
+    state.indicators &&
+    state.indicatorIndex !== undefined &&
+    state.indicatorIndex !== -1
+  ) {
+    return state.indicators.map((row: any[]) => [
       row[0],
       row[state.indicatorIndex],
     ]);
@@ -201,26 +211,31 @@ export const allIndicators = dashboards.map((state) => {
 
 export const currentIndicator = dashboards.map((state) => {
   const indic = state.indicators.find((row: any) => row[0] === state.indicator);
-  if (indic) {
+  if (indic && state.indicatorIndex) {
     return indic[state.indicatorIndex];
   }
   return "";
 });
 
-export const indicatorForGroup = dashboards.map((state) => {
-  if (
-    state.indicators &&
-    state.indicatorGroupIndex &&
-    state.indicatorGroupIndex !== -1
-  ) {
-    return state.indicators
-      .filter(
-        (row: any) => row[state.indicatorGroupIndex] === state.indicatorGroup
-      )
-      .map((row: any) => [row[0], row[state.indicatorIndex]]);
-  }
-  return [];
-});
+export const indicatorForGroup = dashboards
+  .map((state) => {
+    if (
+      state.indicators &&
+      state.indicatorGroupIndex &&
+      state.indicatorGroupIndex !== -1
+    ) {
+      const indicators = state.indicators
+        .filter(
+          (row: any) => row[state.indicatorGroupIndex] === state.indicatorGroup
+        )
+        .map((row: any) => [row[0], row[state.indicatorIndex]]);
+      return [...indicators, ["add", "Add new indicator"]];
+    }
+    return [["add", "Add new indicator"]];
+  })
+  .on(addIndicator, (state, indicator) => {
+    return [...state, indicator];
+  });
 
 export const $withOptionSet = dashboards.map((state) => {
   return state.columns

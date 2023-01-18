@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import {
   Pagination,
   PaginationContainer,
@@ -15,6 +17,7 @@ import {
   Heading,
   Select,
   Spacer,
+  Spinner,
   Stack,
   Table,
   Tbody,
@@ -24,12 +27,15 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
-import { useNavigate } from "@tanstack/react-location";
+import { useDataEngine } from "@dhis2/app-runtime";
+import { DatePicker } from "antd";
 import { useStore } from "effector-react";
-
-import { changeInstance, changeOu, changeProject } from "../Events";
+import { fromPairs } from "lodash";
+import moment from "moment";
+import * as XLSX from "xlsx";
+import { changeOu } from "../Events";
 import { useInstances } from "../Queries";
-import { $withOptionSet, dashboards } from "../Store";
+import { $withOptionSet, allIndicators, dashboards } from "../Store";
 import { withAttributesAsEvent } from "../utils/common";
 import ColumnDrawer from "./ColumnDrawer";
 import DisplayEvent from "./DisplayEvent";
@@ -40,10 +46,17 @@ import ProgramSelect from "./ProgramSelect";
 const OUTER_LIMIT = 4;
 const INNER_LIMIT = 4;
 
+const { RangePicker } = DatePicker;
 
 const Projects = () => {
-  const navigate = useNavigate();
   const store = useStore(dashboards);
+  const engine = useDataEngine();
+  const [selectedDates, setSelectedDates] = useState<any>([
+    moment().startOf("year"),
+    moment().endOf("year"),
+  ]);
+  const [downloading, setDownloading] = useState<boolean>(false);
+  const availableIndicators = useStore(allIndicators);
   const withOptionSet = useStore($withOptionSet);
   const {
     pages,
@@ -66,11 +79,13 @@ const Projects = () => {
   });
 
   const { isLoading, isError, isSuccess, error, data } = useInstances(
-    store.descendants,
     store.ou,
     store.program,
     currentPage,
-    pageSize
+    pageSize,
+    "DESCENDANTS",
+    selectedDates[0].format("YYYY-MM-DD"),
+    selectedDates[1].format("YYYY-MM-DD")
   );
 
   const handlePageChange = (nextPage: number) => {
@@ -100,45 +115,98 @@ const Projects = () => {
     return record[a];
   };
 
-  const add = () => {
-    // changeDataEntryPage("form");
-    navigate({ to: "/data-entry/tracked-entity-form" });
-  };
+  const download = async () => {
+    setDownloading(true);
+    const processedIndicators = fromPairs(availableIndicators);
+    let params: { [key: string]: any } = {
+      program: store.program,
+      skipPaging: "true",
+      ou: store.ou,
+      ouMode: "DESCENDANTS",
+      programStartDate: selectedDates[0].format("YYYY-MM-DD"),
+      programEndDate: selectedDates[1].format("YYYY-MM-DD"),
+    };
 
-  const onRowClick = (instance: any) => {
-    changeProject({
-      startDate: instance.y3hJLGjctPk,
-      endDate: instance.iInAQ40vDGZ,
-      frequency: instance.WQcY6nfPouv,
-      indicator: instance.kHRn35W3Gq4,
+    const {
+      instances: { headers, rows },
+      optionSet: { options },
+    }: any = await engine.query({
+      instances: {
+        resource: "trackedEntityInstances/query.json",
+        params,
+      },
+      optionSet: {
+        resource: `optionSets/uKIuogUIFgl`,
+        params: {
+          fields: "options[id,code,name]",
+        },
+      },
     });
-    changeInstance(instance.instance);
-    // changeDataEntryPage("instance");
-    navigate({ to: "/data-entry/tracked-entity-instance" });
-  };
 
+    const indicatorGroups = fromPairs(
+      options.map((o: any) => [o.code, o.name])
+    );
+
+    const index = headers.findIndex((h: any) => h.name === "kHRn35W3Gq4");
+    const pIndex = headers.findIndex((h: any) => h.name === "TG1QzFgGTex");
+
+    const all = [
+      headers.map((h: any) => h.column),
+      ...rows.map((h: string[]) => {
+        return h.map((v, i) => {
+          if (i === index) {
+            return processedIndicators[v];
+          }
+          if (i === pIndex) {
+            return indicatorGroups[v];
+          }
+          return v;
+        });
+      }),
+    ];
+
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(all);
+    XLSX.utils.book_append_sheet(wb, ws, "export");
+    XLSX.writeFile(wb, "export.xlsx");
+    setDownloading(false);
+  };
   return (
-    <>
-      <Stack bg="white" p="5px">
+    <Stack bg="white" p="5px">
       <Stack h="48px" direction="row">
-        <Box w="34%">
+        <Box w="20%">
           <OrgUnitTreeSelect
             multiple={false}
             value={store.ou}
             onChange={changeOu}
           />
         </Box>
-        <Box w="34%">
+        <Box w="20%">
           <ProgramSelect />
+        </Box>
+        <Box w="20%">
+          <RangePicker value={selectedDates} onChange={setSelectedDates} />
         </Box>
         <Spacer />
         <Stack direction="row">
-          <Button onClick={() => add()}>Add</Button>
+          <Button onClick={() => download()} isLoading={downloading}>
+            Download
+          </Button>
           <ColumnDrawer />
         </Stack>
       </Stack>
+      {isLoading && (
+        <Stack
+          alignItems="center"
+          justifyItems="center"
+          justifyContent="center"
+          alignContent="center"
+          h="calc(100vh - 106px)"
+        >
+          <Spinner />
+        </Stack>
+      )}
       <Box overflow="auto" border="3px solid gray" h="800px">
-        {isLoading && <div>Is Loading</div>}
         {isSuccess && (
           <Table variant="striped" colorScheme="gray" textTransform="none">
             <Thead>
@@ -156,13 +224,11 @@ const Projects = () => {
             </Thead>
             <Tbody>
               {data.map((record: any) => (
-                <Tr key={record.instance} onClick={() => onRowClick(record)}>
+                <Tr key={record.instance}>
                   {store.columns
                     .filter((s: any) => s.displayInList)
                     .map((column: any) => (
                       <Td
-                        fontSize="16px"
-                        cursor="pointer"
                         key={`${record.instance}${column.trackedEntityAttribute.id}`}
                       >
                         {display(record, column.trackedEntityAttribute.id)}
@@ -173,8 +239,8 @@ const Projects = () => {
             </Tbody>
           </Table>
         )}
-        {isError && <div>{error.message}</div>}
       </Box>
+      {isError && <div>{error.message}</div>}
 
       <Pagination
         pagesCount={pagesCount}
@@ -251,8 +317,7 @@ const Projects = () => {
         </Select>
       </Center>
     </Stack>
-    </>
-  )
-}
+  );
+};
 
-export default Projects
+export default Projects;

@@ -8,20 +8,21 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  useDisclosure
+  useDisclosure,
 } from "@chakra-ui/react";
 import { PeriodDimension } from "@dhis2/analytics";
 import { useStore } from "effector-react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { changePeriod } from "../Events";
 import { dashboards } from "../Store";
+import PeriodPicker from "./PeriodPicker";
 const PeriodDialog = () => {
-  const store = useStore(dashboards)
+  const store = useStore(dashboards);
   const [selectedPeriods, setSelectedPeriods] = useState<any[]>(store.period);
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const onOk = () => {
     changePeriod(selectedPeriods);
-    onClose()
+    onClose();
   };
 
   const onSelect = ({ items }: any) => {
@@ -41,16 +42,23 @@ const PeriodDialog = () => {
           <ModalHeader>Period</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <PeriodDimension
+            {/* <PeriodDimension
               selectedPeriods={selectedPeriods}
               onSelect={onSelect}
+            /> */}
+
+            <PeriodPicker
+              selectedPeriods={selectedPeriods}
+              onChange={onSelect}
             />
           </ModalBody>
           <ModalFooter>
             <Button colorScheme="red" mr={3} onClick={onClose}>
               Close
             </Button>
-            <Button colorScheme="blue" onClick={() => onOk()}>OK</Button>
+            <Button colorScheme="blue" onClick={() => onOk()}>
+              OK
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>

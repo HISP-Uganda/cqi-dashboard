@@ -1,14 +1,14 @@
+import React from "react";
+
 import {
-  Center,
   Spinner,
+  Stack,
   Table,
   Tbody,
   Td,
   Th,
   Thead,
   Tr,
-  VStack,
-  Box,
 } from "@chakra-ui/react";
 import { useStore } from "effector-react";
 import { FC } from "react";
@@ -29,14 +29,10 @@ const AllIndicators: FC<AllIndicatorsProps> = ({ rows, dataElementIndex }) => {
     pes
   );
   return (
-    <Box bg="white">
-      {isLoading && (
-        <Center className="biggest-height">
-          <Spinner />
-        </Center>
-      )}
+    <>
+      {isLoading && <Spinner />}
       {isSuccess && (
-        <VStack className="biggest-height" bg="white" overflow="auto">
+        <Stack overflow="auto" w="100%">
           <Table size="sm">
             <Thead
               bg="blue.800"
@@ -84,10 +80,10 @@ const AllIndicators: FC<AllIndicatorsProps> = ({ rows, dataElementIndex }) => {
               ))}
             </Tbody>
           </Table>
-        </VStack>
+        </Stack>
       )}
       {isError && <div>{error.message}</div>}
-    </Box>
+    </>
   );
 };
 

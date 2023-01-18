@@ -1,3 +1,5 @@
+import React from "react";
+
 import { Select } from "antd";
 import { useStore } from "effector-react";
 import { changeIndicator } from "../Events";
@@ -13,7 +15,7 @@ const Indicator = () => {
   const { Option } = Select;
 
   return (
-    <Select value={store.indicator} onChange={onIndicatorChange} >
+    <Select value={store.indicator} onChange={onIndicatorChange}>
       {indicator4Group.map((row: any) => (
         <Option key={row[0]} value={row[0]}>
           {row[1]}

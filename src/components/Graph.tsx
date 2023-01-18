@@ -1,39 +1,36 @@
-import { Box } from "@chakra-ui/layout";
+import { Box, Spinner } from "@chakra-ui/react";
 import { useStore } from "effector-react";
 import { FC } from "react";
 import Plot from "react-plotly.js";
 import { useAnalytics } from "../Queries";
-import { maxLevel, orgUnits, periods } from "../Store";
+import { orgUnits, periods } from "../Store";
 
 interface GraphOptions {
   indicator: string;
   filterBy: string;
   title?: string;
 }
-const Graph: FC<GraphOptions> = ({
-  indicator,
-  filterBy,
-  title,
-}) => {
+const Graph: FC<GraphOptions> = ({ indicator, filterBy, title }) => {
   const periods$ = useStore(periods);
   const orgUnits$ = useStore(orgUnits);
-  const maxLevel$ = useStore(maxLevel);
   const { data, isError, isLoading, error, isSuccess } = useAnalytics(
     "vMfIVFcRWlu",
     "kHRn35W3Gq4",
     indicator,
     "rVZlkzOwWhi",
     "RgNQcLejbwX",
-    `${orgUnits$};LEVEL-${maxLevel$}`,
+    orgUnits$,
     periods$,
     filterBy,
     "SUM",
     true,
     true
   );
+
   return (
     <>
-      {isLoading && <Box>Loading</Box>}
+      {isLoading && <Spinner />}
+
       {isSuccess && (
         <Plot
           data={[
@@ -78,7 +75,6 @@ const Graph: FC<GraphOptions> = ({
               // l: 20
             },
           }}
-          // useResizeHandler={true}
           style={{ width: `100%`, height: `100%`, position: "absolute" }}
           config={{ displayModeBar: false }}
         />
