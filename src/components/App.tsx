@@ -37,7 +37,7 @@ const location = new ReactLocation<LocationGenerics>({
 });
 
 const App = () => {
-  const { isError, isLoading, error, isSuccess } = useUserUnits();
+  const { isError, isLoading, error, isSuccess, data } = useUserUnits();
   const engine = useDataEngine();
   const queryClient = new QueryClient();
 
@@ -87,6 +87,17 @@ const App = () => {
                 () => fetchInstances(engine, search)
               )
               .then(() => ({})),
+          pendingElement: async () => (
+            <Flex
+              w="100%"
+              alignItems="center"
+              justifyContent="center"
+              h="calc(100vh - 48px)"
+            >
+              <Spinner />
+            </Flex>
+          ),
+          pendingMs: 100, // 2 seconds
         },
         {
           path: "/tracked-entity-form",
@@ -127,7 +138,7 @@ const App = () => {
       {isSuccess && (
         <Router location={location} routes={routes}>
           <Stack h="calc(100vh - 68px)">
-            <Menus />
+            <Menus searchOu={data.searchOu} />
             <Outlet />
           </Stack>
         </Router>

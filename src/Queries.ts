@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { fromPairs } from "lodash";
+import { fromPairs, groupBy } from "lodash";
 import { useDataEngine } from "@dhis2/app-runtime";
 
 import {
@@ -18,8 +18,9 @@ import {
   changeLevels,
 } from "./Events";
 import { getRule } from "./utils/common";
-import { Column, LocationGenerics } from "./interfaces";
+import { Column, LocationGenerics, Project } from "./interfaces";
 import { Params, Search } from "@tanstack/react-location";
+import { db } from "./db";
 
 export function useUserOrgUnit() {
   const engine = useDataEngine();
@@ -93,34 +94,98 @@ export function useProgram(currentProgram: string) {
   });
 }
 
-export function useProgramAttributes(program: string) {
+export function useProgramAttributes(
+  program: string,
+  tei: string,
+  isNew: boolean
+) {
   const engine = useDataEngine();
-  return useQuery<any, Error>(["program-attributes", program], async () => {
-    const { prog } = await engine.query({
-      prog: {
-        resource: `programs/${program}.json`,
-        params: {
-          fields:
-            "selectIncidentDatesInFuture,selectEnrollmentDatesInFuture,incidentDateLabel,enrollmentDateLabel,programTrackedEntityAttributes[id,name,mandatory,valueType,displayInList,sortOrder,allowFutureDate,trackedEntityAttribute[id,name,generated,pattern,unique,valueType,orgunitScope,optionSetValue,displayFormName,optionSet[options[code,name]]]]",
+  return useQuery<{ program: any; instance: any }, Error>(
+    ["program-attributes", program, tei, isNew],
+    async () => {
+      let queries: { [k: string]: any } = {
+        prog: {
+          resource: `programs/${program}.json`,
+          params: {
+            fields:
+              "selectIncidentDatesInFuture,selectEnrollmentDatesInFuture,incidentDateLabel,enrollmentDateLabel,programTrackedEntityAttributes[id,name,mandatory,valueType,displayInList,sortOrder,allowFutureDate,trackedEntityAttribute[id,name,generated,pattern,unique,valueType,orgunitScope,optionSetValue,displayFormName,optionSet[options[code,name]]]]",
+          },
         },
-      },
-    });
-    return prog;
-  });
+      };
+
+      if (!isNew) {
+        queries = {
+          ...queries,
+          instance: {
+            resource: "trackedEntityInstances/query.json",
+            params: { trackedEntityInstance: tei, program },
+          },
+        };
+      }
+      let { prog, instance }: any = await engine.query(queries);
+      if (instance) {
+        const { rows, headers } = instance;
+        const obj: any[] = rows.map((r: string[]) => {
+          return fromPairs(
+            headers.map(({ name }: any, i: number) => [name, r[i]])
+          );
+        });
+
+        return { program: prog, instance: obj[0] };
+      }
+      return { program: prog, instance: {} };
+    }
+  );
 }
 
-export function useProgramStages(program: string) {
+export function useProgramStages(program: string, tei: string) {
   const engine = useDataEngine();
-  return useQuery<any, Error>(["program-stages", program], async () => {
-    const { prog }: any = await engine.query({
+  return useQuery<
+    {
+      programStages: any[];
+      stageData: { [key: string]: any[] };
+      project: Partial<Project>;
+    },
+    Error
+  >(["program-stages", program, tei], async () => {
+    const {
+      prog: { programStages },
+      trackedEntityInstance: {
+        enrollments,
+        attributes,
+        orgUnit,
+        trackedEntityInstance,
+        ...rest
+      },
+    }: any = await engine.query({
       prog: {
         resource: `programs/${program}.json`,
         params: {
           fields: "programStages[id,name]",
         },
       },
+      trackedEntityInstance: {
+        resource: `trackedEntityInstances/${tei}`,
+        params: {
+          fields: "*",
+          program,
+        },
+      },
     });
-    return prog.programStages;
+    const stageData = groupBy(
+      enrollments.flatMap(({ events }: any) => events),
+      "programStage"
+    );
+    const project: Partial<Project> = fromPairs([
+      ...attributes.map(({ attribute, value }: any) => [attribute, value]),
+      ["ou", orgUnit],
+      ["instance", trackedEntityInstance],
+    ]);
+    return {
+      programStages,
+      stageData,
+      project,
+    };
   });
 }
 
@@ -378,7 +443,8 @@ export function useUserUnits() {
     },
   };
 
-  return useQuery<any, Error>(["initial data"], async () => {
+  return useQuery<{ searchOu: string }, Error>(["initial data"], async () => {
+    const organisations = await db.organisations.toArray();
     const {
       me: { organisationUnits },
       events: { headers, rows },
@@ -402,6 +468,10 @@ export function useUserUnits() {
         isLeaf: unit.leaf,
       };
     });
+
+    if (organisations.length === 0) {
+      await db.organisations.bulkAdd(availableUnits);
+    }
     const availablePrograms = programs.filter(
       (p: any) => !p.withoutRegistration
     );
@@ -421,7 +491,7 @@ export function useUserUnits() {
     if (currentIndicator) {
       changeIndicator(currentIndicator[0]);
     }
-    return true;
+    return { searchOu: organisationUnits?.[0].id || "" };
   });
 }
 

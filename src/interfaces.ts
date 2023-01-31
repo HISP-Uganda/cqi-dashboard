@@ -1,3 +1,4 @@
+import { changeTrackedEntityType } from "./Events";
 // export interface Project {
 //   startDate?: string;
 //   endDate?: string;
@@ -147,11 +148,39 @@ export type LocationGenerics = MakeGenerics<{
     ou: string;
     program: string;
     trackedEntityType: string;
+    trackedEntityInstance: string;
+    ouSearch: string;
     page: number;
     pageSize: number;
     ouMode: string;
     programStartDate: string;
     programEndDate: string;
-    editing: boolean;
+    isNew: boolean;
   };
 }>;
+
+export interface RunChart {
+  program: string;
+  event: string;
+  programStage: string;
+  orgUnit: string;
+  trackedEntityInstance: string;
+  enrollment: string;
+  eventDate: string;
+  deleted: boolean;
+  rVZlkzOwWhi: number;
+  RgNQcLejbwX: number;
+}
+
+export interface Observation {
+  program: string;
+  event: string;
+  programStage: string;
+  orgUnit: string;
+  trackedEntityInstance: string;
+  enrollment: string;
+  eventDate: string;
+  deleted: boolean;
+  gB9GbPqeAzv: string;
+  EF7Cwwpegv1: string;
+}

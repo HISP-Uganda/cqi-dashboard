@@ -12,38 +12,38 @@ import {
   Th,
   Thead,
   Tr,
-  Spinner,
 } from "@chakra-ui/react";
-import { fromPairs } from "lodash";
 import { useDataEngine } from "@dhis2/app-runtime";
-import { useStore } from "effector-react";
 import { useNavigate } from "@tanstack/react-location";
-import moment from "moment";
-import React, { FC, useEffect, useState } from "react";
-import { useMutation, useQueryClient } from "react-query";
-import { useEvents } from "../Queries";
+import { useMutation } from "@tanstack/react-query";
+import { useStore } from "effector-react";
+import React, { FC, useState } from "react";
+import { Observation, Project } from "../interfaces";
 import { dashboards } from "../Store";
 import { generateUid } from "../utils/uid";
 interface TableProps {
   tei: string;
   stage: string;
+  stageData: Array<Partial<Observation>>;
+  project: Partial<Project>;
 }
-const NormalForm: FC<TableProps> = ({ tei, stage }) => {
+const NormalForm: FC<TableProps> = ({ stageData, tei, stage, project }) => {
   const navigate = useNavigate();
   const store = useStore(dashboards);
-  const [event, setEvent] = useState<{
-    eventDate: string;
-    gB9GbPqeAzv: string;
-    EF7Cwwpegv1: string;
-    event: string;
-  }>({
-    eventDate: moment().format("YYYY-MM-DD"),
-    gB9GbPqeAzv: "",
-    EF7Cwwpegv1: "",
-    event: generateUid(),
+  const [event, setEvent] = useState<Partial<Observation>>(() => {
+    return {
+      trackedEntityInstance: tei,
+      programStage: stage,
+      orgUnit: project.ou,
+      program: store.program,
+      eventDate: new Date().toISOString(),
+      gB9GbPqeAzv: "",
+      EF7Cwwpegv1: "",
+      event: generateUid(),
+    };
   });
+  const [events, setEvents] = useState<Partial<Observation>[]>(() => stageData);
   const engine = useDataEngine();
-  const queryClient = useQueryClient();
   const addEvent = async (data: any) => {
     const mutation: any = {
       type: "create",
@@ -52,33 +52,26 @@ const NormalForm: FC<TableProps> = ({ tei, stage }) => {
     };
     return await engine.mutate(mutation);
   };
-  const { mutateAsync } = useMutation(addEvent, {
-    onSuccess: () => {
-      queryClient.invalidateQueries(["events", stage, tei]);
-    },
-  });
+  const { mutateAsync } = useMutation(addEvent);
   const save = async () => {
-    const e = {
-      event: event.event,
-      eventDate: event.eventDate,
-      programStage: stage,
-      trackedEntityInstance: tei,
-      program: store.program,
-      orgUnit: store.ou,
+    const { gB9GbPqeAzv, EF7Cwwpegv1, ...rest } = event;
+    await mutateAsync({
+      ...rest,
       dataValues: [
-        { dataElement: "gB9GbPqeAzv", value: event.gB9GbPqeAzv },
-        { dataElement: "EF7Cwwpegv1", value: event.EF7Cwwpegv1 },
+        { dataElement: "gB9GbPqeAzv", value: gB9GbPqeAzv },
+        { dataElement: "EF7Cwwpegv1", value: EF7Cwwpegv1 },
       ],
-    };
-    await mutateAsync(e);
-    setEvent({
-      eventDate: moment().format("YYYY-MM-DD"),
-      gB9GbPqeAzv: "",
-      EF7Cwwpegv1: "",
-      event: generateUid(),
+    });
+    setEvents((prev) => [...prev, event]);
+    setEvent(() => {
+      return {
+        eventDate: new Date().toISOString(),
+        gB9GbPqeAzv: "",
+        EF7Cwwpegv1: "",
+        event: generateUid(),
+      };
     });
   };
-  const { isLoading, isError, isSuccess, error, data } = useEvents(stage, tei);
   return (
     <Box ml="12px" mr="48px">
       <Stack direction="row" spacing={50} mb="30px" width="100%">
@@ -89,9 +82,12 @@ const NormalForm: FC<TableProps> = ({ tei, stage }) => {
             mb="48px"
             placeholder="Enter Observed Effects Here"
             size="sm"
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-              setEvent({ ...event, gB9GbPqeAzv: e.target.value })
-            }
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+              e.persist();
+              setEvent((ex) => {
+                return { ...ex, gB9GbPqeAzv: e.target.value };
+              });
+            }}
             value={event.gB9GbPqeAzv}
           />
         </Box>
@@ -102,9 +98,12 @@ const NormalForm: FC<TableProps> = ({ tei, stage }) => {
             mb="48px"
             placeholder="Enter Performance Trends Here"
             size="sm"
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-              setEvent({ ...event, EF7Cwwpegv1: e.target.value })
-            }
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+              e.persist();
+              setEvent((ex) => {
+                return { ...ex, EF7Cwwpegv1: e.target.value };
+              });
+            }}
             value={event.EF7Cwwpegv1}
           />
         </Box>
@@ -124,37 +123,24 @@ const NormalForm: FC<TableProps> = ({ tei, stage }) => {
       <Center>
         <Text fontSize="lg">Summary Observations</Text>
       </Center>
-      {isLoading && <Spinner />}
-      {isSuccess && (
-        <TableContainer>
-          <Table variant="simple">
-            <Thead>
-              <Tr>
-                <Th>Other Observed Effects</Th>
-                <Th>Performance Trends</Th>
+      <TableContainer>
+        <Table variant="simple">
+          <Thead>
+            <Tr>
+              <Th>Other Observed Effects</Th>
+              <Th>Performance Trends</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {events.map((e) => (
+              <Tr key={e.event}>
+                <Td>{e.gB9GbPqeAzv}</Td>
+                <Td>{e.EF7Cwwpegv1}</Td>
               </Tr>
-            </Thead>
-            <Tbody>
-              {data.events
-                .map(({ dataValues, ...others }: any) => {
-                  return {
-                    ...others,
-                    ...fromPairs(
-                      dataValues.map((dv: any) => [dv.dataElement, dv.value])
-                    ),
-                  };
-                })
-                .map((e) => (
-                  <Tr>
-                    <Td>{e["gB9GbPqeAzv"]}</Td>
-                    <Td>{e["EF7Cwwpegv1"]}</Td>
-                  </Tr>
-                ))}
-            </Tbody>
-          </Table>
-        </TableContainer>
-      )}
-      {isError && <div>{error.message}</div>}
+            ))}
+          </Tbody>
+        </Table>
+      </TableContainer>
     </Box>
   );
 };

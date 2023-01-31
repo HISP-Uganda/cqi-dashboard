@@ -26,6 +26,7 @@ import {
   Tr,
 } from "@chakra-ui/react";
 import { useNavigate, useSearch } from "@tanstack/react-location";
+import Search from "antd/es/transfer/search";
 import { useStore } from "effector-react";
 
 import {
@@ -75,17 +76,26 @@ const TrackedEntityInstances = () => {
       inner: INNER_LIMIT,
     },
     initialState: {
-      pageSize: 20,
+      pageSize: search.pageSize,
       currentPage: search.page || 1,
     },
   });
 
   const handlePageChange = (nextPage: number) => {
     setCurrentPage(nextPage);
+    navigate({
+      search: (old) => ({ ...old, page: nextPage }),
+      replace: true,
+    });
   };
 
   const handlePageSizeChange = (event: any) => {
     const pageSize = Number(event.target.value);
+
+    navigate({
+      search: (old) => ({ ...old, pageSize, page: 1 }),
+      replace: true,
+    });
     setPageSize(pageSize);
     setCurrentPage(1);
   };
@@ -108,12 +118,22 @@ const TrackedEntityInstances = () => {
   };
 
   const add = () => {
+    const trackedEntityInstance = generateUid();
     changeProject({
       TG1QzFgGTex: store.indicatorGroup,
-      ou: store.ou,
-      instance: generateUid(),
+      ou: search.ou,
+      instance: trackedEntityInstance,
     });
-    navigate({ to: "/data-entry/tracked-entity-form" });
+    navigate({
+      to: "/data-entry/tracked-entity-form",
+      search: {
+        ou: search.ou,
+        trackedEntityType: search.trackedEntityType,
+        program: search.program,
+        isNew: true,
+        trackedEntityInstance,
+      },
+    });
   };
 
   const edit = (instance: any) => {
@@ -121,7 +141,12 @@ const TrackedEntityInstances = () => {
     changeIndicatorGroup(instance.TG1QzFgGTex);
     navigate({
       to: "/data-entry/tracked-entity-form",
-      search: { editing: true },
+      search: {
+        isNew: false,
+        program: search.program,
+        ou: instance.ou,
+        trackedEntityInstance: instance.instance,
+      },
     });
   };
   const onRowClick = (instance: any) => {
@@ -146,8 +171,18 @@ const TrackedEntityInstances = () => {
     }
   };
 
-  const changeOu = (value: string) => {
-    console.log(value);
+  const changeOu = (ou: string | string[] | undefined) => {
+    if (Array.isArray(ou)) {
+      navigate({
+        search: (old) => ({ ...old, ou: ou.join(",") }),
+        replace: true,
+      });
+    } else {
+      navigate({
+        search: (old) => ({ ...old, ou }),
+        replace: true,
+      });
+    }
   };
 
   return (
@@ -156,7 +191,7 @@ const TrackedEntityInstances = () => {
         <Box w="34%">
           <OrgUnitTreeSelect
             multiple={false}
-            value={search.ou || ""}
+            value={search.ou || undefined}
             onChange={changeOu}
           />
         </Box>

@@ -1,12 +1,14 @@
 import {
   Button,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
   Input,
   SimpleGrid,
-  Stack,
-  Text,
   Textarea,
 } from "@chakra-ui/react";
 import { useDataEngine } from "@dhis2/app-runtime";
+import { useNavigate, useSearch } from "@tanstack/react-location";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DatePicker } from "antd";
 import { GroupBase, Select } from "chakra-react-select";
@@ -15,15 +17,24 @@ import { useStore } from "effector-react";
 import { useEffect, useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { addIndicator, changeIndicatorGroup } from "../Events";
-import { Option, ProjectField, QIProject } from "../interfaces";
+import {
+  LocationGenerics,
+  Option,
+  ProjectField,
+  QIProject,
+} from "../interfaces";
 import { dashboards, indicatorForGroup } from "../Store";
 import { generateUid } from "../utils/uid";
 import NewIndicator from "./NewIndicator";
 export default function InstanceForm({
   programTrackedEntityAttributes,
+  instance,
 }: {
   programTrackedEntityAttributes: any[];
+  instance: Partial<QIProject>;
 }) {
+  const navigate = useNavigate<LocationGenerics>();
+  const search = useSearch<LocationGenerics>();
   const store = useStore(dashboards);
   const indicators = useStore(indicatorForGroup);
   const queryClient = useQueryClient();
@@ -39,12 +50,13 @@ export default function InstanceForm({
     watch,
     setValue,
     formState: { errors },
-  } = useForm<Partial<QIProject>>({ defaultValues: store.project });
+  } = useForm<Partial<QIProject>>({ defaultValues: instance });
 
   const kHRn35W3Gq4 = watch("kHRn35W3Gq4");
   const TG1QzFgGTex = watch("TG1QzFgGTex");
 
-  const onSubmit: SubmitHandler<Partial<QIProject>> = (data) => {
+  const onSubmit: SubmitHandler<Partial<QIProject>> = async (data) => {
+    setSubmitting(() => true);
     const columns: string[] = [
       "y3hJLGjctPk",
       "iInAQ40vDGZ",
@@ -85,6 +97,20 @@ export default function InstanceForm({
       trackedEntityType,
       trackedEntityInstance: instance,
     };
+    await mutateAsync(trackedEntityInstance);
+    setSubmitting(() => false);
+    navigate({
+      to: "/data-entry",
+      search: {
+        ou: search.ou,
+        program: search.program,
+        trackedEntityType: search.trackedEntityType,
+        page: 1,
+        pageSize: 10,
+        ouMode: "DESCENDANTS",
+      },
+      replace: true,
+    });
   };
 
   const addEvent = async (data: any) => {
@@ -127,30 +153,6 @@ export default function InstanceForm({
     },
   });
 
-  const onInsert = async (values: any) => {
-    const eventId = generateUid();
-    const event = {
-      event: eventId,
-      program: "eQf9K4L2yxE",
-      orgUnit: "akV6429SUqu",
-      eventDate: new Date().toISOString(),
-      dataValues: [
-        {
-          dataElement: "kToJ1rk0fwY",
-          value: values.name,
-        },
-        {
-          dataElement: "kuVtv8R9n8q",
-          value: TG1QzFgGTex,
-        },
-      ],
-    };
-    await insertEvent(event);
-    changeIndicatorGroup(TG1QzFgGTex);
-    addIndicator([eventId, values.name]);
-    setValue("kHRn35W3Gq4", eventId);
-  };
-
   const [fields, setFields] = useState<ProjectField[]>(() =>
     programTrackedEntityAttributes.map((pTea: any) => {
       const {
@@ -183,6 +185,41 @@ export default function InstanceForm({
     })
   );
 
+  const onInsert = async (values: any) => {
+    const eventId = generateUid();
+    const event = {
+      event: eventId,
+      program: "eQf9K4L2yxE",
+      orgUnit: "akV6429SUqu",
+      eventDate: new Date().toISOString(),
+      dataValues: [
+        {
+          dataElement: "kToJ1rk0fwY",
+          value: values.name,
+        },
+        {
+          dataElement: "kuVtv8R9n8q",
+          value: TG1QzFgGTex,
+        },
+      ],
+    };
+    await insertEvent(event);
+    changeIndicatorGroup(TG1QzFgGTex);
+    addIndicator([eventId, values.name]);
+    setFields((prev) =>
+      prev.map((p) => {
+        if (p.id === "kHRn35W3Gq4") {
+          return {
+            ...p,
+            options: [[eventId, values.name], ...indicators],
+          };
+        }
+        return p;
+      })
+    );
+    setValue("kHRn35W3Gq4", eventId);
+  };
+
   const getField = (f: ProjectField) => {
     const Opts: any = {
       DATE: (
@@ -192,13 +229,15 @@ export default function InstanceForm({
           render={({ field }) => (
             <DatePicker
               name={field.name}
-              value={dayjs(field.value)}
+              value={field.value ? dayjs(field.value) : null}
               onChange={(e) => {
                 field.onChange(e);
               }}
             />
           )}
-          rules={{ required: true }}
+          rules={{
+            required: { value: f.mandatory, message: `${f.name} is required` },
+          }}
         />
       ),
       DATETIME: (
@@ -208,13 +247,15 @@ export default function InstanceForm({
           render={({ field }) => (
             <DatePicker
               name={field.name}
-              value={dayjs(field.value)}
+              value={field.value ? dayjs(field.value) : null}
               onChange={(e) => {
                 field.onChange(e);
               }}
             />
           )}
-          rules={{ required: true }}
+          rules={{
+            required: { value: f.mandatory, message: `${f.name} is required` },
+          }}
         />
       ),
       LONG_TEXT: (
@@ -222,7 +263,9 @@ export default function InstanceForm({
           control={control}
           name={f.id}
           render={({ field }) => <Textarea {...field} />}
-          rules={{ required: true }}
+          rules={{
+            required: { value: f.mandatory, message: `${f.name} is required` },
+          }}
         />
       ),
     };
@@ -279,7 +322,9 @@ export default function InstanceForm({
               />
             );
           }}
-          rules={{ required: true }}
+          rules={{
+            required: { value: f.mandatory, message: `${f.name} is required` },
+          }}
         />
       );
     }
@@ -290,14 +335,16 @@ export default function InstanceForm({
           control={control}
           name={f.id}
           render={({ field }) => <Input {...field} />}
-          rules={{ required: true }}
+          rules={{
+            required: { value: f.mandatory, message: `${f.name} is required` },
+          }}
         />
       )
     );
   };
 
   useEffect(() => {
-    const subscription = watch((value, { name, type }) => console.log(value));
+    const subscription = watch((value, { name, type }) => {});
     return () => subscription.unsubscribe();
   }, [watch]);
 
@@ -312,10 +359,11 @@ export default function InstanceForm({
       <SimpleGrid spacing="30px" columns={3} mb="30px">
         {fields.map((field) => {
           return (
-            <Stack spacing="20px" key={field.id}>
-              <Text>{field.name}</Text>
+            <FormControl isInvalid={!!errors[field.id]} key={field.id}>
+              <FormLabel htmlFor={field.id}>{field.name}</FormLabel>
               {getField(field)}
-            </Stack>
+              <FormErrorMessage>{errors[field.id]?.message}</FormErrorMessage>
+            </FormControl>
           );
         })}
       </SimpleGrid>

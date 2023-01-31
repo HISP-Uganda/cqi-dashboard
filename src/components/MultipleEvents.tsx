@@ -1,14 +1,24 @@
+import {
+  Box,
+  Button,
+  Spacer,
+  Stack,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Tr,
+} from "@chakra-ui/react";
 import { useDataEngine } from "@dhis2/app-runtime";
-import { InputNumber, Table } from "antd";
-import { format, isValid, parseISO } from "date-fns";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { InputNumber } from "antd";
+import { parseISO } from "date-fns";
 import { useStore } from "effector-react";
-import { fromPairs, range } from "lodash";
-import { ChangeEvent, FC, useEffect, useState } from "react";
+import { ChangeEvent, FC, useState } from "react";
 import Plot from "react-plotly.js";
-import { useMutation, useQueryClient } from "react-query";
-import { useEvents } from "../Queries";
+import { Project, RunChart } from "../interfaces";
 import { dashboards } from "../Store";
-import { calculateEventDays, reviewPeriodString } from "../utils/common";
+import { reviewPeriodString } from "../utils/common";
 import { generateUid } from "../utils/uid";
 import DatePicker from "./DatePicker";
 
@@ -16,14 +26,23 @@ interface MultipleProps {
   tei: string;
   stage: string;
   title?: string;
+  stageData: Array<Partial<RunChart>>;
+  project: Partial<Project>;
 }
 
-const MultipleEvents: FC<MultipleProps> = ({ tei, stage, title }) => {
+const MultipleEvents: FC<MultipleProps> = ({
+  tei,
+  stageData,
+  stage,
+  title,
+  project,
+}) => {
+  const [events, setEvents] = useState<Array<Partial<RunChart>>>(
+    () => stageData
+  );
   const store = useStore(dashboards);
   const engine = useDataEngine();
-
   const queryClient = useQueryClient();
-  const [currentData, setCurrentData] = useState<any[]>([]);
   const addEvent = async (data: any) => {
     const mutation: any = {
       type: "create",
@@ -37,216 +56,65 @@ const MultipleEvents: FC<MultipleProps> = ({ tei, stage, title }) => {
       queryClient.invalidateQueries(["events", stage, tei]);
     },
   });
-  const length = calculateEventDays(
-    store.project.startDate,
-    store.project.endDate,
-    store.project.frequency
-  );
-  const defaultArray = range(0, length);
-  const defaultValues = fromPairs(
-    defaultArray.map((val: number) => [val.toString(), ""])
-  );
-  const defaultColumns = defaultArray.map((val: number) => {
-    const stringVal = val.toString();
-    return {
-      title: stringVal,
-      dataIndex: stringVal,
-      key: stringVal,
-      align: "center",
-      render: (text: string, record: any, index: number) =>
-        display(text, index, stringVal),
+
+  const add = () => {
+    const event: Partial<RunChart> = {
+      event: generateUid(),
+      trackedEntityInstance: tei,
+      program: store.program,
+      programStage: stage,
+      orgUnit: project.ou,
+      eventDate: undefined,
+      rVZlkzOwWhi: undefined,
+      RgNQcLejbwX: undefined,
     };
-  });
-
-  const [data, setData] = useState<{ [key: string]: any }[]>([
-    {
-      id: `Review ${reviewPeriodString(store.project?.frequency)}`,
-      ...defaultValues,
-    },
-    {
-      id: "Numerator",
-      ...defaultValues,
-    },
-    {
-      id: "Denominator",
-      ...defaultValues,
-    },
-    {
-      id: "%",
-      ...defaultValues,
-    },
-  ]);
-
-  const changeIndicator = (key: string, row: number) => (e: any) => {
-    let eventDate = data[0];
-    let numerator: any = data[1];
-    let denominator: any = data[2];
-    let indicator = data[3];
-    if (row === 0) {
-      eventDate = { ...eventDate, [key]: format(e, "yyyy-MM-dd") };
-    } else if (row === 1) {
-      numerator = { ...numerator, [key]: Number(e) };
-    } else if (row === 2) {
-      denominator = { ...denominator, [key]: Number(e) };
-    }
-    const num = numerator[key];
-    const den = denominator[key];
-    if (num >= 0 && den !== 0) {
-      const ind = Number(Number((num * 100) / den).toFixed(1));
-      indicator = { ...indicator, [key]: ind };
-      setData([eventDate, numerator, denominator, indicator]);
-    } else if (den === 0) {
-      indicator = { ...indicator, [key]: "-" };
-      setData([eventDate, numerator, denominator, indicator]);
-    }
+    setEvents((prev) => [...prev, event]);
   };
 
-  const onBlur = (key: string) => async (e: ChangeEvent<HTMLInputElement>) => {
-    const x = currentData.find((pd: any) => pd.ef2RxnUK9ac === key);
-    e.persist();
-    let currentEventDate = data[0][key];
-    let numerator: any = data[1][key];
-    let denominator: any = data[2][key];
-
-    let event: any = null;
-
-    const dataValues = [
-      {
-        dataElement: "rVZlkzOwWhi",
-        value: numerator,
-      },
-      {
-        dataElement: "RgNQcLejbwX",
-        value: denominator,
-      },
-      {
-        dataElement: "ef2RxnUK9ac",
-        value: key,
-      },
-    ];
-
-    if (x) {
-      const { rVZlkzOwWhi, RgNQcLejbwX, ef2RxnUK9ac, eventDate, ...others } = x;
-      if (
-        rVZlkzOwWhi !== numerator ||
-        RgNQcLejbwX !== denominator ||
-        currentEventDate !== format(parseISO(eventDate), "yyyy-MM-dd")
-      ) {
-        event = {
-          ...others,
-          eventDate: currentEventDate,
-          dataValues,
-        };
-      }
-    } else {
-      event = {
-        event: generateUid(),
-        eventDate: currentEventDate,
-        programStage: stage,
-        trackedEntityInstance: tei,
-        program: store.program,
-        orgUnit: store.ou,
-        dataValues,
-      };
-    }
-    if (numerator && denominator && currentEventDate) {
-      await mutateAsync(event);
-    }
-  };
-
-  const display = (text: string, index: number, column: string) => {
-    if (index === 0) {
-      let parsedDate: any = parseISO(text);
-      if (!isValid(parsedDate)) {
-        parsedDate = undefined;
-      }
-      return (
-        <DatePicker
-          picker={
-            reviewPeriodString(store.project.frequency).toLowerCase() || "month"
-          }
-          value={parsedDate}
-          suffixIcon={null}
-          onChange={changeIndicator(column, index)}
-          onBlur={onBlur(column)}
-        />
-      );
-    }
-    return (
-      <InputNumber
-        min="0"
-        style={{ textAlign: "center" }}
-        value={text}
-        onChange={index !== 3 ? changeIndicator(column, index) : () => {}}
-        onBlur={index !== 3 ? onBlur(column) : () => {}}
-        disabled={index === 3}
-      />
+  const changeIndicator = (
+    event: string,
+    value: string | number | undefined | null,
+    option: "rVZlkzOwWhi" | "RgNQcLejbwX" | "eventDate"
+  ) =>
+    setEvents((prev) =>
+      prev.map((p) => {
+        if (p.event === event) {
+          return { ...p, [option]: value };
+        }
+        return p;
+      })
     );
-  };
 
-  const columns: any[] = [
-    {
-      title: "",
-      dataIndex: "id",
-      key: "id",
-      width: 80,
-    },
-    ...defaultColumns,
-  ];
+  const onBlur =
+    (event: Partial<RunChart>) => async (e: ChangeEvent<HTMLInputElement>) => {
+      e.persist();
+      const { rVZlkzOwWhi, RgNQcLejbwX, ...rest } = event;
 
-  const {
-    isLoading,
-    isError,
-    error,
-    data: fetchedData,
-  } = useEvents(stage, tei, store.project.indicator);
+      const dataValues = [
+        {
+          dataElement: "rVZlkzOwWhi",
+          value: rVZlkzOwWhi || "",
+        },
+        {
+          dataElement: "RgNQcLejbwX",
+          value: RgNQcLejbwX || "",
+        },
+      ];
+      await mutateAsync({ ...rest, dataValues });
+    };
 
-  useEffect(() => {
-    if (fetchedData) {
-      let eventDate = data[0];
-      let numerator = data[1];
-      let denominator = data[2];
-      let indicator = data[3];
-      const processedData = fetchedData.events.map(
-        ({ dataValues, ...others }: any) => {
-          return {
-            ...others,
-            ...fromPairs(
-              dataValues.map((dv: any) => [dv.dataElement, dv.value])
-            ),
-          };
-        }
-      );
-      setCurrentData(processedData);
-      for (let i of defaultArray) {
-        const x = processedData.find(
-          (pd: any) => pd.ef2RxnUK9ac === i.toString()
-        );
-        if (x) {
-          const num = Number(x.rVZlkzOwWhi);
-          const den = Number(x.RgNQcLejbwX);
-          const month = x.ef2RxnUK9ac;
-          const eDate = x.eventDate;
-          eventDate = { ...eventDate, [month]: eDate };
-          numerator = { ...numerator, [month]: num };
-          denominator = { ...denominator, [month]: den };
-          indicator = {
-            ...indicator,
-            [month]: Number(((num * 100) / den).toFixed(1)),
-          };
-          setData([eventDate, numerator, denominator, indicator]);
-        }
-      }
+  const display = (e: Partial<RunChart>) => {
+    if (e.rVZlkzOwWhi === 0) {
+      return 0;
     }
-  }, [fetchedData]);
-
-  if (isLoading) {
-    return <div>Is Loading</div>;
-  }
-
-  if (isError) {
-    return <div>{error.message}</div>;
-  }
+    if (e.RgNQcLejbwX && e.rVZlkzOwWhi) {
+      return Intl.NumberFormat("en-GB", {
+        notation: "standard",
+        style: "percent",
+      }).format(e.rVZlkzOwWhi / e.RgNQcLejbwX);
+    }
+    return "-";
+  };
 
   return (
     <div>
@@ -254,8 +122,15 @@ const MultipleEvents: FC<MultipleProps> = ({ tei, stage, title }) => {
         <Plot
           data={[
             {
-              x: defaultArray,
-              y: Object.values(data[3]),
+              x: events.map((e, index) => String(index)),
+              y: Object.values(
+                events.map((e) => {
+                  if (e.RgNQcLejbwX && e.rVZlkzOwWhi) {
+                    return String((e.rVZlkzOwWhi * 100) / e.RgNQcLejbwX);
+                  }
+                  return "-";
+                })
+              ),
               type: "scatter",
               mode: "lines+markers",
               marker: { color: "red" },
@@ -263,7 +138,7 @@ const MultipleEvents: FC<MultipleProps> = ({ tei, stage, title }) => {
           ]}
           layout={{
             autosize: true,
-            title: fetchedData.title,
+            title,
             legend: {
               orientation: "h",
               yanchor: "bottom",
@@ -281,7 +156,7 @@ const MultipleEvents: FC<MultipleProps> = ({ tei, stage, title }) => {
             xaxis: {
               showgrid: false,
               zeroline: false,
-              // rangemode: "tozero",
+              type: "category",
             },
             yaxis: {
               showgrid: true,
@@ -296,16 +171,89 @@ const MultipleEvents: FC<MultipleProps> = ({ tei, stage, title }) => {
           config={{ displayModeBar: false }}
         />
       </div>
-      <div>
-        <Table
-          showHeader={false}
-          columns={columns}
-          dataSource={data}
-          bordered
-          rowKey="id"
-          pagination={false}
-        />
-      </div>
+      <Stack>
+        <TableContainer flex={1}>
+          <Table variant="simple">
+            <Tbody>
+              <Tr>
+                <Td w="60px">Review Period</Td>
+                {events.map((e) => (
+                  <Td key={e.event} textAlign="center">
+                    <DatePicker
+                      picker={
+                        reviewPeriodString(
+                          project.WQcY6nfPouv
+                        ).toLowerCase() as
+                          | "time"
+                          | "date"
+                          | "week"
+                          | "month"
+                          | "quarter"
+                          | "year"
+                          | undefined
+                      }
+                      value={e.eventDate ? parseISO(e.eventDate) : undefined}
+                      onChange={(value) =>
+                        changeIndicator(
+                          e.event || "",
+                          value ? value.toISOString() : undefined,
+                          "eventDate"
+                        )
+                      }
+                    />
+                  </Td>
+                ))}
+              </Tr>
+              <Tr>
+                <Td w="60px">Numerator</Td>
+                {events.map((e) => (
+                  <Td key={e.event} textAlign="center">
+                    <InputNumber
+                      min={0}
+                      style={{ textAlign: "center" }}
+                      value={e.rVZlkzOwWhi}
+                      onChange={(value) =>
+                        changeIndicator(e.event || "", value, "rVZlkzOwWhi")
+                      }
+                      onBlur={onBlur(e)}
+                    />
+                  </Td>
+                ))}
+              </Tr>
+              <Tr>
+                <Td w="60px">Denominator</Td>
+                {events.map((e) => (
+                  <Td key={e.event} textAlign="center">
+                    <InputNumber
+                      min={0}
+                      style={{ textAlign: "center" }}
+                      value={e.RgNQcLejbwX}
+                      onChange={(value) =>
+                        changeIndicator(e.event || "", value, "RgNQcLejbwX")
+                      }
+                      onBlur={onBlur(e)}
+                    />
+                  </Td>
+                ))}
+              </Tr>
+              <Tr>
+                <Td w="60px">%</Td>
+                {events.map((e) => (
+                  <Td key={e.event} textAlign="center">
+                    {display(e)}
+                  </Td>
+                ))}
+              </Tr>
+            </Tbody>
+          </Table>
+        </TableContainer>
+        <Stack direction="row">
+          <Spacer />
+          <Box>
+            <Button onClick={add}>Add Review</Button>
+          </Box>
+        </Stack>
+      </Stack>
     </div>
   );
 };

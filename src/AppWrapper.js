@@ -1,5 +1,5 @@
 import { ChakraProvider } from "@chakra-ui/react";
-import "antd/dist/reset.css";
+// import "antd/dist/reset.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import App from "./components/App";
 

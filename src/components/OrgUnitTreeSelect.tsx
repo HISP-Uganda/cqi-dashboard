@@ -1,19 +1,21 @@
 import { useDataEngine } from "@dhis2/app-runtime";
 import { TreeSelect } from "antd";
-import { useStore } from "effector-react";
-import { flatten, uniqBy } from "lodash";
+import { useLiveQuery } from "dexie-react-hooks";
+import { flatten } from "lodash";
 import { FC } from "react";
-import { changeInitialUnits } from "../Events";
-import { dashboards } from "../Store";
+import { db } from "../db";
 
 const OrgUnitTreeSelect: FC<{
   multiple?: boolean;
-  value: any;
-  onChange: (value: any) => void;
+  value: string | string[] | undefined;
+  onChange: (value: string | string[] | undefined) => void;
 }> = ({ multiple = false, value, onChange }) => {
-  const store = useStore(dashboards);
+  const organisations = useLiveQuery(() => db.organisations.toArray());
   const engine = useDataEngine();
-  const onLoadData = async (parent: any) => {
+  const onLoadData = async ({ id, children }: any) => {
+    if (children) {
+      return;
+    }
     try {
       const {
         units: { organisationUnits },
@@ -21,7 +23,7 @@ const OrgUnitTreeSelect: FC<{
         units: {
           resource: "organisationUnits.json",
           params: {
-            filter: `id:in:[${parent.id}]`,
+            filter: `id:in:[${id}]`,
             paging: "false",
             order: "shortName:desc",
             fields: "children[id,name,path,leaf]",
@@ -33,7 +35,7 @@ const OrgUnitTreeSelect: FC<{
           .map((child: any) => {
             return {
               id: child.id,
-              pId: parent.id,
+              pId: id,
               value: child.id,
               title: child.name,
               isLeaf: child.leaf,
@@ -49,16 +51,14 @@ const OrgUnitTreeSelect: FC<{
             return 0;
           });
       });
-      changeInitialUnits(
-        uniqBy([...store.organisations, ...flatten(found)], "id")
-      );
+      await db.organisations.bulkPut(flatten(found));
     } catch (e) {
       console.log(e);
     }
   };
 
   return (
-    <TreeSelect
+    <TreeSelect<string | string[] | undefined>
       allowClear={true}
       treeDataSimpleMode
       multiple={multiple}
@@ -66,10 +66,10 @@ const OrgUnitTreeSelect: FC<{
       value={value}
       listHeight={700}
       dropdownStyle={{ overflow: "auto" }}
-      placeholder="Please select health centre"
+      placeholder="Please select organisation unit"
       onChange={onChange}
       loadData={onLoadData}
-      treeData={store.organisations}
+      treeData={organisations}
     />
   );
 };

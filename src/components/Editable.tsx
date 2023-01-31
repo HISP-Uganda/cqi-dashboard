@@ -19,7 +19,7 @@ import { fromPairs } from "lodash";
 import { ChangeEvent, useState } from "react";
 import { useDataEngine } from "@dhis2/app-runtime";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ChangeWorkSheet, Column } from "../interfaces";
+import { ChangeWorkSheet, Column, Project } from "../interfaces";
 import { dashboards } from "../Store";
 import { generateUid } from "../utils/uid";
 
@@ -30,11 +30,13 @@ export default function Editable({
   columns,
   stage,
   tei,
+  project,
 }: {
   data: ChangeWorkSheet[];
   columns: Column[];
   stage: string;
   tei: string;
+  project: Partial<Project>;
 }) {
   const engine = useDataEngine();
   const queryClient = useQueryClient();
@@ -42,7 +44,6 @@ export default function Editable({
   const store = useStore(dashboards);
   const [id, setId] = useState<string>("");
   const [events, setEvents] = useState<Partial<ChangeWorkSheet>[]>(() => data);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleAdd = () => {
     const event = generateUid();
@@ -51,10 +52,9 @@ export default function Editable({
       programStage: stage,
       trackedEntityInstance: tei,
       program: store.program,
-      orgUnit: store.project.ou,
+      orgUnit: project.ou,
       ...fromPairs(columns.map((c) => [c.dataIndex, ""])),
     };
-    console.log(record);
     setEvents((prev) => [...prev, record]);
     setId(() => event);
   };
@@ -68,18 +68,13 @@ export default function Editable({
     return await engine.mutate(mutation);
   };
 
-  const { mutateAsync } = useMutation(addEvent, {
-    onSuccess: () => {
-      queryClient.invalidateQueries(["events", stage, tei]);
-    },
-  });
+  const { mutateAsync } = useMutation(addEvent);
 
   const activate = (record: Partial<ChangeWorkSheet>) => {
     setId(() => record.event || "");
   };
 
   const save = async (data: Partial<ChangeWorkSheet>) => {
-    setIsLoading(() => true);
     try {
       const { eventDate, ...withValues }: any = Object.entries(data).reduce(
         (a: any, [k, v]) => (v == null ? a : ((a[k] = v), a)),
@@ -110,7 +105,6 @@ export default function Editable({
     } catch (errInfo) {
       console.log("Validate Failed:", errInfo);
     }
-    setIsLoading(() => false);
     setId(() => "");
   };
 

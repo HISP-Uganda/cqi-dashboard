@@ -1,17 +1,22 @@
+import { Drawer, Radio, Space } from "antd";
+
 import {
+  Box,
   Button,
-  Drawer,
-  DrawerBody,
-  DrawerCloseButton,
-  DrawerContent,
-  DrawerHeader,
-  DrawerOverlay,
-  HStack,
+  // Drawer,
+  // DrawerBody,
+  // DrawerCloseButton,
+  // DrawerContent,
+  // DrawerHeader,
+  // DrawerOverlay,
+  // HStack,
+  Text,
   Spacer,
   Stack,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useNavigate } from "@tanstack/react-location";
+import { DropdownButton } from "@dhis2/ui";
+import { useNavigate, useSearch } from "@tanstack/react-location";
 import { Select } from "antd";
 import { useStore } from "effector-react";
 import { useState } from "react";
@@ -34,23 +39,24 @@ import PeriodPicker from "./PeriodPicker";
 
 const { Option } = Select;
 
-const Menus = () => {
+const Menus = ({ searchOu }: { searchOu: string }) => {
   const navigate = useNavigate<LocationGenerics>();
-
-  const { isOpen, onToggle, onClose } = useDisclosure();
+  const { isOpen, onToggle, onOpen, onClose } = useDisclosure();
   const store = useStore(dashboards);
   const indicators = useStore(indicatorForGroup);
   const onIndicatorGroupChange = (value: string) => {
     changeIndicatorGroup(value);
     changeIndicator(indicators[0][0]);
   };
-  const [selectedPeriods, setSelectedPeriods] = useState<any[]>(store.period);
+  const [selectedPeriods, setSelectedPeriods] = useState<any[]>(
+    () => store.period
+  );
   const onOk = () => {
     changePeriod(selectedPeriods);
   };
 
-  const onSelect = ({ items }: any) => {
-    setSelectedPeriods(items);
+  const onSelect = (data: any[]) => {
+    setSelectedPeriods(data);
   };
   const onLevelChange = (value: string) => {
     changeLevel(value);
@@ -83,7 +89,7 @@ const Menus = () => {
         <Button
           onClick={() =>
             handleClick("/data-entry", {
-              ou: store.ou,
+              ou: searchOu,
               program: "vMfIVFcRWlu",
               trackedEntityType: "KSy4dEvpMWi",
               page: 1,
@@ -118,79 +124,169 @@ const Menus = () => {
         {["/", "/analytics", "/layered-dashboard", "/indicators"].indexOf(
           store.url
         ) !== -1 && (
-          <Button onClick={() => onToggle()} colorScheme="red">
-            Filters
-          </Button>
+          // <Button onClick={() => onToggle()} colorScheme="red">
+          //   Filters
+          // </Button>
+          <DropdownButton
+            primary
+            component={
+              <Stack
+                w="600px"
+                p="15px"
+                mt="7px"
+                bg="white"
+                boxShadow="2xl"
+                spacing="20px"
+                overflow="auto"
+                h="calc(100vh - 170px)"
+              >
+                {store.url !== "/indicators" && store.url !== "/" && (
+                  <>
+                    <Stack>
+                      <Text>Program Area</Text>
+                      <IndicatorGroup
+                        value={store.indicatorGroup}
+                        onChange={onIndicatorGroupChange}
+                      />
+                    </Stack>
+                    <Stack>
+                      <Text>Indicator</Text>
+                      <Indicator />
+                    </Stack>
+                  </>
+                )}
+                <Stack>
+                  <Text>Organisation Unit</Text>
+                  <OrgUnitTreeSelect
+                    multiple={true}
+                    value={store.ous}
+                    onChange={changeOus}
+                  />
+                </Stack>
+                <Stack>
+                  <Text>Organisation Unit Level</Text>
+                  <Select
+                    style={{ width: "100%" }}
+                    value={store.level}
+                    onChange={onLevelChange}
+                  >
+                    {store.levels.map((level: any) => (
+                      <Option key={level.id} value={`LEVEL-${level.level}`}>
+                        {level.name}
+                      </Option>
+                    ))}
+                  </Select>
+                </Stack>
+                <Stack>
+                  <Text>Period</Text>
+                  <PeriodPicker
+                    selectedPeriods={selectedPeriods}
+                    onChange={onSelect}
+                  />
+                  <Button onClick={() => onOk()}>Add Period Filter</Button>
+                </Stack>
+                {store.url === "/indicators" && (
+                  <>
+                    {store.filterBy === "period" ? (
+                      <Button
+                        onClick={() => changeFilterBy("orgUnit")}
+                        w="300px"
+                        size="sm"
+                      >
+                        Filter By OrgUnits
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={() => changeFilterBy("period")}
+                        w="300px"
+                        size="sm"
+                      >
+                        Filter By Period
+                      </Button>
+                    )}
+                  </>
+                )}
+              </Stack>
+            }
+            name="buttonName"
+            value="buttonValue"
+          >
+            Filter
+          </DropdownButton>
         )}
       </Stack>
 
-      <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="md">
-        <DrawerOverlay />
-        <DrawerContent>
-          <DrawerCloseButton />
-          <DrawerHeader>Filters</DrawerHeader>
-          <DrawerBody>
-            <Stack spacing="20px">
-              {store.url !== "/indicators" && store.url !== "/" && (
-                <>
-                  <IndicatorGroup
-                    value={store.indicatorGroup}
-                    onChange={onIndicatorGroupChange}
-                  />
-                  <Indicator />
-                </>
-              )}
-
-              <OrgUnitTreeSelect
-                multiple={true}
-                value={store.ous}
-                onChange={changeOus}
+      <Drawer
+        title="Drawer with extra actions"
+        placement="right"
+        width={500}
+        onClose={onClose}
+        open={isOpen}
+        getContainer={false}
+        extra={
+          <Space>
+            <Button onClick={onClose}>Cancel</Button>
+            <Button onClick={onClose}>OK</Button>
+          </Space>
+        }
+      >
+        <Stack spacing="20px">
+          {store.url !== "/indicators" && store.url !== "/" && (
+            <>
+              <IndicatorGroup
+                value={store.indicatorGroup}
+                onChange={onIndicatorGroupChange}
               />
-              <Select
-                style={{ width: "100%" }}
-                value={store.level}
-                onChange={onLevelChange}
-              >
-                {store.levels.map((level: any) => (
-                  <Option key={level.id} value={`LEVEL-${level.level}`}>
-                    {level.name}
-                  </Option>
-                ))}
-              </Select>
+              <Indicator />
+            </>
+          )}
 
-              <PeriodPicker
-                selectedPeriods={selectedPeriods}
-                onChange={onSelect}
-              />
-              {store.url === "/indicators" && (
-                <>
-                  {store.filterBy === "period" ? (
-                    <Button
-                      onClick={() => changeFilterBy("orgUnit")}
-                      w="300px"
-                      size="sm"
-                    >
-                      Filter By OrgUnits
-                    </Button>
-                  ) : (
-                    <Button
-                      onClick={() => changeFilterBy("period")}
-                      w="300px"
-                      size="sm"
-                    >
-                      Filter By Period
-                    </Button>
-                  )}
-                </>
+          <OrgUnitTreeSelect
+            multiple={true}
+            value={store.ous}
+            onChange={changeOus}
+          />
+          <Select
+            style={{ width: "100%" }}
+            value={store.level}
+            onChange={onLevelChange}
+          >
+            {store.levels.map((level: any) => (
+              <Option key={level.id} value={`LEVEL-${level.level}`}>
+                {level.name}
+              </Option>
+            ))}
+          </Select>
+
+          <Box zIndex={10000}>
+            <PeriodPicker
+              selectedPeriods={selectedPeriods}
+              onChange={onSelect}
+            />
+          </Box>
+          {store.url === "/indicators" && (
+            <>
+              {store.filterBy === "period" ? (
+                <Button
+                  onClick={() => changeFilterBy("orgUnit")}
+                  w="300px"
+                  size="sm"
+                >
+                  Filter By OrgUnits
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => changeFilterBy("period")}
+                  w="300px"
+                  size="sm"
+                >
+                  Filter By Period
+                </Button>
               )}
-            </Stack>
-          </DrawerBody>
-        </DrawerContent>
+            </>
+          )}
+        </Stack>
       </Drawer>
-
-      {isOpen && store.url !== "/data-entry" && (
-        <HStack spacing="20px"></HStack>
-      )}
     </Stack>
   );
 };
