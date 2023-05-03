@@ -1,42 +1,42 @@
 import {
-  Pagination,
-  PaginationContainer,
-  PaginationNext,
-  PaginationPage,
-  PaginationPageGroup,
-  PaginationPrevious,
-  PaginationSeparator,
-  usePagination,
+    Pagination,
+    PaginationContainer,
+    PaginationNext,
+    PaginationPage,
+    PaginationPageGroup,
+    PaginationPrevious,
+    PaginationSeparator,
+    usePagination,
 } from "@ajna/pagination";
 import {
-  Box,
-  Button,
-  Center,
-  Heading,
-  Select,
-  Spacer,
-  Spinner,
-  Stack,
-  Table,
-  Tbody,
-  Td,
-  Text,
-  Th,
-  Thead,
-  Tr,
+    Box,
+    Button,
+    Center,
+    Heading,
+    Select,
+    Spacer,
+    Spinner,
+    Stack,
+    Table,
+    Tbody,
+    Td,
+    Text,
+    Th,
+    Thead,
+    Tr,
 } from "@chakra-ui/react";
 import { useNavigate, useSearch } from "@tanstack/react-location";
 import Search from "antd/es/transfer/search";
 import { useStore } from "effector-react";
 
 import {
-  changeIndicatorGroup,
-  changeInstance,
-  // changeOu,
-  changeProgram,
-  changeProgramEntity,
-  changeProject,
-  changeTrackedEntityType,
+    changeIndicatorGroup,
+    changeInstance,
+    // changeOu,
+    changeProgram,
+    changeProgramEntity,
+    changeProject,
+    changeTrackedEntityType,
 } from "../Events";
 import { LocationGenerics } from "../interfaces";
 import { useInstances } from "../Queries";
@@ -53,294 +53,331 @@ const OUTER_LIMIT = 4;
 const INNER_LIMIT = 4;
 
 const TrackedEntityInstances = () => {
-  const navigate = useNavigate<LocationGenerics>();
-  const store = useStore(dashboards);
-  const withOptionSet = useStore($withOptionSet);
+    const navigate = useNavigate<LocationGenerics>();
+    const store = useStore(dashboards);
+    const withOptionSet = useStore($withOptionSet);
 
-  const search = useSearch<LocationGenerics>();
+    const search = useSearch<LocationGenerics>();
 
-  const { isLoading, isError, isSuccess, error, data } = useInstances(search);
+    const { isLoading, isError, isSuccess, error, data } = useInstances(search);
 
-  const {
-    pages,
-    pagesCount,
-    currentPage,
-    setCurrentPage,
-    isDisabled,
-    pageSize,
-    setPageSize,
-  } = usePagination({
-    total: store.total,
-    limits: {
-      outer: OUTER_LIMIT,
-      inner: INNER_LIMIT,
-    },
-    initialState: {
-      pageSize: search.pageSize,
-      currentPage: search.page || 1,
-    },
-  });
-
-  const handlePageChange = (nextPage: number) => {
-    setCurrentPage(nextPage);
-    navigate({
-      search: (old) => ({ ...old, page: nextPage }),
-      replace: true,
+    const {
+        pages,
+        pagesCount,
+        currentPage,
+        setCurrentPage,
+        isDisabled,
+        pageSize,
+        setPageSize,
+    } = usePagination({
+        total: store.total,
+        limits: {
+            outer: OUTER_LIMIT,
+            inner: INNER_LIMIT,
+        },
+        initialState: {
+            pageSize: search.pageSize,
+            currentPage: search.page || 1,
+        },
     });
-  };
 
-  const handlePageSizeChange = (event: any) => {
-    const pageSize = Number(event.target.value);
+    const handlePageChange = (nextPage: number) => {
+        setCurrentPage(nextPage);
+        navigate({
+            search: (old) => ({ ...old, page: nextPage }),
+            replace: true,
+        });
+    };
 
-    navigate({
-      search: (old) => ({ ...old, pageSize, page: 1 }),
-      replace: true,
-    });
-    setPageSize(pageSize);
-    setCurrentPage(1);
-  };
+    const handlePageSizeChange = (event: any) => {
+        const pageSize = Number(event.target.value);
 
-  const display = (record: any, a: string) => {
-    if (withOptionSet.indexOf(a) !== -1) {
-      return <OptionDisplay code={record[a]} />;
-    }
-    const withEvent = withAttributesAsEvent(a);
-    if (withEvent) {
-      return (
-        <DisplayEvent
-          programStage={withEvent.programStage}
-          dataElement={withEvent.dataElement}
-          event={record[a]}
-        />
-      );
-    }
-    return record[a];
-  };
+        navigate({
+            search: (old) => ({ ...old, pageSize, page: 1 }),
+            replace: true,
+        });
+        setPageSize(pageSize);
+        setCurrentPage(1);
+    };
 
-  const add = () => {
-    const trackedEntityInstance = generateUid();
-    changeProject({
-      TG1QzFgGTex: store.indicatorGroup,
-      ou: search.ou,
-      instance: trackedEntityInstance,
-    });
-    navigate({
-      to: "/data-entry/tracked-entity-form",
-      search: {
-        ou: search.ou,
-        trackedEntityType: search.trackedEntityType,
-        program: search.program,
-        isNew: true,
-        trackedEntityInstance,
-      },
-    });
-  };
+    const display = (record: any, a: string) => {
+        if (withOptionSet.indexOf(a) !== -1) {
+            return <OptionDisplay code={record[a]} />;
+        }
+        const withEvent = withAttributesAsEvent(a);
+        if (withEvent) {
+            return (
+                <DisplayEvent
+                    programStage={withEvent.programStage}
+                    dataElement={withEvent.dataElement}
+                    event={record[a]}
+                />
+            );
+        }
+        return record[a];
+    };
 
-  const edit = (instance: any) => {
-    changeProject(instance);
-    changeIndicatorGroup(instance.TG1QzFgGTex);
-    navigate({
-      to: "/data-entry/tracked-entity-form",
-      search: {
-        isNew: false,
-        program: search.program,
-        ou: instance.ou,
-        trackedEntityInstance: instance.instance,
-      },
-    });
-  };
-  const onRowClick = (instance: any) => {
-    changeProject(instance);
-    changeInstance(instance.instance);
-    navigate({ to: `/data-entry/${instance.instance}` });
-  };
+    const add = () => {
+        const trackedEntityInstance = generateUid();
+        changeProject({
+            TG1QzFgGTex: store.indicatorGroup,
+            ou: search.ou,
+            instance: trackedEntityInstance,
+        });
+        navigate({
+            to: "/data-entry/tracked-entity-form",
+            search: {
+                ou: search.ou,
+                trackedEntityType: search.trackedEntityType,
+                program: search.program,
+                isNew: true,
+                trackedEntityInstance,
+            },
+        });
+    };
 
-  const handleChange = (value: string) => {
-    changeProgramEntity(value);
-    if (value) {
-      const [trackedEntityType, program] = value.split(",");
-      changeTrackedEntityType(trackedEntityType);
-      changeProgram(program);
-      navigate({
-        search: (old) => ({ ...old, program, trackedEntityType }),
-        replace: true,
-      });
-    } else {
-      changeTrackedEntityType("");
-      changeProgram("");
-    }
-  };
+    const edit = (instance: any) => {
+        changeProject(instance);
+        changeIndicatorGroup(instance.TG1QzFgGTex);
+        navigate({
+            to: "/data-entry/tracked-entity-form",
+            search: {
+                isNew: false,
+                program: search.program,
+                ou: instance.ou,
+                trackedEntityInstance: instance.instance,
+            },
+        });
+    };
+    const onRowClick = (instance: any) => {
+        changeProject(instance);
+        changeInstance(instance.instance);
+        navigate({ to: `/data-entry/${instance.instance}` });
+    };
 
-  const changeOu = (ou: string | string[] | undefined) => {
-    if (Array.isArray(ou)) {
-      navigate({
-        search: (old) => ({ ...old, ou: ou.join(",") }),
-        replace: true,
-      });
-    } else {
-      navigate({
-        search: (old) => ({ ...old, ou }),
-        replace: true,
-      });
-    }
-  };
+    const handleChange = (value: string) => {
+        changeProgramEntity(value);
+        if (value) {
+            const [trackedEntityType, program] = value.split(",");
+            changeTrackedEntityType(trackedEntityType);
+            changeProgram(program);
+            navigate({
+                search: (old) => ({ ...old, program, trackedEntityType }),
+                replace: true,
+            });
+        } else {
+            changeTrackedEntityType("");
+            changeProgram("");
+        }
+    };
 
-  return (
-    <Stack bg="white" p="5px">
-      <Stack h="48px" direction="row">
-        <Box w="34%">
-          <OrgUnitTreeSelect
-            multiple={false}
-            value={search.ou || undefined}
-            onChange={changeOu}
-          />
-        </Box>
-        <Box w="34%">
-          <ProgramSelect
-            program={search.program || ""}
-            trackedEntityType={search.trackedEntityType || ""}
-            handleChange={handleChange}
-          />
-        </Box>
-        <Spacer />
-        <Stack direction="row">
-          <Button onClick={() => add()}>Add</Button>
-          <ColumnDrawer />
+    const changeOu = (ou: string | string[] | undefined) => {
+        if (Array.isArray(ou)) {
+            navigate({
+                search: (old) => ({ ...old, ou: ou.join(",") }),
+                replace: true,
+            });
+        } else {
+            navigate({
+                search: (old) => ({ ...old, ou }),
+                replace: true,
+            });
+        }
+    };
+
+    return (
+        <Stack bg="white" p="5px">
+            <Stack h="48px" direction="row">
+                <Box w="34%">
+                    <OrgUnitTreeSelect
+                        multiple={false}
+                        value={search.ou || undefined}
+                        onChange={changeOu}
+                    />
+                </Box>
+                <Box w="34%">
+                    <ProgramSelect
+                        program={search.program || ""}
+                        trackedEntityType={search.trackedEntityType || ""}
+                        handleChange={handleChange}
+                    />
+                </Box>
+                <Spacer />
+                <Stack direction="row">
+                    <Button onClick={() => add()}>Add</Button>
+                    <ColumnDrawer />
+                </Stack>
+            </Stack>
+            {isLoading && (
+                <Stack
+                    alignItems="center"
+                    justifyItems="center"
+                    justifyContent="center"
+                    alignContent="center"
+                >
+                    <Spinner />
+                </Stack>
+            )}
+
+            {isSuccess && (
+                <Box overflow="auto" border="3px solid gray" h="800px">
+                    <Table
+                        variant="striped"
+                        colorScheme="gray"
+                        textTransform="none"
+                    >
+                        <Thead>
+                            <Tr py={1}>
+                                {store.columns
+                                    .filter((s: any) => s.displayInList)
+                                    .map((column: any) => (
+                                        <Th
+                                            key={
+                                                column.trackedEntityAttribute.id
+                                            }
+                                            minW="200px"
+                                        >
+                                            <Heading
+                                                as="h6"
+                                                size="xs"
+                                                textTransform="none"
+                                            >
+                                                {
+                                                    column
+                                                        .trackedEntityAttribute
+                                                        .name
+                                                }
+                                            </Heading>
+                                        </Th>
+                                    ))}
+                                <Th></Th>
+                            </Tr>
+                        </Thead>
+                        <Tbody>
+                            {data.map((record: any) => (
+                                <Tr key={record.instance}>
+                                    {store.columns
+                                        .filter((s: any) => s.displayInList)
+                                        .map((column: any) => (
+                                            <Td
+                                                fontSize="16px"
+                                                cursor="pointer"
+                                                key={`${record.instance}${column.trackedEntityAttribute.id}`}
+                                            >
+                                                {display(
+                                                    record,
+                                                    column
+                                                        .trackedEntityAttribute
+                                                        .id
+                                                )}
+                                            </Td>
+                                        ))}
+                                    <Td>
+                                        <Stack direction="row">
+                                            <Button
+                                                onClick={() =>
+                                                    onRowClick(record)
+                                                }
+                                            >
+                                                Details
+                                            </Button>
+                                            <Button
+                                                onClick={() => edit(record)}
+                                            >
+                                                Edit
+                                            </Button>
+                                        </Stack>
+                                    </Td>
+                                </Tr>
+                            ))}
+                        </Tbody>
+                    </Table>
+                </Box>
+            )}
+            {isError && <div>{error.message}</div>}
+            <Pagination
+                pagesCount={pagesCount}
+                currentPage={currentPage}
+                isDisabled={isDisabled}
+                onPageChange={handlePageChange}
+            >
+                <PaginationContainer
+                    align="center"
+                    justify="space-between"
+                    p={4}
+                    w="full"
+                >
+                    <PaginationPrevious
+                        _hover={{
+                            bg: "yellow.400",
+                        }}
+                        bg="yellow.300"
+                    >
+                        <Text>Previous</Text>
+                    </PaginationPrevious>
+                    <PaginationPageGroup
+                        isInline
+                        align="center"
+                        separator={
+                            <PaginationSeparator
+                                onClick={() =>
+                                    console.warn("I'm clicking the separator")
+                                }
+                                bg="blue.300"
+                                fontSize="sm"
+                                w={14}
+                                jumpSize={11}
+                            />
+                        }
+                    >
+                        {pages.map((page: number) => (
+                            <PaginationPage
+                                w={14}
+                                bg="red.300"
+                                key={`pagination_page_${page}`}
+                                page={page}
+                                fontSize="sm"
+                                _hover={{
+                                    bg: "green.300",
+                                }}
+                                _current={{
+                                    bg: "green.300",
+                                    fontSize: "sm",
+                                    w: 14,
+                                }}
+                            />
+                        ))}
+                    </PaginationPageGroup>
+                    <PaginationNext
+                        _hover={{
+                            bg: "yellow.400",
+                        }}
+                        bg="yellow.300"
+                    >
+                        <Text>Next</Text>
+                    </PaginationNext>
+                </PaginationContainer>
+            </Pagination>
+            <Center w="full">
+                <Text>Records per page</Text>
+                <Select
+                    ml={3}
+                    onChange={handlePageSizeChange}
+                    w={40}
+                    value={pageSize}
+                >
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="150">150</option>
+                    <option value="200">200</option>
+                </Select>
+            </Center>
         </Stack>
-      </Stack>
-      {isLoading && (
-        <Stack
-          alignItems="center"
-          justifyItems="center"
-          justifyContent="center"
-          alignContent="center"
-        >
-          <Spinner />
-        </Stack>
-      )}
-
-      {isSuccess && (
-        <Box overflow="auto" border="3px solid gray" h="800px">
-          <Table variant="striped" colorScheme="gray" textTransform="none">
-            <Thead>
-              <Tr py={1}>
-                {store.columns
-                  .filter((s: any) => s.displayInList)
-                  .map((column: any) => (
-                    <Th key={column.trackedEntityAttribute.id} minW="200px">
-                      <Heading as="h6" size="xs" textTransform="none">
-                        {column.trackedEntityAttribute.name}
-                      </Heading>
-                    </Th>
-                  ))}
-                <Th></Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {data.map((record: any) => (
-                <Tr key={record.instance}>
-                  {store.columns
-                    .filter((s: any) => s.displayInList)
-                    .map((column: any) => (
-                      <Td
-                        fontSize="16px"
-                        cursor="pointer"
-                        key={`${record.instance}${column.trackedEntityAttribute.id}`}
-                      >
-                        {display(record, column.trackedEntityAttribute.id)}
-                      </Td>
-                    ))}
-                  <Td>
-                    <Stack direction="row">
-                      <Button onClick={() => onRowClick(record)}>
-                        Details
-                      </Button>
-                      <Button onClick={() => edit(record)}>Edit</Button>
-                    </Stack>
-                  </Td>
-                </Tr>
-              ))}
-            </Tbody>
-          </Table>
-        </Box>
-      )}
-      {isError && <div>{error.message}</div>}
-      <Pagination
-        pagesCount={pagesCount}
-        currentPage={currentPage}
-        isDisabled={isDisabled}
-        onPageChange={handlePageChange}
-      >
-        <PaginationContainer
-          align="center"
-          justify="space-between"
-          p={4}
-          w="full"
-        >
-          <PaginationPrevious
-            _hover={{
-              bg: "yellow.400",
-            }}
-            bg="yellow.300"
-          >
-            <Text>Previous</Text>
-          </PaginationPrevious>
-          <PaginationPageGroup
-            isInline
-            align="center"
-            separator={
-              <PaginationSeparator
-                onClick={() => console.warn("I'm clicking the separator")}
-                bg="blue.300"
-                fontSize="sm"
-                w={14}
-                jumpSize={11}
-              />
-            }
-          >
-            {pages.map((page: number) => (
-              <PaginationPage
-                w={14}
-                bg="red.300"
-                key={`pagination_page_${page}`}
-                page={page}
-                fontSize="sm"
-                _hover={{
-                  bg: "green.300",
-                }}
-                _current={{
-                  bg: "green.300",
-                  fontSize: "sm",
-                  w: 14,
-                }}
-              />
-            ))}
-          </PaginationPageGroup>
-          <PaginationNext
-            _hover={{
-              bg: "yellow.400",
-            }}
-            bg="yellow.300"
-          >
-            <Text>Next</Text>
-          </PaginationNext>
-        </PaginationContainer>
-      </Pagination>
-      <Center w="full">
-        <Text>Records per page</Text>
-        <Select ml={3} onChange={handlePageSizeChange} w={40} value={pageSize}>
-          <option value="5">5</option>
-          <option value="10">10</option>
-          <option value="20">20</option>
-          <option value="25">25</option>
-          <option value="50">50</option>
-          <option value="100">100</option>
-          <option value="150">150</option>
-          <option value="200">200</option>
-        </Select>
-      </Center>
-    </Stack>
-  );
+    );
 };
 
 export default TrackedEntityInstances;
