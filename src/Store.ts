@@ -26,12 +26,12 @@ import {
     changeLevel,
     addIndicator,
 } from "./Events";
-import { Store } from "./interfaces";
+import { Period, Store } from "./interfaces";
 
 export const dashboards = domain
     .createStore<Store>({
         url: "/",
-        filterBy: "period",
+        filterBy: "orgUnit",
         indicator: "",
         ou: "",
         ous: [],
@@ -40,7 +40,13 @@ export const dashboards = domain
         program: "vMfIVFcRWlu",
         trackedEntityType: "KSy4dEvpMWi",
         indicators: [],
-        period: [{ id: "LAST_3_MONTHS", name: "Last 3 months" }],
+        period: [
+            {
+                value: "LAST_12_MONTHS",
+                label: "Last 12 months",
+                type: "relative",
+            },
+        ],
         loading: false,
         columns: [],
         organisations: [],
@@ -64,7 +70,7 @@ export const dashboards = domain
             return { ...state, indicatorGroup };
         }
     })
-    .on(changePeriod, (state, period: any[]) => {
+    .on(changePeriod, (state, period: Period[]) => {
         return { ...state, period };
     })
     .on(changeOu, (state, ou) => {
@@ -192,7 +198,7 @@ export const maxLevel = dashboards.map((state) => {
 });
 
 export const periods = dashboards.map((state) => {
-    return state.period.map((p: any) => p.id).join(";");
+    return state.period.map((p: Period) => p.value).join(";");
 });
 
 export const allIndicators = dashboards.map((state) => {
@@ -232,9 +238,10 @@ export const indicatorForGroup = dashboards
                         row[state.indicatorGroupIndex] === state.indicatorGroup
                 )
                 .map((row: any) => [row[0], row[state.indicatorIndex]]);
-            return [...indicators, ["add", "Add new indicator"]];
+            return indicators;
+            // return [...indicators, ["add", "Add new indicator"]];
         }
-        return [["add", "Add new indicator"]];
+        return [];
     })
     .on(addIndicator, (state, indicator) => {
         return [...state, indicator];

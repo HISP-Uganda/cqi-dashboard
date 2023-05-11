@@ -62,7 +62,7 @@ const OrgUnitTreeSelect: FC<{
             allowClear={true}
             treeDataSimpleMode
             multiple={multiple}
-            style={{ width: "100%" }}
+            style={{ flex: 1, width: "300px" }}
             value={value}
             listHeight={700}
             dropdownStyle={{ overflow: "auto" }}
@@ -70,6 +70,7 @@ const OrgUnitTreeSelect: FC<{
             onChange={onChange}
             loadData={onLoadData}
             treeData={organisations}
+            size="large"
         />
     );
 };

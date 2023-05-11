@@ -338,7 +338,7 @@ export default function InstanceForm({
                                         value: o[0],
                                     };
                                 })}
-                                size="sm"
+                                // size="sm"
                             />
                         );
                     }}

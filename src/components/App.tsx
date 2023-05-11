@@ -136,22 +136,24 @@ const App = () => {
         },
     ];
     return (
-        <Stack p="10px" bg="gray.200">
+        <Stack p="5px" bg="gray.300" h="calc(100vh - 48px)">
             {isLoading && (
                 <Flex
                     w="100%"
                     alignItems="center"
                     justifyContent="center"
-                    h="calc(100vh - 48px)"
+                    h="100%"
                 >
                     <Spinner />
                 </Flex>
             )}
             {isSuccess && (
                 <Router location={location} routes={routes}>
-                    <Stack h="calc(100vh - 68px)">
+                    <Stack h="calc(100vh - 48px)">
                         <Menus searchOu={data.searchOu} />
+                        {/* <Stack bg="yellow" p="5px" flex={1} h="100%"> */}
                         <Outlet />
+                        {/* </Stack> */}
                     </Stack>
                 </Router>
             )}

@@ -1,0 +1,211 @@
+import React from "react";
+
+import {
+    Spinner,
+    Stack,
+    Table,
+    Tbody,
+    Td,
+    Th,
+    Thead,
+    Tr,
+} from "@chakra-ui/react";
+import { useStore } from "effector-react";
+import { FC, useMemo } from "react";
+import EllipsisTooltip from "ellipsis-tooltip-react-chan";
+import { useAnalyticsStructure } from "../Queries";
+import { dashboards, orgUnits, periods } from "../Store";
+import TableIndicator from "./TableIndicator";
+interface AllIndicatorsProps {
+    rows: any[];
+    dataElementIndex: number;
+}
+
+const AllIndicators: FC<AllIndicatorsProps> = ({ rows, dataElementIndex }) => {
+    const store = useStore(dashboards);
+    const units = useStore(orgUnits);
+    const pes = useStore(periods);
+    const { data, isError, isLoading, error, isSuccess } =
+        useAnalyticsStructure(units, pes);
+
+    const options = useMemo(() => {
+        return {
+            effect: "solid",
+            place: "top",
+            multiline: true,
+            className: "toolTipClass",
+        };
+    }, []);
+    const styles = useMemo(() => {
+        return {
+            float: "left",
+        };
+    }, []);
+    return (
+        <>
+            {isLoading && <Spinner />}
+            {isSuccess && (
+                <Stack overflow="auto" p="0" m="0" spacing="0" w="100%">
+                    <Table size="sm" variant="unstyled">
+                        <Thead
+                            bgColor="blue.500"
+                            position="sticky"
+                            top={0}
+                            boxShadow="0 2px 2px -1px rgba(0, 0, 0, 0.4)"
+                            h="96px"
+                            maxH="96px"
+                            minH="96px"
+                        >
+                            <Tr>
+                                <Th
+                                    textColor="white"
+                                    rowSpan={2}
+                                    w="30vw"
+                                    maxW="30vw"
+                                    minWidth="30vw"
+                                    position="sticky"
+                                    left="0"
+                                    zIndex={1000}
+                                    bgColor="blue.800"
+                                >
+                                    Indicator
+                                </Th>
+                                {store.filterBy === "orgUnit" &&
+                                    data.metaData.dimensions.pe.map(
+                                        (pe: string) => (
+                                            <Th
+                                                textColor="white"
+                                                key={pe}
+                                                textAlign="center"
+                                                colSpan={3}
+                                            >
+                                                {data.metaData.items[pe].name}
+                                            </Th>
+                                        )
+                                    )}
+                                {store.filterBy === "period" &&
+                                    data.metaData.dimensions.ou.map(
+                                        (ou: string) => (
+                                            <Th
+                                                textColor="white"
+                                                key={ou}
+                                                textAlign="center"
+                                                colSpan={3}
+                                            >
+                                                {data.metaData.items[ou].name}
+                                            </Th>
+                                        )
+                                    )}
+                            </Tr>
+                            <Tr>
+                                {store.filterBy === "orgUnit" &&
+                                    data.metaData.dimensions.pe.map(
+                                        (pe: string) => (
+                                            <>
+                                                <Th
+                                                    textColor="white"
+                                                    key={pe}
+                                                    textAlign="center"
+                                                >
+                                                    N
+                                                </Th>
+                                                <Th
+                                                    textColor="white"
+                                                    key={pe}
+                                                    textAlign="center"
+                                                >
+                                                    D
+                                                </Th>
+                                                <Th
+                                                    textColor="white"
+                                                    key={pe}
+                                                    textAlign="center"
+                                                >
+                                                    %
+                                                </Th>
+                                            </>
+                                        )
+                                    )}
+                                {store.filterBy === "period" &&
+                                    data.metaData.dimensions.ou.map(
+                                        (ou: string) => (
+                                            <>
+                                                <Th
+                                                    textColor="white"
+                                                    key={ou}
+                                                    textAlign="center"
+                                                >
+                                                    N
+                                                </Th>
+                                                <Th
+                                                    textColor="white"
+                                                    key={ou}
+                                                    textAlign="center"
+                                                >
+                                                    D
+                                                </Th>
+                                                <Th
+                                                    textColor="white"
+                                                    key={ou}
+                                                    textAlign="center"
+                                                >
+                                                    %
+                                                </Th>
+                                            </>
+                                        )
+                                    )}
+                            </Tr>
+                        </Thead>
+                        <Tbody>
+                            {rows.map((row: any) => (
+                                <Tr key={row[0]}>
+                                    <Td
+                                        fontSize="md"
+                                        border="1px solid black"
+                                        w="30vw"
+                                        maxW="30vw"
+                                        minWidth="30vw"
+                                        position="sticky"
+                                        // top="96px"
+                                        zIndex={500}
+                                        left="0"
+                                    >
+                                        <EllipsisTooltip
+                                            options={options}
+                                            // style={styles}
+                                        >
+                                            {row[dataElementIndex]}
+                                        </EllipsisTooltip>
+                                    </Td>
+                                    {store.filterBy === "orgUnit" &&
+                                        data.metaData.dimensions.pe.map(
+                                            (pe: string) => (
+                                                <TableIndicator
+                                                    key={`${pe}${row[0]}`}
+                                                    search={row[0]}
+                                                    what={pe}
+                                                />
+                                            )
+                                        )}
+                                    {store.filterBy === "period" &&
+                                        data.metaData.dimensions.ou.map(
+                                            (ou: string) => (
+                                                <TableIndicator
+                                                    key={`${ou}${row[0]}`}
+                                                    search={row[0]}
+                                                    what={ou}
+                                                />
+                                            )
+                                        )}
+                                </Tr>
+                            ))}
+                        </Tbody>
+                    </Table>
+                </Stack>
+            )}
+            {isError && <div>{error.message}</div>}
+        </>
+    );
+};
+
+export default AllIndicators;

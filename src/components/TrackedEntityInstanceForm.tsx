@@ -14,7 +14,7 @@ const TrackedEntityInstanceForm = () => {
     );
 
     return (
-        <Box bg="white" m="auto" p="30px">
+        <Box bg="white" m="auto" w="100%">
             {isLoading && <Spinner />}
             {isSuccess && (
                 <InstanceForm

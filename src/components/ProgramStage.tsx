@@ -7,90 +7,92 @@ import MultipleEvents from "./MultipleEvents";
 import NormalForm from "./NormalForm";
 
 type ProgramStageProps = {
-  tei: string;
-  stageData: any[];
-  stage: string;
-  project: Partial<Project>;
+    tei: string;
+    stageData: any[];
+    stage: string;
+    project: Partial<Project>;
 };
 
 const ProgramStage = ({
-  tei,
-  stage,
-  stageData,
-  project,
+    tei,
+    stage,
+    stageData,
+    project,
 }: ProgramStageProps) => {
-  const { isLoading, isError, isSuccess, error, data } = useStage(stage);
+    const { isLoading, isError, isSuccess, error, data } = useStage(stage);
 
-  const findDisplay = ({
-    columns,
-    sortOrder,
-  }: {
-    columns: Column[];
-    sortOrder: any;
-  }) => {
-    if (sortOrder === 1) {
-      return (
-        <EditableTable
-          stageData={stageData}
-          columns={columns}
-          tei={tei}
-          stage={stage}
-          project={project}
-        />
-      );
-    }
-    if (sortOrder === 2) {
-      return (
-        <MultipleEvents
-          stageData={stageData.map(({ dataValues, ...others }: any) => {
-            return {
-              ...others,
-              ...fromPairs(
-                dataValues.map((dv: any) => {
-                  return [
-                    dv.dataElement,
-                    ["rVZlkzOwWhi", "RgNQcLejbwX"].indexOf(dv.dataElement) !==
-                    -1
-                      ? Number(dv.value)
-                      : dv.value,
-                  ];
-                })
-              ),
-            };
-          })}
-          stage={stage}
-          tei={tei}
-          project={project}
-        />
-      );
-    }
+    const findDisplay = ({
+        columns,
+        sortOrder,
+    }: {
+        columns: Column[];
+        sortOrder: any;
+    }) => {
+        if (sortOrder === 1) {
+            return (
+                <EditableTable
+                    stageData={stageData}
+                    columns={columns}
+                    tei={tei}
+                    stage={stage}
+                    project={project}
+                />
+            );
+        }
+        if (sortOrder === 2) {
+            return (
+                <MultipleEvents
+                    stageData={stageData.map(
+                        ({ dataValues, ...others }: any) => {
+                            return {
+                                ...others,
+                                ...fromPairs(
+                                    dataValues.map((dv: any) => {
+                                        return [
+                                            dv.dataElement,
+                                            [
+                                                "rVZlkzOwWhi",
+                                                "RgNQcLejbwX",
+                                            ].indexOf(dv.dataElement) !== -1
+                                                ? Number(dv.value)
+                                                : dv.value,
+                                        ];
+                                    })
+                                ),
+                            };
+                        }
+                    )}
+                    stage={stage}
+                    tei={tei}
+                    project={project}
+                />
+            );
+        }
 
-    return (
-      <NormalForm
-        stage={stage}
-        tei={tei}
-        stageData={stageData.map(({ dataValues, ...others }: any) => {
-          return {
-            ...others,
-            ...fromPairs(
-              dataValues.map((dv: any) => {
-                return [dv.dataElement, dv.value];
-              })
-            ),
-          };
-        })}
-        project={project}
-      />
-    );
-  };
+        return (
+            <NormalForm
+                stage={stage}
+                tei={tei}
+                stageData={stageData.map(({ dataValues, ...others }: any) => {
+                    return {
+                        ...others,
+                        ...fromPairs(
+                            dataValues.map((dv: any) => {
+                                return [dv.dataElement, dv.value];
+                            })
+                        ),
+                    };
+                })}
+                project={project}
+            />
+        );
+    };
 
-  return (
-    <Box>
-      {isLoading && <Spinner />}
-      {isSuccess && findDisplay(data)}
-      {isError && <div>{error.message}</div>}
-    </Box>
-  );
+    if (isLoading) return <Spinner />;
+
+    if (isSuccess) return findDisplay(data);
+
+    return <div>{error.message}</div>;
 };
 
 export default ProgramStage;

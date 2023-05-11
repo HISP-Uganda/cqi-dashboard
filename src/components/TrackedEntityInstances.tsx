@@ -186,7 +186,7 @@ const TrackedEntityInstances = () => {
     };
 
     return (
-        <Stack bg="white" p="5px">
+        <Stack bg="white" p="5px" h="calc(100vh - 126px)">
             <Stack h="48px" direction="row">
                 <Box w="34%">
                     <OrgUnitTreeSelect
@@ -220,7 +220,7 @@ const TrackedEntityInstances = () => {
             )}
 
             {isSuccess && (
-                <Box overflow="auto" border="3px solid gray" h="800px">
+                <Box overflow="auto" border="3px solid gray">
                     <Table
                         variant="striped"
                         colorScheme="gray"

@@ -71,7 +71,7 @@ const Menus = ({ searchOu }: { searchOu: string }) => {
         navigate({ to, search });
     };
     return (
-        <Stack>
+        <Stack h="48px" minH="48px" maxH="48px" justifyContent="center">
             <Stack direction="row" spacing="10px">
                 <Button
                     onClick={() => handleClick("/")}
@@ -117,7 +117,7 @@ const Menus = ({ searchOu }: { searchOu: string }) => {
                 >
                     Projects
                 </Button>
-                <Spacer />
+                {/* <Spacer />
                 {[
                     "/",
                     "/analytics",
@@ -136,6 +136,7 @@ const Menus = ({ searchOu }: { searchOu: string }) => {
                                 spacing="20px"
                                 overflow="auto"
                                 h="calc(100vh - 170px)"
+                                zIndex={30000}
                             >
                                 {store.url !== "/indicators" &&
                                     store.url !== "/" && (
@@ -183,8 +184,8 @@ const Menus = ({ searchOu }: { searchOu: string }) => {
                                 <Stack>
                                     <Text>Period</Text>
                                     <PeriodPicker
-                                        selectedPeriods={selectedPeriods}
-                                        onChange={onSelect}
+                                    // selectedPeriods={selectedPeriods}
+                                    // onChange={onSelect}
                                     />
                                     <Button onClick={() => onOk()}>
                                         Add Period Filter
@@ -222,7 +223,7 @@ const Menus = ({ searchOu }: { searchOu: string }) => {
                     >
                         Filter
                     </DropdownButton>
-                )}
+                )} */}
             </Stack>
 
             <Drawer
@@ -272,8 +273,8 @@ const Menus = ({ searchOu }: { searchOu: string }) => {
 
                     <Box zIndex={10000}>
                         <PeriodPicker
-                            selectedPeriods={selectedPeriods}
-                            onChange={onSelect}
+                        // selectedPeriods={selectedPeriods}
+                        // onChange={onSelect}
                         />
                     </Box>
                     {store.url === "/indicators" && (

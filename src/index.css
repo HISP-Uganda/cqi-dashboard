@@ -1,0 +1,14 @@
+.toolTipClass {
+    max-width: 200px;
+    overflow-wrap: break-word;
+    /* display: block; */
+
+    @media (min-width: 600px) {
+        max-width: 300px;
+    }
+}
+
+.dialog{
+	z-index: 100000;
+	background-color: yellow;
+}
