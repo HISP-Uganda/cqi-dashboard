@@ -21,7 +21,7 @@ import { dashboards, indicatorForGroup } from "../Store";
 import Indicator from "./Indicator";
 import IndicatorGroup from "./IndicatorGroup";
 import OrgUnitTreeSelect from "./OrgUnitTreeSelect";
-import PeriodDialog from "./PeriodDialog";
+import PeriodPicker from "./PeriodPicker";
 import { HeaderProps } from "./VisualizationHeader";
 
 const { Option } = Select;
@@ -63,7 +63,7 @@ const Navigation: FC<HeaderProps> = () => {
         </Button>
         <Spacer />
         {["analytics", "layered", "indicators"].indexOf(store.url) !== -1 && (
-          <Button onClick={() => onToggle()}>Filters</Button>
+          <Button onClick={() => onToggle()} colorScheme="blue">Filters</Button>
         )}
       </Stack>
 
@@ -99,7 +99,7 @@ const Navigation: FC<HeaderProps> = () => {
               </Option>
             ))}
           </Select>
-          <PeriodDialog />
+          {/* <PeriodPicker /> */}
           {store.url === "indicators" && (
             <>
               {store.filterBy === "period" ? (
@@ -115,6 +115,7 @@ const Navigation: FC<HeaderProps> = () => {
           )}
         </HStack>
       )}
+
     </Stack>
   );
 };

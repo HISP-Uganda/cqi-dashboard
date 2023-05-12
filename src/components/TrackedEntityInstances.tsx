@@ -13,6 +13,7 @@ import {
     Button,
     Center,
     Heading,
+    Input,
     Select,
     Spacer,
     Spinner,
@@ -203,6 +204,7 @@ const TrackedEntityInstances = () => {
                     />
                 </Box>
                 <Spacer />
+                <Input placeholder='Search Project' w="50%" />
                 <Stack direction="row">
                     <Button onClick={() => add()}>Add</Button>
                     <ColumnDrawer />
