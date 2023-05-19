@@ -73,6 +73,15 @@ const Menus = ({ searchOu }: { searchOu: string }) => {
     return (
         <Stack h="48px" minH="48px" maxH="48px" justifyContent="center">
             <Stack direction="row" spacing="10px">
+                <Text
+                    fontSize="3xl"
+                    // textTransform="uppercase"
+                    color="tomato"
+                    fontWeight="bold"
+                >
+                    Continious Quality Improvement (CQI) Database
+                </Text>
+                <Spacer />
                 <Button
                     onClick={() => handleClick("/")}
                     colorScheme={store.url === "/" ? "blue" : "gray"}
@@ -117,6 +126,8 @@ const Menus = ({ searchOu }: { searchOu: string }) => {
                 >
                     Projects
                 </Button>
+
+
                 {/* <Spacer />
                 {[
                     "/",

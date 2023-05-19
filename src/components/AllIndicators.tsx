@@ -1,6 +1,7 @@
 import {
     Box,
     Button,
+    Input,
     Spinner,
     Stack,
     Table,
@@ -13,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { useStore } from "effector-react";
 import EllipsisTooltip from "ellipsis-tooltip-react-chan";
-import { FC } from "react";
+import { FC, ChangeEvent, useEffect, useState } from "react";
 import {
     changeFilterBy,
     changeIndicator,
@@ -36,9 +37,9 @@ interface AllIndicatorsProps {
 const AllIndicators: FC<AllIndicatorsProps> = ({ rows, dataElementIndex }) => {
     console.log(rows[0]);
     const store = useStore(dashboards);
+    const [indicator, setIndicator] = useState<string>("");
     const units = useStore(orgUnits);
     const pes = useStore(periods);
-
     const orgUnits$ = useStore(orgUnits);
     const indicators = useStore(indicatorForGroup);
 
@@ -90,6 +91,12 @@ const AllIndicators: FC<AllIndicatorsProps> = ({ rows, dataElementIndex }) => {
                         Filter By Period
                     </Button>
                 )}
+                <Input
+                    value={indicator}
+                    placeholder='Search Indicator'
+                    w="20%"
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => setIndicator(e.target.value)}
+                />
             </Stack>
             <Box w="100%">
                 <Box
@@ -98,7 +105,7 @@ const AllIndicators: FC<AllIndicatorsProps> = ({ rows, dataElementIndex }) => {
                     // whiteSpace="nowrap"
                     h="calc(100vh - 184px)"
                     w="100%"
-                    // zIndex={2000}
+                // zIndex={2000}
                 >
                     {isLoading && <Spinner />}
                     {isSuccess && (
@@ -109,7 +116,7 @@ const AllIndicators: FC<AllIndicatorsProps> = ({ rows, dataElementIndex }) => {
                                 top={0}
                                 left={0}
                                 zIndex={10}
-                                // boxShadow="0 2px 2px -1px rgba(0, 0, 0, 0.4)"
+                            // boxShadow="0 2px 2px -1px rgba(0, 0, 0, 0.4)"
                             >
                                 <Tr>
                                     <Th

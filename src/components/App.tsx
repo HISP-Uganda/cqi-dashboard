@@ -1,4 +1,4 @@
-import { Box, Flex, Stack } from "@chakra-ui/react";
+import { Box, Flex, Stack, Text } from "@chakra-ui/react";
 import { Spinner } from "@chakra-ui/spinner";
 import {
     createHashHistory,
@@ -154,6 +154,8 @@ const App = () => {
                         {/* <Stack bg="yellow" p="5px" flex={1} h="100%"> */}
                         <Outlet />
                         {/* </Stack> */}
+
+
                     </Stack>
                 </Router>
             )}

@@ -15,6 +15,7 @@ import {
     Button,
     Center,
     Heading,
+    Input,
     Select,
     Spacer,
     Spinner,
@@ -179,6 +180,7 @@ const Projects = () => {
     return (
         <Stack bg="white" p="5px">
             <Stack h="48px" direction="row">
+                <Input placeholder='Search Project' w="50%" />
                 {/* <Box w="20%">
                     <OrgUnitTreeSelect
                         multiple={false}
