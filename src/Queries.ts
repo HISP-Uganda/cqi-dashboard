@@ -470,10 +470,8 @@ export function useUserUnits() {
                 isLeaf: unit.leaf,
             };
         });
-
-        if (organisations.length === 0) {
-            await db.organisations.bulkAdd(availableUnits);
-        }
+        await db.organisations.clear();
+        await db.organisations.bulkPut(availableUnits);
         const availablePrograms = programs.filter(
             (p: any) => !p.withoutRegistration
         );
