@@ -1,5 +1,6 @@
 import {
     Box,
+    Button,
     Center,
     Flex,
     Spacer,
@@ -13,11 +14,13 @@ import {
     Thead,
     Tr,
 } from "@chakra-ui/react";
+import React, { useRef } from 'react';
 import { useStore } from "effector-react";
 import { changeIndicator, changeIndicatorGroup, changeOus } from "../../Events";
 import { useAnalytics } from "../../Queries";
 import { dashboards, indicatorForGroup, orgUnits, periods } from "../../Store";
 import { colors } from "../../utils/common";
+import { utils, writeFile } from 'xlsx';
 import Indicator from "../Indicator";
 import IndicatorGroup from "../IndicatorGroup";
 import OrganisationLevel from "../OrganisationLevel";
@@ -27,7 +30,7 @@ const Layered = () => {
     const store = useStore(dashboards);
     const orgUnits$ = useStore(orgUnits);
     const indicators = useStore(indicatorForGroup);
-
+    const tbl = useRef(null);
     const onIndicatorGroupChange = (value: string) => {
         changeIndicatorGroup(value);
         changeIndicator(indicators[0][0]);
@@ -74,6 +77,14 @@ const Layered = () => {
                         <Box flex={1}>
                             <Indicator />
                         </Box>
+                    </Stack>
+                    <Stack direction="row" flex={1}>
+                        <Button colorScheme="blue" onClick={() => {
+                            const wb = utils.table_to_book(tbl.current);
+                            writeFile(wb, "Table.xlsx")
+                        }}>
+                            Download Indicators
+                        </Button>
                     </Stack>
                 </Stack>
 
@@ -135,6 +146,7 @@ const Layered = () => {
                     whiteSpace="nowrap"
                     h="calc(100vh - 184px)"
                     w="100%"
+                    ref={tbl}
                 >
                     {isSuccess && (
                         <Table variant="unstyled">
