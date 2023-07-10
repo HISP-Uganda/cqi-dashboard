@@ -13,29 +13,27 @@ const ProgramSelect = ({
     handleChange,
     trackedEntityType,
     program,
+    onClear,
 }: {
     handleChange: (value: string) => void;
     trackedEntityType: string;
     program: string;
+    onClear: () => void;
 }) => {
     const store = useStore(dashboards);
-    // const handleChange = (value: string) => {
-    //   changeProgramEntity(value);
-    //   if (value) {
-    //     const [trackedEntityType, program] = value.split(",");
-    //     changeTrackedEntityType(trackedEntityType);
-    //     changeProgram(program);
-    //   } else {
-    //     changeTrackedEntityType("");
-    //     changeProgram("");
-    //   }
-    // };
     return (
         <Select
             style={{ width: "100%" }}
-            value={`${trackedEntityType},${program}`}
+            value={
+                trackedEntityType && program
+                    ? `${trackedEntityType},${program}`
+                    : undefined
+            }
             onChange={handleChange}
-            placeholder=""
+            placeholder="Select program"
+            size="large"
+            allowClear
+            onClear={() => onClear()}
         >
             {store.programs.map((p: any) => (
                 <Option

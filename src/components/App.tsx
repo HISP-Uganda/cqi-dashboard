@@ -151,11 +151,7 @@ const App = () => {
                 <Router location={location} routes={routes}>
                     <Stack h="calc(100vh - 48px)">
                         <Menus searchOu={data.searchOu} />
-                        {/* <Stack bg="yellow" p="5px" flex={1} h="100%"> */}
                         <Outlet />
-                        {/* </Stack> */}
-
-
                     </Stack>
                 </Router>
             )}

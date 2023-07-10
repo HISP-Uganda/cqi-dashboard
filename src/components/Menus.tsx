@@ -72,25 +72,24 @@ const Menus = ({ searchOu }: { searchOu: string }) => {
         navigate({ to, search });
     };
     return (
-        <Stack h="48px" minH="48px" maxH="48px" justifyContent="center" >
-            <Stack direction="row" spacing="10px">
+        <Stack h="48px" minH="48px" maxH="48px" justifyContent="center">
+            <Stack direction="row" spacing="10px" alignItems="center">
                 <Image
-                    boxSize='40px'
-                    objectFit='cover'
-                    src='https://raw.githubusercontent.com/HISP-Uganda/covid-dashboard/master/src/images/Coat_of_arms_of_Uganda.svg'
-                    alt='CQI'
+                    boxSize="40px"
+                    objectFit="cover"
+                    src="https://raw.githubusercontent.com/HISP-Uganda/covid-dashboard/master/src/images/Coat_of_arms_of_Uganda.svg"
+                    alt="CQI"
                 />
                 <Text
-                    fontSize="3.5vh"
+                    fontSize="2.7vh"
                     // textTransform="uppercase"
                     color="red.500"
                     fontWeight="bold"
                 >
-
                     Continuous Quality Improvement (CQI) Database
                 </Text>
                 <Spacer />
-                <Stack pt="10px" direction="row" >
+                <Stack pt="10px" direction="row">
                     <Button
                         onClick={() => handleClick("/")}
                         colorScheme={store.url === "/" ? "blue" : "gray"}
@@ -108,7 +107,9 @@ const Menus = ({ searchOu }: { searchOu: string }) => {
                                 ouMode: "DESCENDANTS",
                             })
                         }
-                        colorScheme={store.url === "/data-entry" ? "blue" : "gray"}
+                        colorScheme={
+                            store.url === "/data-entry" ? "blue" : "gray"
+                        }
                     >
                         Data Entry
                     </Button>
@@ -123,14 +124,18 @@ const Menus = ({ searchOu }: { searchOu: string }) => {
 
                     <Button
                         onClick={() => handleClick("/indicators")}
-                        colorScheme={store.url === "/indicators" ? "blue" : "gray"}
+                        colorScheme={
+                            store.url === "/indicators" ? "blue" : "gray"
+                        }
                     >
                         All Indicators
                     </Button>
                     <Button
                         onClick={() => handleClick("/data-entry/projects")}
                         colorScheme={
-                            store.url === "/data-entry/projects" ? "blue" : "gray"
+                            store.url === "/data-entry/projects"
+                                ? "blue"
+                                : "gray"
                         }
                     >
                         Projects

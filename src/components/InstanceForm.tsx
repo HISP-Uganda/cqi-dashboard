@@ -9,6 +9,7 @@ import {
     Spacer,
     Stack,
     Textarea,
+    Checkbox,
 } from "@chakra-ui/react";
 import { useDataEngine } from "@dhis2/app-runtime";
 import { useNavigate, useSearch } from "@tanstack/react-location";
@@ -278,6 +279,19 @@ export default function InstanceForm({
                     }}
                 />
             ),
+            TRUE_ONLY: (
+                <Controller
+                    control={control}
+                    name={f.id}
+                    render={({ field }) => <Checkbox {...field} />}
+                    rules={{
+                        required: {
+                            value: f.mandatory,
+                            message: `${f.name} is required`,
+                        },
+                    }}
+                />
+            ),
         };
         if (f.optionSetValue) {
             return (
@@ -293,7 +307,6 @@ export default function InstanceForm({
                             currentVal = { label: val[1], value: val[0] };
                         }
                         return (
-
                             <Select<Option, false, GroupBase<Option>>
                                 value={currentVal}
                                 isClearable
@@ -307,8 +320,8 @@ export default function InstanceForm({
                                             .filter(
                                                 (row: any) =>
                                                     row[
-                                                    store
-                                                        .indicatorGroupIndex
+                                                        store
+                                                            .indicatorGroupIndex
                                                     ] === e?.value
                                             )
                                             .map((row: any) => [
@@ -340,7 +353,7 @@ export default function InstanceForm({
                                         value: o[0],
                                     };
                                 })}
-                            // size="sm"
+                                // size="sm"
                             />
                         );
                     }}
@@ -372,7 +385,7 @@ export default function InstanceForm({
     };
 
     useEffect(() => {
-        const subscription = watch((value, { name, type }) => { });
+        const subscription = watch((value, { name, type }) => {});
         return () => subscription.unsubscribe();
     }, [watch]);
 

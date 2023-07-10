@@ -1,6 +1,6 @@
 import { useDataEngine } from "@dhis2/app-runtime";
 import { useQuery } from "@tanstack/react-query";
-import { fromPairs, groupBy } from "lodash";
+import { fromPairs, groupBy, uniq } from "lodash";
 
 import { db } from "./db";
 import {
@@ -19,6 +19,7 @@ import {
     changeTotal,
 } from "./Events";
 import { Column, Project } from "./interfaces";
+import { convertParent } from "./utils";
 import { getRule } from "./utils/common";
 
 export function useUserOrgUnit() {
@@ -86,7 +87,18 @@ export function useProgram(currentProgram: string) {
                         },
                     },
                 });
-                changeColumns(programTrackedEntityAttributes);
+                changeColumns([
+                    {
+                        id: "ouPath",
+                        displayInList: true,
+                        trackedEntityAttribute: {
+                            id: "path",
+                            name: "Organisation Path",
+                            optionSetValue: false,
+                        },
+                    },
+                    ...programTrackedEntityAttributes,
+                ]);
                 return true;
             }
             changeColumns([]);
@@ -800,7 +812,7 @@ export const fetchInstances = async (
             };
         }
         if (query) {
-            params = { ...params, query };
+            params = { ...params, query: `LIKE:${query}` };
         }
         const {
             instances: {
@@ -816,12 +828,39 @@ export const fetchInstances = async (
                 params,
             },
         });
+        const ouIndex =
+            headers.findIndex((header: any) => header.name === "ou") || 3;
+
+        const allOrganizations = uniq(
+            rows.map((row: string[]) => row[ouIndex])
+        );
+        const {
+            data: { organisationUnits },
+        } = await engine.query({
+            data: {
+                resource: "organisationUnits.json",
+                params: {
+                    filter: `id:in:[${allOrganizations.join(",")}]`,
+                    fields: "id,name,parent[id,name,parent[id,name,parent[id,name,parent[id,name]]]]",
+                },
+            },
+        });
+
+        const facilities = fromPairs(
+            organisationUnits.map(({ id, name, parent }: any) => {
+                return [
+                    id,
+                    [name, ...convertParent(parent, [])].reverse().join("/"),
+                ];
+            })
+        );
 
         changeTotal(total);
         return rows.map((r: string[]) => {
-            return fromPairs(
-                headers.map(({ name }: any, i: number) => [name, r[i]])
-            );
+            return {
+                ...fromPairs(r.map((val, i: number) => [headers[i].name, val])),
+                path: facilities[r[ouIndex]],
+            };
         });
     }
     return [];

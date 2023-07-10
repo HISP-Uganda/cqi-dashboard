@@ -142,3 +142,11 @@ export const fixedPeriods = [
     "FYJUL",
     "FYAPR",
 ];
+
+export const convertParent: any = (parent: any, found: string[]) => {
+    found = [...found, parent.name];
+    if (parent.parent) {
+        return convertParent(parent.parent, found);
+    }
+    return found;
+};

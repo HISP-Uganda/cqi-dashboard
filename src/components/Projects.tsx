@@ -27,7 +27,11 @@ import {
     Th,
     Thead,
     Tr,
-    Tabs, TabList, TabPanels, Tab, TabPanel
+    Tabs,
+    TabList,
+    TabPanels,
+    Tab,
+    TabPanel,
 } from "@chakra-ui/react";
 import { useDataEngine } from "@dhis2/app-runtime";
 import { DatePicker } from "antd";
@@ -51,7 +55,12 @@ import {
     changeTrackedEntityType,
 } from "../Events";
 import { useInstances } from "../Queries";
-import { $withOptionSet, allIndicators, dashboards, indicatorForGroup } from "../Store";
+import {
+    $withOptionSet,
+    allIndicators,
+    dashboards,
+    indicatorForGroup,
+} from "../Store";
 import { withAttributesAsEvent } from "../utils/common";
 import ColumnDrawer from "./ColumnDrawer";
 import DisplayEvent from "./DisplayEvent";
@@ -104,22 +113,31 @@ const Projects = () => {
         },
     });
 
-    const [realSearch, setRealSearch] = useState<Partial<{
-        ou: string;
-        program: string;
-        trackedEntityType: string;
-        trackedEntityInstance: string;
-        ouSearch: string;
-        page: number;
-        pageSize: number;
-        ouMode: string;
-        programStartDate: string;
-        programEndDate: string;
-        isNew: boolean;
-        query: string;
-    }>>({ ...search, ouMode: "ALL", program: "vMfIVFcRWlu", ou: "akV6429SUqu", query: "" })
+    const [realSearch, setRealSearch] = useState<
+        Partial<{
+            ou: string;
+            program: string;
+            trackedEntityType: string;
+            trackedEntityInstance: string;
+            ouSearch: string;
+            page: number;
+            pageSize: number;
+            ouMode: string;
+            programStartDate: string;
+            programEndDate: string;
+            isNew: boolean;
+            query: string;
+        }>
+    >({
+        ...search,
+        ouMode: "ALL",
+        program: "vMfIVFcRWlu",
+        ou: "akV6429SUqu",
+        query: "",
+    });
 
-    const { isLoading, isError, isSuccess, error, data } = useInstances(realSearch);
+    const { isLoading, isError, isSuccess, error, data } =
+        useInstances(realSearch);
 
     // const { isLoading, isError, isSuccess, error, data } = useInstances(
     //   store.ou,
@@ -193,7 +211,8 @@ const Projects = () => {
         const processedIndicators = fromPairs(availableIndicators);
         let params: { [key: string]: any } = {
             // skipPaging: "true",
-            ouMode: "ALL", program: "vMfIVFcRWlu",
+            ouMode: "ALL",
+            program: "vMfIVFcRWlu",
             //ou: store.ou,
             // programStartDate: selectedDates[0].format("YYYY-MM-DD"),
             // programEndDate: selectedDates[1].format("YYYY-MM-DD"),
@@ -248,8 +267,8 @@ const Projects = () => {
     };
     return (
         <Stack>
-            <Tabs bg="white" isFitted >
-                <TabList >
+            <Tabs bg="white" isFitted>
+                <TabList>
                     {/* <Tab fontSize="2.0vh" fontWeight="semibold" color="gray.700"
                         _selected={{ color: 'white', bg: 'blue.500' }}
                     >
@@ -273,15 +292,15 @@ const Projects = () => {
                     </TabPanel> */}
                     <TabPanel>
                         <Stack bg="white" p="5px">
-                            <Stack
-                                spacing="30px"
-                                flex={1}
-                            >
+                            <Stack spacing="30px" flex={1}>
                                 <Stack direction="row" flex={1}>
-                                    <Text fontSize="xl"
+                                    <Text
+                                        fontSize="xl"
                                         color="#0b72ef"
                                         p="2px"
-                                        fontWeight="bold">Program Area
+                                        fontWeight="bold"
+                                    >
+                                        Program Area
                                     </Text>
                                     <Box w="50%">
                                         <IndicatorGroup
@@ -290,15 +309,27 @@ const Projects = () => {
                                         />
                                     </Box>
                                     <Spacer />
-                                    <Input placeholder='Search Project' w="50%" value={realSearch.query} onChange={(e) => setRealSearch((prev) => {
-                                        e.preventDefault()
-                                        console.log(e.target?.value)
-                                        return { ...prev, query: e.target?.value }
-                                    })} />
+                                    <Input
+                                        placeholder="Search Project"
+                                        w="50%"
+                                        value={realSearch.query}
+                                        onChange={(e) =>
+                                            setRealSearch((prev) => {
+                                                e.preventDefault();
+                                                console.log(e.target?.value);
+                                                return {
+                                                    ...prev,
+                                                    query: e.target?.value,
+                                                };
+                                            })
+                                        }
+                                    />
                                     <Spacer />
                                     <Stack direction="row">
-                                        <Button colorScheme="green"
-                                            onClick={() => download()} isLoading={downloading}
+                                        <Button
+                                            colorScheme="green"
+                                            onClick={() => download()}
+                                            isLoading={downloading}
                                         >
                                             Download Projects
                                         </Button>
@@ -306,12 +337,23 @@ const Projects = () => {
                                     </Stack>
                                 </Stack>
 
-                                <Stack direction="row" alignItems="center" flex={1}>
-                                    <Stack direction="row" alignItems="center" flex={1}>
-                                        <Text fontSize="xl"
+                                <Stack
+                                    direction="row"
+                                    alignItems="center"
+                                    flex={1}
+                                >
+                                    <Stack
+                                        direction="row"
+                                        alignItems="center"
+                                        flex={1}
+                                    >
+                                        <Text
+                                            fontSize="xl"
                                             color="#0b72ef"
                                             p="2px"
-                                            fontWeight="bold">Organisation
+                                            fontWeight="bold"
+                                        >
+                                            Organisation
                                         </Text>
                                         <Box flex={1}>
                                             <OrgUnitTreeSelect
@@ -328,8 +370,8 @@ const Projects = () => {
                                         </Box>
                                     </Stack>
                                     <Stack direction="row" w="33vw">
-
-                                        <Text fontSize="xl"
+                                        <Text
+                                            fontSize="xl"
                                             color="#0b72ef"
                                             p="2px"
                                             fontWeight="bold"
@@ -338,12 +380,16 @@ const Projects = () => {
                                         </Text>
                                         <ProgramSelect
                                             program={search.program || ""}
-                                            trackedEntityType={search.trackedEntityType || ""}
+                                            trackedEntityType={
+                                                search.trackedEntityType || ""
+                                            }
                                             handleChange={handleChange}
+                                            onClear={() => {}}
                                         />
                                     </Stack>
                                     <Stack direction="row">
-                                        <Text fontSize="xl"
+                                        <Text
+                                            fontSize="xl"
                                             color="#0b72ef"
                                             p="2px"
                                             fontWeight="bold"
@@ -365,7 +411,11 @@ const Projects = () => {
                                     <Spinner />
                                 </Stack>
                             )}
-                            <Box overflow="auto" border="3px solid gray" h="800px">
+                            <Box
+                                overflow="auto"
+                                border="3px solid gray"
+                                h="800px"
+                            >
                                 {isSuccess && (
                                     <Table
                                         variant="striped"
@@ -375,11 +425,16 @@ const Projects = () => {
                                         <Thead>
                                             <Tr py={1}>
                                                 {store.columns
-                                                    .filter((s: any) => s.displayInList)
+                                                    .filter(
+                                                        (s: any) =>
+                                                            s.displayInList
+                                                    )
                                                     .map((column: any) => (
                                                         <Th
                                                             key={
-                                                                column.trackedEntityAttribute.id
+                                                                column
+                                                                    .trackedEntityAttribute
+                                                                    .id
                                                             }
                                                             minW="200px"
                                                         >
@@ -402,7 +457,10 @@ const Projects = () => {
                                             {data.map((record: any) => (
                                                 <Tr key={record.instance}>
                                                     {store.columns
-                                                        .filter((s: any) => s.displayInList)
+                                                        .filter(
+                                                            (s: any) =>
+                                                                s.displayInList
+                                                        )
                                                         .map((column: any) => (
                                                             <Td
                                                                 key={`${record.instance}${column.trackedEntityAttribute.id}`}
@@ -449,7 +507,9 @@ const Projects = () => {
                                         separator={
                                             <PaginationSeparator
                                                 onClick={() =>
-                                                    console.warn("I'm clicking the separator")
+                                                    console.warn(
+                                                        "I'm clicking the separator"
+                                                    )
                                                 }
                                                 bg="blue.300"
                                                 fontSize="sm"
@@ -512,7 +572,6 @@ const Projects = () => {
                 </TabPanels>
             </Tabs>
         </Stack>
-
     );
 };
 

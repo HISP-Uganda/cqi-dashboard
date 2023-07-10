@@ -25,15 +25,15 @@ import {
     Th,
     Thead,
     Tr,
+    Checkbox,
 } from "@chakra-ui/react";
 import { useNavigate, useSearch } from "@tanstack/react-location";
-import Search from "antd/es/transfer/search";
 import { useStore } from "effector-react";
+import { ChangeEvent } from "react";
 
 import {
     changeIndicatorGroup,
     changeInstance,
-    // changeOu,
     changeProgram,
     changeProgramEntity,
     changeProject,
@@ -189,22 +189,68 @@ const TrackedEntityInstances = () => {
     return (
         <Stack bg="white" p="5px" h="calc(100vh - 126px)">
             <Stack h="48px" direction="row">
-                <Box w="34%">
-                    <OrgUnitTreeSelect
-                        multiple={false}
-                        value={search.ou || undefined}
-                        onChange={changeOu}
-                    />
-                </Box>
-                <Box w="50%" h="100px">
-                    <ProgramSelect
-                        program={search.program || ""}
-                        trackedEntityType={search.trackedEntityType || ""}
-                        handleChange={handleChange}
-                    />
-                </Box>
+                <Stack w="34%" direction="row" alignItems="center">
+                    <Text>Organisation</Text>
+                    <Box flex={1}>
+                        <OrgUnitTreeSelect
+                            multiple={false}
+                            value={search.ou || undefined}
+                            onChange={changeOu}
+                        />
+                    </Box>
+                </Stack>
+                <Stack w="50%" direction="row" alignItems="center">
+                    <Text>Program</Text>
+                    <Box flex={1}>
+                        <ProgramSelect
+                            program={search.program || ""}
+                            trackedEntityType={search.trackedEntityType || ""}
+                            handleChange={handleChange}
+                            onClear={() => {
+                                changeTrackedEntityType("");
+                                changeProgram("");
+                                navigate({
+                                    search: (old) => ({
+                                        ...old,
+                                        trackedEntityType: undefined,
+                                        program: undefined,
+                                    }),
+                                    replace: true,
+                                });
+                            }}
+                        />
+                    </Box>
+                </Stack>
                 <Spacer />
-                <Input placeholder='Search Project' w="50%" />
+                <Stack direction="row" w="50%" spacing="10px">
+                    <Checkbox>Only Completed Projects</Checkbox>
+                    <Input
+                        placeholder="Search Project"
+                        flex={1}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                            if (e.target.value) {
+                                navigate({
+                                    search: (old) => ({
+                                        ...old,
+                                        query: e.target.value,
+                                    }),
+                                    replace: true,
+                                });
+                            } else {
+                                navigate({
+                                    search: (old) => {
+                                        if (old !== undefined) {
+                                            const { query, ...rest } = old;
+                                            return rest;
+                                        }
+                                        return {};
+                                    },
+                                    replace: true,
+                                });
+                            }
+                        }}
+                    />
+                </Stack>
                 <Stack direction="row">
                     <Button onClick={() => add()}>Add</Button>
                     <ColumnDrawer />
