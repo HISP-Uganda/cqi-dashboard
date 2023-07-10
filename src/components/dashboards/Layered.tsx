@@ -2,6 +2,7 @@ import {
     Box,
     Center,
     Flex,
+    Spacer,
     Spinner,
     Stack,
     Table,
@@ -48,43 +49,71 @@ const Layered = () => {
     return (
         <Stack bgColor="white" p="5px">
             <Stack
-                w="100%"
-                // textColor="white"
-                direction="row"
                 spacing="30px"
-                h="48px"
-                maxH="48px"
-                minH="48px"
-                alignItems="center"
+                flex={1}
             >
-                <Stack direction="row" zIndex="100" alignItems="center">
-                    <Text>Program Area</Text>
-                    <Box w="300px">
-                        <IndicatorGroup
-                            value={store.indicatorGroup}
-                            onChange={onIndicatorGroupChange}
-                        />
-                    </Box>
+                <Stack direction="row" flex={1} spacing="40px">
+                    <Stack direction="row" zIndex="10000" flex={1} >
+                        <Text fontSize="xl"
+                            color="#0b72ef"
+                            p="2px"
+                            fontWeight="bold">Program Area</Text>
+                        <Box flex={1}>
+                            <IndicatorGroup
+                                value={store.indicatorGroup}
+                                onChange={onIndicatorGroupChange}
+                            />
+                        </Box>
+                    </Stack>
+                    {/* <Spacer /> */}
+                    <Stack direction="row" flex={1}>
+                        <Text fontSize="xl"
+                            color="#0b72ef"
+                            p="2px"
+                            fontWeight="bold">Indicator</Text>
+                        <Box flex={1}>
+                            <Indicator />
+                        </Box>
+                    </Stack>
                 </Stack>
-                <Stack direction="row" zIndex="10" alignItems="center">
-                    <Text>Indicator</Text>
-                    <Box w="400px">
-                        <Indicator />
-                    </Box>
-                </Stack>
-                <Stack direction="row" alignItems="center">
-                    <Text>Organisation</Text>
-                    <OrgUnitTreeSelect
-                        multiple={true}
-                        value={store.ous}
-                        onChange={changeOus}
-                    />
-                </Stack>
-                <OrganisationLevel />
 
-                <PeriodPicker />
+                <Stack direction="row" alignItems="center" flex={1}>
+                    <Stack direction="row" alignItems="center" w="34vw">
+                        <Text fontSize="xl"
+                            color="#0b72ef"
+                            p="2px"
+                            fontWeight="bold">Organisation
+                        </Text>
+                        <Box flex={1}>
+                            <OrgUnitTreeSelect
+                                multiple={true}
+                                value={store.ous}
+                                onChange={changeOus}
+                            />
+                        </Box>
+                    </Stack>
+                    <Stack direction="row" w="33vw">
+                        <Text fontSize="xl"
+                            color="#0b72ef"
+                            p="2px"
+                            fontWeight="bold"
+                        >
+                            Organisation Level
+                        </Text>
+                        <OrganisationLevel />
+                    </Stack>
+                    <Stack direction="row" w="34vw">
+                        <Text fontSize="xl"
+                            color="#0b72ef"
+                            p="2px"
+                            fontWeight="bold"
+                        >
+                            Period
+                        </Text>
+                        <PeriodPicker />
+                    </Stack>
+                </Stack>
             </Stack>
-
             {isLoading && (
                 <Flex
                     className="biggest-height"
@@ -156,7 +185,7 @@ const Layered = () => {
                                             <Td
                                                 bg={colors(
                                                     data.data[ou.id][pe.id][
-                                                        "indicator"
+                                                    "indicator"
                                                     ]
                                                 )}
                                                 textAlign="center"
@@ -165,14 +194,13 @@ const Layered = () => {
                                                 {data.data[ou.id][pe.id][
                                                     "indicator"
                                                 ] !== "-"
-                                                    ? `${
-                                                          data.data[ou.id][
-                                                              pe.id
-                                                          ]["indicator"]
-                                                      }%`
+                                                    ? `${data.data[ou.id][
+                                                    pe.id
+                                                    ]["indicator"]
+                                                    }%`
                                                     : data.data[ou.id][pe.id][
-                                                          "indicator"
-                                                      ]}
+                                                    "indicator"
+                                                    ]}
                                             </Td>
                                         ))}
                                     </Tr>

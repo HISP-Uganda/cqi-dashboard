@@ -87,22 +87,22 @@ const MultipleEvents: FC<MultipleProps> = ({
 
     const onBlur =
         (event: Partial<RunChart>) =>
-        async (e: ChangeEvent<HTMLInputElement>) => {
-            e.persist();
-            const { rVZlkzOwWhi, RgNQcLejbwX, ...rest } = event;
+            async (e: ChangeEvent<HTMLInputElement>) => {
+                e.persist();
+                const { rVZlkzOwWhi, RgNQcLejbwX, ...rest } = event;
 
-            const dataValues = [
-                {
-                    dataElement: "rVZlkzOwWhi",
-                    value: rVZlkzOwWhi || "",
-                },
-                {
-                    dataElement: "RgNQcLejbwX",
-                    value: RgNQcLejbwX || "",
-                },
-            ];
-            await mutateAsync({ ...rest, dataValues });
-        };
+                const dataValues = [
+                    {
+                        dataElement: "rVZlkzOwWhi",
+                        value: rVZlkzOwWhi || "",
+                    },
+                    {
+                        dataElement: "RgNQcLejbwX",
+                        value: RgNQcLejbwX || "",
+                    },
+                ];
+                await mutateAsync({ ...rest, dataValues });
+            };
 
     const display = (e: Partial<RunChart>) => {
         if (e.rVZlkzOwWhi === 0) {
@@ -132,7 +132,7 @@ const MultipleEvents: FC<MultipleProps> = ({
                                     if (e.RgNQcLejbwX && e.rVZlkzOwWhi) {
                                         return String(
                                             (e.rVZlkzOwWhi * 100) /
-                                                e.RgNQcLejbwX
+                                            e.RgNQcLejbwX
                                         );
                                     }
                                     return "-";
@@ -191,13 +191,13 @@ const MultipleEvents: FC<MultipleProps> = ({
                                                 reviewPeriodString(
                                                     project.WQcY6nfPouv
                                                 ).toLowerCase() as
-                                                    | "time"
-                                                    | "date"
-                                                    | "week"
-                                                    | "month"
-                                                    | "quarter"
-                                                    | "year"
-                                                    | undefined
+                                                | "time"
+                                                | "date"
+                                                | "week"
+                                                | "month"
+                                                | "quarter"
+                                                | "year"
+                                                | undefined
                                             }
                                             value={
                                                 e.eventDate

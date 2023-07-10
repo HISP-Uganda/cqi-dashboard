@@ -39,7 +39,12 @@ const Graph: FC<GraphOptions> = ({ indicator, filterBy, title }) => {
                             y: Object.keys(data).map((x) => data[x].indicator),
                             type: "bar",
                             mode: "lines+markers",
-                            marker: { color: "#add8e6" },
+                            marker: {
+                                // color: "#3C78D7",
+                                color: ['rgba(36,123,160,1)', 'rgba(241,90,41,0.8)', 'rgba(156,211,38,1)', 'rgba(82,155,197,1)', 'rgba(36,123,160,1)', 'rgba(241,90,41,0.8)', 'rgba(156,211,38,1)', 'rgba(82,155,197,1)', 'rgba(36,123,160,1)', 'rgba(241,90,41,0.8)', 'rgba(156,211,38,1)', 'rgba(82,155,197,1)', 'rgba(36,123,160,1)', 'rgba(241,90,41,0.8)', 'rgba(156,211,38,1)', 'rgba(82,155,197,1)']
+                                // color: ['rgba(204,204,204,1)', 'rgba(222,45,38,0.8)', 'rgba(204,204,204,1)', 'rgba(204,204,204,1)', 'rgba(204,204,204,1)']
+                            },
+                            //#5194FF  #3C78D7
                         },
                     ]}
                     layout={{

@@ -252,3 +252,9 @@ export const $withOptionSet = dashboards.map((state) => {
         .filter((column: any) => column.trackedEntityAttribute.optionSetValue)
         .map((column: any) => column.trackedEntityAttribute.id);
 });
+
+export const $selectedIndicators = dashboards.map((state) => {
+    return state.indicators.filter((x) => {
+        return state.indicatorGroup === x[state.indicatorGroupIndex];
+    });
+});

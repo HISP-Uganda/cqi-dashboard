@@ -15,6 +15,7 @@ import {
     changeOus,
     changeUrl,
 } from "../../Events";
+import OrganisationLevel from "../OrganisationLevel";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -75,10 +76,7 @@ const Analytics = () => {
     return (
         <>
             <Stack direction="row" bg="white" h="60px" p="10px"
-                alignContent="right"
-                justifyContent="right"
-                alignItems="right"
-                justifyItems="right">
+            >
 
                 <Stack direction="row">
                     <Text fontSize="xl"
@@ -94,7 +92,17 @@ const Analytics = () => {
                         onChange={changeOus}
                     />
                 </Stack>
-                <Stack direction="row">
+                <Stack direction="row" w="33vw">
+                    <Text fontSize="xl"
+                        color="#0b72ef"
+                        p="2px"
+                        fontWeight="bold"
+                    >
+                        Organisation Level
+                    </Text>
+                    <OrganisationLevel />
+                </Stack>
+                <Stack direction="row" w="34vw">
                     <Text fontSize="xl"
                         color="#0b72ef"
                         p="2px"
@@ -105,7 +113,7 @@ const Analytics = () => {
                     <PeriodPicker />
                 </Stack>
 
-                <Button colorScheme="blue" w="10%">Download Indicators</Button>
+
             </Stack>
             <ResponsiveGridLayout
                 isDraggable={false}

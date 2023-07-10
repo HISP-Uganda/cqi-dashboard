@@ -781,9 +781,10 @@ export const fetchInstances = async (
         programStartDate: string;
         programEndDate: string;
         trackedEntityType: string;
+        query: string;
     }>
 ) => {
-    const { ou, program, trackedEntityType, ...rest } = search;
+    const { ou, program, trackedEntityType, query, ...rest } = search;
 
     if ((ou && program) || (ou && trackedEntityType)) {
         let params: { [key: string]: any } = rest;
@@ -797,6 +798,9 @@ export const fetchInstances = async (
                 trackedEntityType,
                 totalPages: true,
             };
+        }
+        if (query) {
+            params = { ...params, query };
         }
         const {
             instances: {

@@ -17,10 +17,8 @@ export default function OrganisationLevel() {
     const realValue = levels.find((v) => v.value === store.indicator);
 
     return (
-        <Stack direction="row" alignItems="center" zIndex={100}>
-            <Text>Organisation Level</Text>
-
-            <Box w="150px">
+        <Stack direction="row" alignItems="center" zIndex={100} flex={1}>
+            <Box flex={1}>
                 <Select<Option, false, GroupBase<Option>>
                     value={realValue}
                     isClearable
@@ -30,7 +28,7 @@ export default function OrganisationLevel() {
                         }
                     }}
                     options={levels}
-                    // size="sm"
+                // size="sm"
                 />
             </Box>
         </Stack>

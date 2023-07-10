@@ -121,40 +121,6 @@ export const relativePeriods: { [key: string]: Option[] } = {
         { value: "LAST_10_YEARS", label: "Last 10 years" },
     ],
 };
-
-// const lastNPeriods = (
-//     n: number,
-//     periodType: RelativePeriodType,
-//     includeCurrent: boolean = false
-// ) => {
-//     const dateFormats: { [key: string]: string } = {
-//         Days: "YYYYMMDD",
-//         Weeks: "YYYY[W]W",
-//         "Bi-Weeks": "",
-//         Months: "YYYYMM",
-//         "Bi-Months": "",
-//         Quarters: "YYYY[Q]Q",
-//         "Six-Months": "",
-//         "Financial-Years": "",
-//         Years: "YYYY",
-//     };
-
-//     const periods = new Set<string>();
-//     if (n === 0) {
-//         periods.add(moment().format(dateFormats[periodType]));
-//         return Array.from(periods);
-//     }
-//     for (let i = n; i >= 1; i--) {
-//         periods.add(
-//             moment().subtract(i, periodType).format(dateFormats[periodType])
-//         );
-//     }
-//     if (includeCurrent) {
-//         periods.add(moment().format(dateFormats[periodType]));
-//     }
-//     return Array.from(periods);
-// };
-
 export const fixedPeriods = [
     "DAILY",
     "WEEKLY",

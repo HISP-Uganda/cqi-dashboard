@@ -163,6 +163,7 @@ export type LocationGenerics = MakeGenerics<{
         programStartDate: string;
         programEndDate: string;
         isNew: boolean;
+        query: string;
     };
 }>;
 

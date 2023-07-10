@@ -1,3 +1,4 @@
+import React, { useRef } from 'react';
 import {
     Box,
     Button,
@@ -11,6 +12,7 @@ import {
     Th,
     Thead,
     Tr,
+    SimpleGrid,
 } from "@chakra-ui/react";
 import { useStore } from "effector-react";
 import EllipsisTooltip from "ellipsis-tooltip-react-chan";
@@ -22,11 +24,12 @@ import {
     changeOus,
 } from "../Events";
 import { useAnalyticsStructure } from "../Queries";
-import { dashboards, indicatorForGroup, orgUnits, periods } from "../Store";
+import { $selectedIndicators, dashboards, indicatorForGroup, orgUnits, periods } from "../Store";
 import IndicatorGroup from "./IndicatorGroup";
 import OrganisationLevel from "./OrganisationLevel";
 import OrgUnitTreeSelect from "./OrgUnitTreeSelect";
 import PeriodPicker from "./PeriodPicker";
+import { utils, writeFile } from 'xlsx';
 
 import TableIndicator from "./TableIndicator";
 interface AllIndicatorsProps {
@@ -35,13 +38,12 @@ interface AllIndicatorsProps {
 }
 
 const AllIndicators: FC<AllIndicatorsProps> = ({ rows, dataElementIndex }) => {
-    console.log(rows[0]);
     const store = useStore(dashboards);
-    const [indicator, setIndicator] = useState<string>("");
     const units = useStore(orgUnits);
     const pes = useStore(periods);
-    const orgUnits$ = useStore(orgUnits);
     const indicators = useStore(indicatorForGroup);
+    const tbl = useRef(null);
+    const selectedIndicators = useStore($selectedIndicators)
 
     const onIndicatorGroupChange = (value: string) => {
         changeIndicatorGroup(value);
@@ -50,66 +52,92 @@ const AllIndicators: FC<AllIndicatorsProps> = ({ rows, dataElementIndex }) => {
     const { data, isError, isLoading, error, isSuccess } =
         useAnalyticsStructure(units, pes);
     return (
-        <Stack bg="white" p="5px">
+        <Stack bg="white" p="5px" flex={1}>
             <Stack
-                w="100%"
-                // textColor="white"
-                direction="row"
                 spacing="30px"
-                h="48px"
-                maxH="48px"
-                minH="48px"
-                alignItems="center"
+                flex={1}
             >
-                <Stack direction="row" zIndex="10000" alignItems="center">
-                    <Text>Program Area</Text>
-                    <Box w="300px">
-                        <IndicatorGroup
-                            value={store.indicatorGroup}
-                            onChange={onIndicatorGroupChange}
-                        />
-                    </Box>
-                </Stack>
-                <Stack direction="row" alignItems="center">
-                    <Text>Organisation</Text>
-                    <OrgUnitTreeSelect
-                        multiple={true}
-                        value={store.ous}
-                        onChange={changeOus}
-                    />
-                </Stack>
-                <OrganisationLevel />
+                <Stack direction="row" flex={1}>
+                    <Stack direction="row" zIndex="10000" alignItems="center" flex={1}>
+                        <Text fontSize="xl"
+                            color="#0b72ef"
+                            p="2px"
+                            fontWeight="bold">Program Area
+                        </Text>
+                        <Box w="50%">
+                            <IndicatorGroup
+                                value={store.indicatorGroup}
+                                onChange={onIndicatorGroupChange}
+                            />
+                        </Box>
+                    </Stack>
 
-                <PeriodPicker />
+                    <Stack direction="row">
+                        {store.filterBy === "period" ? (
+                            <Button colorScheme="green" onClick={() => changeFilterBy("orgUnit")}>
+                                Filter By OrgUnits
+                            </Button>
+                        ) : (
+                            <Button colorScheme="teal" onClick={() => changeFilterBy("period")}>
+                                Filter By Period
+                            </Button>
+                        )}
+                        <Button colorScheme="blue" onClick={() => {
+                            const wb = utils.table_to_book(tbl.current);
+                            writeFile(wb, "Table.xlsx")
+                        }}>
+                            Download Indicators
+                        </Button>
+                    </Stack>
+                </Stack>
 
-                {store.filterBy === "period" ? (
-                    <Button onClick={() => changeFilterBy("orgUnit")}>
-                        Filter By OrgUnits
-                    </Button>
-                ) : (
-                    <Button onClick={() => changeFilterBy("period")}>
-                        Filter By Period
-                    </Button>
-                )}
-                <Input
-                    value={indicator}
-                    placeholder='Search Indicator'
-                    w="20%"
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => setIndicator(e.target.value)}
-                />
+                <Stack direction="row" alignItems="center" flex={1}>
+                    <Stack direction="row" alignItems="center" flex={1}>
+                        <Text fontSize="xl"
+                            color="#0b72ef"
+                            p="2px"
+                            fontWeight="bold">Organisation
+                        </Text>
+                        <Box flex={1}>
+                            <OrgUnitTreeSelect
+                                multiple={true}
+                                value={store.ous}
+                                onChange={changeOus}
+                            />
+                        </Box>
+                    </Stack>
+                    <Stack direction="row" w="33vw">
+                        <Text fontSize="xl"
+                            color="#0b72ef"
+                            p="2px"
+                            fontWeight="bold"
+                        >
+                            Organisation Level
+                        </Text>
+                        <OrganisationLevel />
+                    </Stack>
+                    <Stack direction="row">
+                        <Text fontSize="xl"
+                            color="#0b72ef"
+                            p="2px"
+                            fontWeight="bold"
+                        >
+                            Period
+                        </Text>
+                        <PeriodPicker />
+                    </Stack>
+                </Stack>
             </Stack>
             <Box w="100%">
                 <Box
                     position="relative"
                     overflow="auto"
-                    // whiteSpace="nowrap"
                     h="calc(100vh - 184px)"
                     w="100%"
-                // zIndex={2000}
                 >
                     {isLoading && <Spinner />}
                     {isSuccess && (
-                        <Table variant="unstyled">
+                        <Table variant="unstyled" ref={tbl}>
                             <Thead
                                 // bg="blue.800"
                                 position="sticky"
@@ -173,7 +201,7 @@ const AllIndicators: FC<AllIndicatorsProps> = ({ rows, dataElementIndex }) => {
                                                 <>
                                                     <Th
                                                         textColor="black"
-                                                        bgColor="yellow"
+                                                        bgColor="gray.400"
                                                         key={pe}
                                                         textAlign="center"
                                                     >
@@ -181,7 +209,7 @@ const AllIndicators: FC<AllIndicatorsProps> = ({ rows, dataElementIndex }) => {
                                                     </Th>
                                                     <Th
                                                         textColor="black"
-                                                        bgColor="yellow"
+                                                        bgColor="gray.400"
                                                         key={pe}
                                                         textAlign="center"
                                                     >
@@ -189,7 +217,7 @@ const AllIndicators: FC<AllIndicatorsProps> = ({ rows, dataElementIndex }) => {
                                                     </Th>
                                                     <Th
                                                         textColor="black"
-                                                        bgColor="yellow"
+                                                        bgColor="gray.400"
                                                         key={pe}
                                                         textAlign="center"
                                                     >
@@ -204,7 +232,7 @@ const AllIndicators: FC<AllIndicatorsProps> = ({ rows, dataElementIndex }) => {
                                                 <>
                                                     <Th
                                                         textColor="black"
-                                                        bgColor="yellow"
+                                                        bgColor="gray.400"
                                                         key={ou}
                                                         textAlign="center"
                                                     >
@@ -212,7 +240,7 @@ const AllIndicators: FC<AllIndicatorsProps> = ({ rows, dataElementIndex }) => {
                                                     </Th>
                                                     <Th
                                                         textColor="black"
-                                                        bgColor="yellow"
+                                                        bgColor="gray.400"
                                                         key={ou}
                                                         textAlign="center"
                                                     >
@@ -220,7 +248,7 @@ const AllIndicators: FC<AllIndicatorsProps> = ({ rows, dataElementIndex }) => {
                                                     </Th>
                                                     <Th
                                                         textColor="black"
-                                                        bgColor="yellow"
+                                                        bgColor="gray.400"
                                                         key={ou}
                                                         textAlign="center"
                                                     >
@@ -232,7 +260,7 @@ const AllIndicators: FC<AllIndicatorsProps> = ({ rows, dataElementIndex }) => {
                                 </Tr>
                             </Thead>
                             <Tbody>
-                                {rows.slice(0, 10).map((row: any) => (
+                                {selectedIndicators.map((row: any) => (
                                     <Tr key={row[0]}>
                                         <Td
                                             fontSize="md"
@@ -242,6 +270,7 @@ const AllIndicators: FC<AllIndicatorsProps> = ({ rows, dataElementIndex }) => {
                                             position="sticky"
                                             left="0"
                                             bg="blue.50"
+
                                         >
                                             <EllipsisTooltip>
                                                 {row[dataElementIndex]}
