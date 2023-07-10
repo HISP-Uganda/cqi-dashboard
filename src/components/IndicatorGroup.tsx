@@ -1,20 +1,13 @@
-import React from "react";
-// import { Select } from "antd";
 import { GroupBase, Select } from "chakra-react-select";
-
 import { useStore } from "effector-react";
 import { FC } from "react";
 import { dashboards } from "../Store";
-import {
-    LocationGenerics,
-    Option,
-    ProjectField,
-    QIProject,
-} from "../interfaces";
+import { Option } from "../interfaces";
 
 interface IndicatorGroupProps {
     value: string;
     onChange: (value: string) => void;
+
 }
 
 const IndicatorGroup: FC<IndicatorGroupProps> = ({ value, onChange }) => {
@@ -22,6 +15,7 @@ const IndicatorGroup: FC<IndicatorGroupProps> = ({ value, onChange }) => {
     const realValue = store.indicatorGroups.find((v: any) => v.code === value);
     return (
         <Select<Option, false, GroupBase<Option>>
+            focusBorderColor="blue.500"
             value={
                 realValue
                     ? { value: realValue.code, label: realValue.name }
@@ -39,7 +33,7 @@ const IndicatorGroup: FC<IndicatorGroupProps> = ({ value, onChange }) => {
                     value: o.code,
                 };
             })}
-            // size="sm"
+        // size="sm"
         />
         // <Select
         //     style={{ width: "100%", flex: 1 }}

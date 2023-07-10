@@ -41,11 +41,11 @@ const rangePresets: {
     label: string;
     value: [Dayjs, Dayjs];
 }[] = [
-    { label: "Last 7 Days", value: [dayjs().add(-7, "d"), dayjs()] },
-    { label: "Last 14 Days", value: [dayjs().add(-14, "d"), dayjs()] },
-    { label: "Last 30 Days", value: [dayjs().add(-30, "d"), dayjs()] },
-    { label: "Last 90 Days", value: [dayjs().add(-90, "d"), dayjs()] },
-];
+        { label: "Last 7 Days", value: [dayjs().add(-7, "d"), dayjs()] },
+        { label: "Last 14 Days", value: [dayjs().add(-14, "d"), dayjs()] },
+        { label: "Last 30 Days", value: [dayjs().add(-30, "d"), dayjs()] },
+        { label: "Last 90 Days", value: [dayjs().add(-90, "d"), dayjs()] },
+    ];
 
 const relativePeriodTypeOptions = createOptions2(
     [
@@ -74,8 +74,10 @@ const fixedPeriodTypeOptions = createOptions2(
         "Monthly",
         "Bi-Monthly",
         "Quarterly",
+        "Quarterly-November",
         "Six-Monthly",
         "Six-Monthly-April",
+        "Six-Monthly-November",
         "Yearly",
         "Financial-Year (Start November)",
         "Financial-Year (Start October)",
@@ -132,10 +134,12 @@ const PeriodPicker = () => {
     }, [fixedPeriodType, year, selectedPeriods]);
 
     return (
-        <Stack position="relative">
+        <Stack position="relative" flex={1}>
             <Button
                 onClick={onToggle}
-                maxW="200px"
+                // maxW="500px"
+                w="25vw"
+                flex={1}
                 variant="outline"
                 _hover={{ backgroundColor: "none" }}
             >
@@ -154,7 +158,7 @@ const PeriodPicker = () => {
                     minW="800px"
                     minH="660px"
                     maxH="660px"
-                    right={-10}
+                    right={0}
                 >
                     <Stack direction="row" p="5px">
                         <Stack
@@ -323,32 +327,32 @@ const PeriodPicker = () => {
                                     const others: Period[] =
                                         tabIndex === 0
                                             ? availableRelativePeriods.map(
-                                                  (val) => {
-                                                      const opt: Period = {
-                                                          ...val,
-                                                          type: "relative",
-                                                      };
-                                                      return opt;
-                                                  }
-                                              )
+                                                (val) => {
+                                                    const opt: Period = {
+                                                        ...val,
+                                                        type: "relative",
+                                                    };
+                                                    return opt;
+                                                }
+                                            )
                                             : tabIndex === 1
-                                            ? availableFixedPeriods.map(
-                                                  ({
-                                                      id,
-                                                      name,
-                                                      startDate,
-                                                      endDate,
-                                                  }) => {
-                                                      return {
-                                                          value: id,
-                                                          label: name,
-                                                          startDate,
-                                                          endDate,
-                                                          type: "fixed",
-                                                      };
-                                                  }
-                                              )
-                                            : [];
+                                                ? availableFixedPeriods.map(
+                                                    ({
+                                                        id,
+                                                        name,
+                                                        startDate,
+                                                        endDate,
+                                                    }) => {
+                                                        return {
+                                                            value: id,
+                                                            label: name,
+                                                            startDate,
+                                                            endDate,
+                                                            type: "fixed",
+                                                        };
+                                                    }
+                                                )
+                                                : [];
                                     setSelectedPeriods((prev) => [
                                         ...prev,
                                         ...others,

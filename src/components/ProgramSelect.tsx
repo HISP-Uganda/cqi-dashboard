@@ -35,6 +35,7 @@ const ProgramSelect = ({
             style={{ width: "100%" }}
             value={`${trackedEntityType},${program}`}
             onChange={handleChange}
+            placeholder=""
         >
             {store.programs.map((p: any) => (
                 <Option

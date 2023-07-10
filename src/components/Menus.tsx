@@ -5,6 +5,7 @@ import {
     Button,
     Spacer,
     Stack,
+    Image,
     Text,
     useDisclosure,
 } from "@chakra-ui/react";
@@ -71,63 +72,70 @@ const Menus = ({ searchOu }: { searchOu: string }) => {
         navigate({ to, search });
     };
     return (
-        <Stack h="48px" minH="48px" maxH="48px" justifyContent="center">
+        <Stack h="48px" minH="48px" maxH="48px" justifyContent="center" >
             <Stack direction="row" spacing="10px">
+                <Image
+                    boxSize='40px'
+                    objectFit='cover'
+                    src='https://raw.githubusercontent.com/HISP-Uganda/covid-dashboard/master/src/images/Coat_of_arms_of_Uganda.svg'
+                    alt='CQI'
+                />
                 <Text
-                    fontSize="3xl"
+                    fontSize="3.5vh"
                     // textTransform="uppercase"
-                    color="tomato"
+                    color="red.500"
                     fontWeight="bold"
                 >
-                    Continious Quality Improvement (CQI) Database
+
+                    Continuous Quality Improvement (CQI) Database
                 </Text>
                 <Spacer />
-                <Button
-                    onClick={() => handleClick("/")}
-                    colorScheme={store.url === "/" ? "blue" : "gray"}
-                >
-                    Home
-                </Button>
-                <Button
-                    onClick={() =>
-                        handleClick("/data-entry", {
-                            ou: searchOu,
-                            program: "vMfIVFcRWlu",
-                            trackedEntityType: "KSy4dEvpMWi",
-                            page: 1,
-                            pageSize: 10,
-                            ouMode: "DESCENDANTS",
-                        })
-                    }
-                    colorScheme={store.url === "/data-entry" ? "blue" : "gray"}
-                >
-                    Data Entry
-                </Button>
-                <Button
-                    onClick={() => handleClick("/layered-dashboard")}
-                    colorScheme={
-                        store.url === "/layered-dashboard" ? "blue" : "gray"
-                    }
-                >
-                    Layered Dashboard
-                </Button>
+                <Stack pt="10px" direction="row" >
+                    <Button
+                        onClick={() => handleClick("/")}
+                        colorScheme={store.url === "/" ? "blue" : "gray"}
+                    >
+                        Home
+                    </Button>
+                    <Button
+                        onClick={() =>
+                            handleClick("/data-entry", {
+                                ou: searchOu,
+                                program: "vMfIVFcRWlu",
+                                trackedEntityType: "KSy4dEvpMWi",
+                                page: 1,
+                                pageSize: 10,
+                                ouMode: "DESCENDANTS",
+                            })
+                        }
+                        colorScheme={store.url === "/data-entry" ? "blue" : "gray"}
+                    >
+                        Data Entry
+                    </Button>
+                    <Button
+                        onClick={() => handleClick("/layered-dashboard")}
+                        colorScheme={
+                            store.url === "/layered-dashboard" ? "blue" : "gray"
+                        }
+                    >
+                        Layered Dashboard
+                    </Button>
 
-                <Button
-                    onClick={() => handleClick("/indicators")}
-                    colorScheme={store.url === "/indicators" ? "blue" : "gray"}
-                >
-                    All Indicators
-                </Button>
-                <Button
-                    onClick={() => handleClick("/data-entry/projects")}
-                    colorScheme={
-                        store.url === "/data-entry/projects" ? "blue" : "gray"
-                    }
-                >
-                    Projects
-                </Button>
-
-
+                    <Button
+                        onClick={() => handleClick("/indicators")}
+                        colorScheme={store.url === "/indicators" ? "blue" : "gray"}
+                    >
+                        All Indicators
+                    </Button>
+                    <Button
+                        onClick={() => handleClick("/data-entry/projects")}
+                        colorScheme={
+                            store.url === "/data-entry/projects" ? "blue" : "gray"
+                        }
+                    >
+                        Projects
+                    </Button>
+                </Stack>
                 {/* <Spacer />
                 {[
                     "/",

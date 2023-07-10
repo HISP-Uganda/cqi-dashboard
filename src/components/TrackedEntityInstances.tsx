@@ -196,7 +196,7 @@ const TrackedEntityInstances = () => {
                         onChange={changeOu}
                     />
                 </Box>
-                <Box w="34%">
+                <Box w="50%" h="100px">
                     <ProgramSelect
                         program={search.program || ""}
                         trackedEntityType={search.trackedEntityType || ""}
@@ -252,7 +252,7 @@ const TrackedEntityInstances = () => {
                                             </Heading>
                                         </Th>
                                     ))}
-                                <Th></Th>
+                                <Th>Operations</Th>
                             </Tr>
                         </Thead>
                         <Tbody>
