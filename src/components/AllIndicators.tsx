@@ -43,7 +43,8 @@ const AllIndicators: FC<AllIndicatorsProps> = ({ rows, dataElementIndex }) => {
     const pes = useStore(periods);
     const indicators = useStore(indicatorForGroup);
     const tbl = useRef(null);
-    const selectedIndicators = useStore($selectedIndicators)
+    const selectedIndicators = useStore($selectedIndicators);
+    const [showHeaders, setShowHeaders] = useState(true);
 
     const onIndicatorGroupChange = (value: string) => {
         changeIndicatorGroup(value);
@@ -132,18 +133,21 @@ const AllIndicators: FC<AllIndicatorsProps> = ({ rows, dataElementIndex }) => {
                 <Box
                     position="relative"
                     overflow="auto"
+                    // whiteSpace="nowrap"
                     h="calc(100vh - 184px)"
                     w="100%"
+                // zIndex={2000}
                 >
                     {isLoading && <Spinner />}
                     {isSuccess && (
-                        <Table variant="unstyled" ref={tbl}>
+                        <Table variant="unstyled">
                             <Thead
                                 // bg="blue.800"
                                 position="sticky"
                                 top={0}
                                 left={0}
                                 zIndex={10}
+                                style={{ visibility: showHeaders ? "visible" : "hidden" }}
                             // boxShadow="0 2px 2px -1px rgba(0, 0, 0, 0.4)"
                             >
                                 <Tr>
@@ -166,7 +170,7 @@ const AllIndicators: FC<AllIndicatorsProps> = ({ rows, dataElementIndex }) => {
                                                     textColor="black"
                                                     key={pe}
                                                     textAlign="center"
-                                                    colSpan={3}
+                                                    // colSpan={3}
                                                     bgColor="blue.50"
                                                 >
                                                     {
@@ -184,7 +188,7 @@ const AllIndicators: FC<AllIndicatorsProps> = ({ rows, dataElementIndex }) => {
                                                     bgColor="blue.50"
                                                     key={ou}
                                                     textAlign="center"
-                                                    colSpan={3}
+                                                // colSpan={3}
                                                 >
                                                     {
                                                         data.metaData.items[ou]
@@ -199,9 +203,9 @@ const AllIndicators: FC<AllIndicatorsProps> = ({ rows, dataElementIndex }) => {
                                         data.metaData.dimensions.pe.map(
                                             (pe: string) => (
                                                 <>
-                                                    <Th
+                                                    {/* <Th
                                                         textColor="black"
-                                                        bgColor="gray.400"
+                                                        bgColor="gray.200"
                                                         key={pe}
                                                         textAlign="center"
                                                     >
@@ -209,16 +213,14 @@ const AllIndicators: FC<AllIndicatorsProps> = ({ rows, dataElementIndex }) => {
                                                     </Th>
                                                     <Th
                                                         textColor="black"
-                                                        bgColor="gray.400"
-                                                        key={pe}
+                                                        bgColor="gray.200" key={pe}
                                                         textAlign="center"
                                                     >
                                                         D
-                                                    </Th>
+                                                    </Th> */}
                                                     <Th
                                                         textColor="black"
-                                                        bgColor="gray.400"
-                                                        key={pe}
+                                                        bgColor="gray.200" key={pe}
                                                         textAlign="center"
                                                     >
                                                         %
@@ -230,9 +232,9 @@ const AllIndicators: FC<AllIndicatorsProps> = ({ rows, dataElementIndex }) => {
                                         data.metaData.dimensions.ou.map(
                                             (ou: string) => (
                                                 <>
-                                                    <Th
+                                                    {/* <Th
                                                         textColor="black"
-                                                        bgColor="gray.400"
+                                                        bgColor="yellow"
                                                         key={ou}
                                                         textAlign="center"
                                                     >
@@ -240,15 +242,15 @@ const AllIndicators: FC<AllIndicatorsProps> = ({ rows, dataElementIndex }) => {
                                                     </Th>
                                                     <Th
                                                         textColor="black"
-                                                        bgColor="gray.400"
+                                                        bgColor="yellow"
                                                         key={ou}
                                                         textAlign="center"
                                                     >
                                                         D
-                                                    </Th>
+                                                    </Th> */}
                                                     <Th
                                                         textColor="black"
-                                                        bgColor="gray.400"
+                                                        bgColor="yellow"
                                                         key={ou}
                                                         textAlign="center"
                                                     >
@@ -260,44 +262,47 @@ const AllIndicators: FC<AllIndicatorsProps> = ({ rows, dataElementIndex }) => {
                                 </Tr>
                             </Thead>
                             <Tbody>
-                                {selectedIndicators.map((row: any) => (
-                                    <Tr key={row[0]}>
-                                        <Td
-                                            fontSize="md"
-                                            w="30vw"
-                                            maxW="30vw"
-                                            minWidth="30vw"
-                                            position="sticky"
-                                            left="0"
-                                            bg="blue.50"
-
-                                        >
-                                            <EllipsisTooltip>
-                                                {row[dataElementIndex]}
-                                            </EllipsisTooltip>
-                                        </Td>
-                                        {store.filterBy === "orgUnit" &&
-                                            data.metaData.dimensions.pe.map(
-                                                (pe: string) => (
-                                                    <TableIndicator
-                                                        key={`${pe}${row[0]}`}
-                                                        search={row[0]}
-                                                        what={pe}
-                                                    />
-                                                )
-                                            )}
-                                        {store.filterBy === "period" &&
-                                            data.metaData.dimensions.ou.map(
-                                                (ou: string) => (
-                                                    <TableIndicator
-                                                        key={`${ou}${row[0]}`}
-                                                        search={row[0]}
-                                                        what={ou}
-                                                    />
-                                                )
-                                            )}
-                                    </Tr>
-                                ))}
+                                {/* {rows.slice(0, 10).map((row: any) => ( */}
+                                {rows
+                                    .slice(0, 10)
+                                    .map((row: any, index: number) =>
+                                        showHeaders && index < 2 ? null : (
+                                            <Tr key={row[0]}>
+                                                <Td
+                                                    fontSize="md"
+                                                    w="30vw"
+                                                    maxW="30vw"
+                                                    minWidth="30vw"
+                                                    position="sticky"
+                                                    left="0"
+                                                    bg="blue.50"
+                                                >
+                                                    <EllipsisTooltip>
+                                                        {row[dataElementIndex]}
+                                                    </EllipsisTooltip>
+                                                </Td>
+                                                {store.filterBy === "orgUnit" &&
+                                                    data.metaData.dimensions.pe.map(
+                                                        (pe: string) => (
+                                                            <TableIndicator
+                                                                key={`${pe}${row[0]}`}
+                                                                search={row[0]}
+                                                                what={pe}
+                                                            />
+                                                        )
+                                                    )}
+                                                {store.filterBy === "period" &&
+                                                    data.metaData.dimensions.ou.map(
+                                                        (ou: string) => (
+                                                            <TableIndicator
+                                                                key={`${ou}${row[0]}`}
+                                                                search={row[0]}
+                                                                what={ou}
+                                                            />
+                                                        )
+                                                    )}
+                                            </Tr>
+                                        ))}
                             </Tbody>
                         </Table>
                     )}
