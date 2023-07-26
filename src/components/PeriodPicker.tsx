@@ -41,11 +41,11 @@ const rangePresets: {
     label: string;
     value: [Dayjs, Dayjs];
 }[] = [
-        { label: "Last 7 Days", value: [dayjs().add(-7, "d"), dayjs()] },
-        { label: "Last 14 Days", value: [dayjs().add(-14, "d"), dayjs()] },
-        { label: "Last 30 Days", value: [dayjs().add(-30, "d"), dayjs()] },
-        { label: "Last 90 Days", value: [dayjs().add(-90, "d"), dayjs()] },
-    ];
+    { label: "Last 7 Days", value: [dayjs().add(-7, "d"), dayjs()] },
+    { label: "Last 14 Days", value: [dayjs().add(-14, "d"), dayjs()] },
+    { label: "Last 30 Days", value: [dayjs().add(-30, "d"), dayjs()] },
+    { label: "Last 90 Days", value: [dayjs().add(-90, "d"), dayjs()] },
+];
 
 const relativePeriodTypeOptions = createOptions2(
     [
@@ -138,8 +138,9 @@ const PeriodPicker = () => {
             <Button
                 onClick={onToggle}
                 // maxW="500px"
-                w="25vw"
-                flex={1}
+                w="300px"
+                // flex={1}
+                size="sm"
                 variant="outline"
                 _hover={{ backgroundColor: "none" }}
             >
@@ -327,32 +328,32 @@ const PeriodPicker = () => {
                                     const others: Period[] =
                                         tabIndex === 0
                                             ? availableRelativePeriods.map(
-                                                (val) => {
-                                                    const opt: Period = {
-                                                        ...val,
-                                                        type: "relative",
-                                                    };
-                                                    return opt;
-                                                }
-                                            )
+                                                  (val) => {
+                                                      const opt: Period = {
+                                                          ...val,
+                                                          type: "relative",
+                                                      };
+                                                      return opt;
+                                                  }
+                                              )
                                             : tabIndex === 1
-                                                ? availableFixedPeriods.map(
-                                                    ({
-                                                        id,
-                                                        name,
-                                                        startDate,
-                                                        endDate,
-                                                    }) => {
-                                                        return {
-                                                            value: id,
-                                                            label: name,
-                                                            startDate,
-                                                            endDate,
-                                                            type: "fixed",
-                                                        };
-                                                    }
-                                                )
-                                                : [];
+                                            ? availableFixedPeriods.map(
+                                                  ({
+                                                      id,
+                                                      name,
+                                                      startDate,
+                                                      endDate,
+                                                  }) => {
+                                                      return {
+                                                          value: id,
+                                                          label: name,
+                                                          startDate,
+                                                          endDate,
+                                                          type: "fixed",
+                                                      };
+                                                  }
+                                              )
+                                            : [];
                                     setSelectedPeriods((prev) => [
                                         ...prev,
                                         ...others,

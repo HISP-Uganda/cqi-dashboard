@@ -164,6 +164,7 @@ export type LocationGenerics = MakeGenerics<{
         programEndDate: string;
         isNew: boolean;
         query: string;
+        onlyCompleted: boolean;
     };
 }>;
 
@@ -233,3 +234,11 @@ export type FixedPeriod = {
     startDate: string;
     endDate: string;
 };
+
+export interface IUnit {
+    id: string;
+    name: string;
+    path: string;
+    leaf: boolean;
+    parent?: { id: string };
+}

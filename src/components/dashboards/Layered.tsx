@@ -14,13 +14,13 @@ import {
     Thead,
     Tr,
 } from "@chakra-ui/react";
-import React, { useRef } from 'react';
+import React, { useRef } from "react";
 import { useStore } from "effector-react";
 import { changeIndicator, changeIndicatorGroup, changeOus } from "../../Events";
 import { useAnalytics } from "../../Queries";
 import { dashboards, indicatorForGroup, orgUnits, periods } from "../../Store";
 import { colors } from "../../utils/common";
-import { utils, writeFile } from 'xlsx';
+import { utils, writeFile } from "xlsx";
 import Indicator from "../Indicator";
 import IndicatorGroup from "../IndicatorGroup";
 import OrganisationLevel from "../OrganisationLevel";
@@ -33,7 +33,7 @@ const Layered = () => {
     const tbl = useRef(null);
     const onIndicatorGroupChange = (value: string) => {
         changeIndicatorGroup(value);
-        changeIndicator(indicators[0][0]);
+        changeIndicator(indicators[0].event);
     };
     const periods$ = useStore(periods);
     const { data, isError, isLoading, error, isSuccess } = useAnalytics(
@@ -50,79 +50,71 @@ const Layered = () => {
         true
     );
     return (
-        <Stack bgColor="white" p="5px">
+        <Stack p="5px" spacing="0">
             <Stack
-                spacing="30px"
+                direction="row"
+                alignItems="center"
                 flex={1}
+                p="15px"
+                bgColor="white"
             >
-                <Stack direction="row" flex={1} spacing="40px">
-                    <Stack direction="row" zIndex="10000" flex={1} >
-                        <Text fontSize="xl"
-                            color="#0b72ef"
-                            p="2px"
-                            fontWeight="bold">Program Area</Text>
-                        <Box flex={1}>
-                            <IndicatorGroup
-                                value={store.indicatorGroup}
-                                onChange={onIndicatorGroupChange}
-                            />
-                        </Box>
-                    </Stack>
-                    {/* <Spacer /> */}
-                    <Stack direction="row" flex={1}>
-                        <Text fontSize="xl"
-                            color="#0b72ef"
-                            p="2px"
-                            fontWeight="bold">Indicator</Text>
-                        <Box flex={1}>
-                            <Indicator />
-                        </Box>
-                    </Stack>
-                    <Stack direction="row" flex={1}>
-                        <Button colorScheme="blue" onClick={() => {
-                            const wb = utils.table_to_book(tbl.current);
-                            writeFile(wb, "Table.xlsx")
-                        }}>
-                            Download Indicators
-                        </Button>
-                    </Stack>
+                <Stack
+                    direction="row"
+                    zIndex="10000"
+                    alignItems="center"
+                    flex={1}
+                >
+                    <Text color="#0b72ef" fontWeight="bold">
+                        Program Area
+                    </Text>
+                    <Box flex={1}>
+                        <IndicatorGroup
+                            value={store.indicatorGroup}
+                            onChange={onIndicatorGroupChange}
+                        />
+                    </Box>
                 </Stack>
-
+                <Stack
+                    direction="row"
+                    flex={1}
+                    alignItems="center"
+                    zIndex="10000"
+                >
+                    <Text color="#0b72ef" fontWeight="bold">
+                        Indicator
+                    </Text>
+                    <Indicator
+                        indicatorGroup={store.indicatorGroup}
+                        value={store.indicator}
+                        onChange={(value) => changeIndicator(value)}
+                    />
+                </Stack>
                 <Stack direction="row" alignItems="center" flex={1}>
-                    <Stack direction="row" alignItems="center" w="34vw">
-                        <Text fontSize="xl"
-                            color="#0b72ef"
-                            p="2px"
-                            fontWeight="bold">Organisation
-                        </Text>
-                        <Box flex={1}>
-                            <OrgUnitTreeSelect
-                                multiple={true}
-                                value={store.ous}
-                                onChange={changeOus}
-                            />
-                        </Box>
-                    </Stack>
-                    <Stack direction="row" w="33vw">
-                        <Text fontSize="xl"
-                            color="#0b72ef"
-                            p="2px"
-                            fontWeight="bold"
-                        >
-                            Organisation Level
-                        </Text>
-                        <OrganisationLevel />
-                    </Stack>
-                    <Stack direction="row" w="34vw">
-                        <Text fontSize="xl"
-                            color="#0b72ef"
-                            p="2px"
-                            fontWeight="bold"
-                        >
-                            Period
-                        </Text>
-                        <PeriodPicker />
-                    </Stack>
+                    <Text color="#0b72ef" fontWeight="bold">
+                        Organisation
+                    </Text>
+                    <OrgUnitTreeSelect
+                        multiple={true}
+                        value={store.ous}
+                        onChange={changeOus}
+                    />
+                </Stack>
+                <Stack
+                    direction="row"
+                    alignItems="center"
+                    flex={1}
+                    zIndex="10000"
+                >
+                    <Text color="#0b72ef" fontWeight="bold">
+                        Level
+                    </Text>
+                    <OrganisationLevel />
+                </Stack>
+                <Stack direction="row" alignItems="center">
+                    <Text color="#0b72ef" fontWeight="bold">
+                        Period
+                    </Text>
+                    <PeriodPicker />
                 </Stack>
             </Stack>
             {isLoading && (
@@ -139,12 +131,25 @@ const Layered = () => {
                     </Center>
                 </Flex>
             )}
-            <Box w="100%">
+            <Stack w="100%" px="5px" spacing="10px" bgColor="white">
+                <Stack direction="row">
+                    <Spacer />
+                    <Button
+                        colorScheme="blue"
+                        size="sm"
+                        onClick={() => {
+                            const wb = utils.table_to_book(tbl.current);
+                            writeFile(wb, "Table.xlsx");
+                        }}
+                    >
+                        Download Indicators
+                    </Button>
+                </Stack>
                 <Box
                     position="relative"
                     overflow="auto"
                     whiteSpace="nowrap"
-                    h="calc(100vh - 184px)"
+                    h="calc(100vh - 215px)"
                     w="100%"
                     ref={tbl}
                 >
@@ -197,7 +202,7 @@ const Layered = () => {
                                             <Td
                                                 bg={colors(
                                                     data.data[ou.id][pe.id][
-                                                    "indicator"
+                                                        "indicator"
                                                     ]
                                                 )}
                                                 textAlign="center"
@@ -206,13 +211,14 @@ const Layered = () => {
                                                 {data.data[ou.id][pe.id][
                                                     "indicator"
                                                 ] !== "-"
-                                                    ? `${data.data[ou.id][
-                                                    pe.id
-                                                    ]["indicator"]
-                                                    }%`
+                                                    ? `${
+                                                          data.data[ou.id][
+                                                              pe.id
+                                                          ]["indicator"]
+                                                      }%`
                                                     : data.data[ou.id][pe.id][
-                                                    "indicator"
-                                                    ]}
+                                                          "indicator"
+                                                      ]}
                                             </Td>
                                         ))}
                                     </Tr>
@@ -221,7 +227,7 @@ const Layered = () => {
                         </Table>
                     )}
                 </Box>
-            </Box>
+            </Stack>
             {isError && <div>{error.message}</div>}
         </Stack>
     );

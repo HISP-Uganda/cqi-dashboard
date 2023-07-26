@@ -1,51 +1,37 @@
-import React from "react";
-
-import { changeIndicator } from "../Events";
-import { dashboards, indicatorForGroup } from "../Store";
+import { indicatorForGroup, dashboards } from "../Store";
 
 import { GroupBase, Select } from "chakra-react-select";
-
+import { Stack, Box } from "@chakra-ui/react";
 import { useStore } from "effector-react";
-import { FC } from "react";
-import {
-    LocationGenerics,
-    Option,
-    ProjectField,
-    QIProject,
-} from "../interfaces";
+import { Option } from "../interfaces";
 
-const Indicator = () => {
+const Indicator = ({
+    onChange,
+    value,
+    indicatorGroup,
+}: {
+    onChange: (option: string) => void;
+    value: string;
+    indicatorGroup: string;
+}) => {
     const store = useStore(dashboards);
-    const indicator4Group = useStore(indicatorForGroup);
-    const onIndicatorChange = (value: string) => {
-        changeIndicator(value);
-    };
-
-    const realValue = indicator4Group.find(
-        (v: any) => v[0] === store.indicator
-    );
-
+    const options: Option[] = store.indicators
+        .filter((row: any) => row["kuVtv8R9n8q"] === indicatorGroup)
+        .map(({ kToJ1rk0fwY, event }) => ({
+            label: kToJ1rk0fwY,
+            value: event,
+        }));
+    const realValue = options.find((v) => v.value === value);
     return (
-        <Select<Option, false, GroupBase<Option>>
-            value={
-                realValue
-                    ? { value: realValue[0], label: realValue[1] }
-                    : undefined
-            }
-            isClearable
-            onChange={(e) => {
-                if (e?.value) {
-                    changeIndicator(e.value);
-                }
-            }}
-            options={indicator4Group.map((o: any) => {
-                return {
-                    label: o[1],
-                    value: o[0],
-                };
-            })}
-            // size="sm"
-        />
+        <Box flex={1}>
+            <Select<Option, false, GroupBase<Option>>
+                value={realValue}
+                isClearable
+                onChange={(e) => onChange(e?.value || "")}
+                options={options}
+                size="sm"
+            />
+        </Box>
     );
 };
 

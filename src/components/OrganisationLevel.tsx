@@ -17,20 +17,18 @@ export default function OrganisationLevel() {
     const realValue = levels.find((v) => v.value === store.indicator);
 
     return (
-        <Stack direction="row" alignItems="center" zIndex={100} flex={1}>
-            <Box flex={1}>
-                <Select<Option, false, GroupBase<Option>>
-                    value={realValue}
-                    isClearable
-                    onChange={(e) => {
-                        if (e?.value) {
-                            changeLevel(e.value);
-                        }
-                    }}
-                    options={levels}
-                // size="sm"
-                />
-            </Box>
-        </Stack>
+        <Box flex={1}>
+            <Select<Option, false, GroupBase<Option>>
+                value={realValue}
+                isClearable
+                onChange={(e) => {
+                    if (e?.value) {
+                        changeLevel(e.value);
+                    }
+                }}
+                options={levels}
+                size="sm"
+            />
+        </Box>
     );
 }

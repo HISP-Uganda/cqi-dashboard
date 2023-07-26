@@ -28,14 +28,12 @@ const TableIndicator: FC<TableIndicatorProps> = ({ search, what }) => {
     return (
         <>
             {isLoading && (
-                <Td textAlign="center" colSpan={3}>
+                <Td textAlign="center">
                     <Spinner size="xs" />
                 </Td>
             )}
             {isSuccess && (
                 <>
-                    {/* <Td textAlign="center">{data[what].numerator}</Td>
-                    <Td textAlign="center">{data[what].denominator}</Td> */}
                     <Td bg={colors(data[what].indicator)} textAlign="center">
                         {data[what].indicator !== "-"
                             ? `${data[what].indicator}%`
@@ -43,7 +41,7 @@ const TableIndicator: FC<TableIndicatorProps> = ({ search, what }) => {
                     </Td>
                 </>
             )}
-            {isError && <Td colSpan={3}>{error.message}</Td>}
+            {isError && <Td>{error.message}</Td>}
         </>
     );
 };

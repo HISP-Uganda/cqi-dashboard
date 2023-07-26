@@ -283,7 +283,12 @@ export default function InstanceForm({
                 <Controller
                     control={control}
                     name={f.id}
-                    render={({ field }) => <Checkbox {...field} />}
+                    render={({ field }) => (
+                        <Checkbox
+                            isChecked={String(field.value) === "true"}
+                            onChange={(e) => field.onChange(e.target.checked)}
+                        />
+                    )}
                     rules={{
                         required: {
                             value: f.mandatory,

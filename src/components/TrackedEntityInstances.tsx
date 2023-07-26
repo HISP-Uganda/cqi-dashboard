@@ -146,6 +146,7 @@ const TrackedEntityInstances = () => {
                 isNew: false,
                 program: search.program,
                 ou: instance.ou,
+                trackedEntityType: search.trackedEntityType,
                 trackedEntityInstance: instance.instance,
             },
         });
@@ -186,10 +187,53 @@ const TrackedEntityInstances = () => {
         }
     };
 
+    const onlyCompleted = (e: ChangeEvent<HTMLInputElement>) => {
+        if (e.target.checked) {
+            navigate({
+                search: (old) => ({ ...old, onlyCompleted: true }),
+                replace: true,
+            });
+        } else {
+            navigate({
+                search: (old) => {
+                    if (old !== undefined) {
+                        const { onlyCompleted, ...rest } = old;
+                        return rest;
+                    }
+                    return {};
+                },
+                replace: true,
+            });
+        }
+    };
+
+    const searchByProject = (e: ChangeEvent<HTMLInputElement>) => {
+        if (e.target.value) {
+            navigate({
+                search: (old) => ({
+                    ...old,
+                    query: e.target.value,
+                }),
+                replace: true,
+            });
+        } else {
+            navigate({
+                search: (old) => {
+                    if (old !== undefined) {
+                        const { query, ...rest } = old;
+                        return rest;
+                    }
+                    return {};
+                },
+                replace: true,
+            });
+        }
+    };
+
     return (
-        <Stack bg="white" p="5px" h="calc(100vh - 126px)">
-            <Stack h="48px" direction="row">
-                <Stack w="34%" direction="row" alignItems="center">
+        <Stack h="calc(100vh - 110px)" spacing="0px" p="5px">
+            <Stack direction="row" spacing="20px" p="5px" bg="white">
+                <Stack direction="row" alignItems="center">
                     <Text>Organisation</Text>
                     <Box flex={1}>
                         <OrgUnitTreeSelect
@@ -199,7 +243,7 @@ const TrackedEntityInstances = () => {
                         />
                     </Box>
                 </Stack>
-                <Stack w="50%" direction="row" alignItems="center">
+                <Stack direction="row" alignItems="center">
                     <Text>Program</Text>
                     <Box flex={1}>
                         <ProgramSelect
@@ -221,36 +265,22 @@ const TrackedEntityInstances = () => {
                         />
                     </Box>
                 </Stack>
+                {search.program && search.program === "vMfIVFcRWlu" && (
+                    <Stack direction="row" spacing="10px">
+                        <Checkbox onChange={onlyCompleted}>
+                            Only Completed Projects
+                        </Checkbox>
+                        <Input
+                            placeholder="Search Project"
+                            flex={1}
+                            w="400px"
+                            onChange={searchByProject}
+                            value={search.query}
+                            size="md"
+                        />
+                    </Stack>
+                )}
                 <Spacer />
-                <Stack direction="row" w="50%" spacing="10px">
-                    <Checkbox>Only Completed Projects</Checkbox>
-                    <Input
-                        placeholder="Search Project"
-                        flex={1}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                            if (e.target.value) {
-                                navigate({
-                                    search: (old) => ({
-                                        ...old,
-                                        query: e.target.value,
-                                    }),
-                                    replace: true,
-                                });
-                            } else {
-                                navigate({
-                                    search: (old) => {
-                                        if (old !== undefined) {
-                                            const { query, ...rest } = old;
-                                            return rest;
-                                        }
-                                        return {};
-                                    },
-                                    replace: true,
-                                });
-                            }
-                        }}
-                    />
-                </Stack>
                 <Stack direction="row">
                     <Button onClick={() => add()}>Add</Button>
                     <ColumnDrawer />
@@ -268,7 +298,7 @@ const TrackedEntityInstances = () => {
             )}
 
             {isSuccess && (
-                <Box overflow="auto" border="3px solid gray">
+                <Box overflow="auto" bg="white">
                     <Table
                         variant="striped"
                         colorScheme="gray"
@@ -343,87 +373,91 @@ const TrackedEntityInstances = () => {
                 </Box>
             )}
             {isError && <div>{error.message}</div>}
-            <Pagination
-                pagesCount={pagesCount}
-                currentPage={currentPage}
-                isDisabled={isDisabled}
-                onPageChange={handlePageChange}
-            >
-                <PaginationContainer
-                    align="center"
-                    justify="space-between"
-                    p={4}
-                    w="full"
+            <Stack bg="white" p="5px">
+                <Pagination
+                    pagesCount={pagesCount}
+                    currentPage={currentPage}
+                    isDisabled={isDisabled}
+                    onPageChange={handlePageChange}
                 >
-                    <PaginationPrevious
-                        _hover={{
-                            bg: "yellow.400",
-                        }}
-                        bg="yellow.300"
-                    >
-                        <Text>Previous</Text>
-                    </PaginationPrevious>
-                    <PaginationPageGroup
-                        isInline
+                    <PaginationContainer
                         align="center"
-                        separator={
-                            <PaginationSeparator
-                                onClick={() =>
-                                    console.warn("I'm clicking the separator")
-                                }
-                                bg="blue.300"
-                                fontSize="sm"
-                                w={14}
-                                jumpSize={11}
-                            />
-                        }
+                        justify="space-between"
+                        p={4}
+                        w="full"
                     >
-                        {pages.map((page: number) => (
-                            <PaginationPage
-                                w={14}
-                                bg="red.300"
-                                key={`pagination_page_${page}`}
-                                page={page}
-                                fontSize="sm"
-                                _hover={{
-                                    bg: "green.300",
-                                }}
-                                _current={{
-                                    bg: "green.300",
-                                    fontSize: "sm",
-                                    w: 14,
-                                }}
-                            />
-                        ))}
-                    </PaginationPageGroup>
-                    <PaginationNext
-                        _hover={{
-                            bg: "yellow.400",
-                        }}
-                        bg="yellow.300"
+                        <PaginationPrevious
+                            _hover={{
+                                bg: "yellow.400",
+                            }}
+                            bg="yellow.300"
+                        >
+                            <Text>Previous</Text>
+                        </PaginationPrevious>
+                        <PaginationPageGroup
+                            isInline
+                            align="center"
+                            separator={
+                                <PaginationSeparator
+                                    onClick={() =>
+                                        console.warn(
+                                            "I'm clicking the separator"
+                                        )
+                                    }
+                                    bg="blue.300"
+                                    fontSize="sm"
+                                    w={14}
+                                    jumpSize={11}
+                                />
+                            }
+                        >
+                            {pages.map((page: number) => (
+                                <PaginationPage
+                                    w={14}
+                                    bg="red.300"
+                                    key={`pagination_page_${page}`}
+                                    page={page}
+                                    fontSize="sm"
+                                    _hover={{
+                                        bg: "green.300",
+                                    }}
+                                    _current={{
+                                        bg: "green.300",
+                                        fontSize: "sm",
+                                        w: 14,
+                                    }}
+                                />
+                            ))}
+                        </PaginationPageGroup>
+                        <PaginationNext
+                            _hover={{
+                                bg: "yellow.400",
+                            }}
+                            bg="yellow.300"
+                        >
+                            <Text>Next</Text>
+                        </PaginationNext>
+                    </PaginationContainer>
+                </Pagination>
+                <Center w="full">
+                    <Text>Records per page</Text>
+                    <Select
+                        ml={3}
+                        onChange={handlePageSizeChange}
+                        w={40}
+                        value={pageSize}
                     >
-                        <Text>Next</Text>
-                    </PaginationNext>
-                </PaginationContainer>
-            </Pagination>
-            <Center w="full">
-                <Text>Records per page</Text>
-                <Select
-                    ml={3}
-                    onChange={handlePageSizeChange}
-                    w={40}
-                    value={pageSize}
-                >
-                    <option value="5">5</option>
-                    <option value="10">10</option>
-                    <option value="20">20</option>
-                    <option value="25">25</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                    <option value="150">150</option>
-                    <option value="200">200</option>
-                </Select>
-            </Center>
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="150">150</option>
+                        <option value="200">200</option>
+                    </Select>
+                </Center>
+            </Stack>
         </Stack>
     );
 };

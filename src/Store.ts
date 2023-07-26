@@ -227,21 +227,9 @@ export const currentIndicator = dashboards.map((state) => {
 
 export const indicatorForGroup = dashboards
     .map((state) => {
-        if (
-            state.indicators &&
-            state.indicatorGroupIndex &&
-            state.indicatorGroupIndex !== -1
-        ) {
-            const indicators = state.indicators
-                .filter(
-                    (row: any) =>
-                        row[state.indicatorGroupIndex] === state.indicatorGroup
-                )
-                .map((row: any) => [row[0], row[state.indicatorIndex]]);
-            return indicators;
-            // return [...indicators, ["add", "Add new indicator"]];
-        }
-        return [];
+        return state.indicators.filter(
+            (row: any) => row.kuVtv8R9n8q === state.indicatorGroup
+        );
     })
     .on(addIndicator, (state, indicator) => {
         return [...state, indicator];
@@ -255,6 +243,6 @@ export const $withOptionSet = dashboards.map((state) => {
 
 export const $selectedIndicators = dashboards.map((state) => {
     return state.indicators.filter((x) => {
-        return state.indicatorGroup === x[state.indicatorGroupIndex];
+        return state.indicatorGroup === x["kuVtv8R9n8q"];
     });
 });

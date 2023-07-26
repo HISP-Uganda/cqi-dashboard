@@ -72,8 +72,14 @@ const Menus = ({ searchOu }: { searchOu: string }) => {
         navigate({ to, search });
     };
     return (
-        <Stack h="48px" minH="48px" maxH="48px" justifyContent="center">
-            <Stack direction="row" spacing="10px" alignItems="center">
+        <Stack
+            h="48px"
+            minH="48px"
+            maxH="48px"
+            justifyContent="center"
+            bg="white"
+        >
+            <Stack direction="row" spacing="10px" alignItems="center" px="5px">
                 <Image
                     boxSize="40px"
                     objectFit="cover"
@@ -89,8 +95,9 @@ const Menus = ({ searchOu }: { searchOu: string }) => {
                     Continuous Quality Improvement (CQI) Database
                 </Text>
                 <Spacer />
-                <Stack pt="10px" direction="row">
+                <Stack direction="row" alignItems="center">
                     <Button
+                        size="sm"
                         onClick={() => handleClick("/")}
                         colorScheme={store.url === "/" ? "blue" : "gray"}
                     >
@@ -110,10 +117,12 @@ const Menus = ({ searchOu }: { searchOu: string }) => {
                         colorScheme={
                             store.url === "/data-entry" ? "blue" : "gray"
                         }
+                        size="sm"
                     >
                         Data Entry
                     </Button>
                     <Button
+                        size="sm"
                         onClick={() => handleClick("/layered-dashboard")}
                         colorScheme={
                             store.url === "/layered-dashboard" ? "blue" : "gray"
@@ -123,6 +132,7 @@ const Menus = ({ searchOu }: { searchOu: string }) => {
                     </Button>
 
                     <Button
+                        size="sm"
                         onClick={() => handleClick("/indicators")}
                         colorScheme={
                             store.url === "/indicators" ? "blue" : "gray"
@@ -131,6 +141,7 @@ const Menus = ({ searchOu }: { searchOu: string }) => {
                         All Indicators
                     </Button>
                     <Button
+                        size="sm"
                         onClick={() => handleClick("/data-entry/projects")}
                         colorScheme={
                             store.url === "/data-entry/projects"
@@ -141,113 +152,6 @@ const Menus = ({ searchOu }: { searchOu: string }) => {
                         Projects
                     </Button>
                 </Stack>
-                {/* <Spacer />
-                {[
-                    "/",
-                    "/analytics",
-                    "/layered-dashboard",
-                    "/indicators",
-                ].indexOf(store.url) !== -1 && (
-                    <DropdownButton
-                        primary
-                        component={
-                            <Stack
-                                w="600px"
-                                p="15px"
-                                mt="7px"
-                                bg="white"
-                                boxShadow="2xl"
-                                spacing="20px"
-                                overflow="auto"
-                                h="calc(100vh - 170px)"
-                                zIndex={30000}
-                            >
-                                {store.url !== "/indicators" &&
-                                    store.url !== "/" && (
-                                        <>
-                                            <Stack>
-                                                <Text>Program Area</Text>
-                                                <IndicatorGroup
-                                                    value={store.indicatorGroup}
-                                                    onChange={
-                                                        onIndicatorGroupChange
-                                                    }
-                                                />
-                                            </Stack>
-                                            <Stack>
-                                                <Text>Indicator</Text>
-                                                <Indicator />
-                                            </Stack>
-                                        </>
-                                    )}
-                                <Stack>
-                                    <Text>Organisation Unit</Text>
-                                    <OrgUnitTreeSelect
-                                        multiple={true}
-                                        value={store.ous}
-                                        onChange={changeOus}
-                                    />
-                                </Stack>
-                                <Stack>
-                                    <Text>Organisation Unit Level</Text>
-                                    <Select
-                                        style={{ width: "100%" }}
-                                        value={store.level}
-                                        onChange={onLevelChange}
-                                    >
-                                        {store.levels.map((level: any) => (
-                                            <Option
-                                                key={level.id}
-                                                value={`LEVEL-${level.level}`}
-                                            >
-                                                {level.name}
-                                            </Option>
-                                        ))}
-                                    </Select>
-                                </Stack>
-                                <Stack>
-                                    <Text>Period</Text>
-                                    <PeriodPicker
-                                    // selectedPeriods={selectedPeriods}
-                                    // onChange={onSelect}
-                                    />
-                                    <Button onClick={() => onOk()}>
-                                        Add Period Filter
-                                    </Button>
-                                </Stack>
-                                {store.url === "/indicators" && (
-                                    <>
-                                        {store.filterBy === "period" ? (
-                                            <Button
-                                                onClick={() =>
-                                                    changeFilterBy("orgUnit")
-                                                }
-                                                w="300px"
-                                                size="sm"
-                                            >
-                                                Filter By OrgUnits
-                                            </Button>
-                                        ) : (
-                                            <Button
-                                                onClick={() =>
-                                                    changeFilterBy("period")
-                                                }
-                                                w="300px"
-                                                size="sm"
-                                            >
-                                                Filter By Period
-                                            </Button>
-                                        )}
-                                    </>
-                                )}
-                            </Stack>
-                        }
-                        name="buttonName"
-                        value="buttonValue"
-                    >
-                        Filter
-                    </DropdownButton>
-                )} */}
             </Stack>
 
             <Drawer
@@ -271,7 +175,11 @@ const Menus = ({ searchOu }: { searchOu: string }) => {
                                 value={store.indicatorGroup}
                                 onChange={onIndicatorGroupChange}
                             />
-                            <Indicator />
+                            <Indicator
+                                value={store.indicator}
+                                indicatorGroup={store.indicator}
+                                onChange={(val: string) => changeIndicator(val)}
+                            />
                         </>
                     )}
 

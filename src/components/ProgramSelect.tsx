@@ -31,7 +31,7 @@ const ProgramSelect = ({
             }
             onChange={handleChange}
             placeholder="Select program"
-            size="large"
+            size="middle"
             allowClear
             onClear={() => onClear()}
         >

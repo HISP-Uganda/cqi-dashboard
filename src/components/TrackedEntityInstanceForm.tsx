@@ -1,4 +1,4 @@
-import { Box, Spinner } from "@chakra-ui/react";
+import { Box, Spinner, Stack } from "@chakra-ui/react";
 import { useSearch } from "@tanstack/react-location";
 import { LocationGenerics } from "../interfaces";
 import { useProgramAttributes } from "../Queries";
@@ -14,15 +14,18 @@ const TrackedEntityInstanceForm = () => {
     );
 
     return (
-        <Box bg="white" m="auto" w="100%" padding="10px" flex={1}>
+        <Box m="auto" w="100%" padding="10px" flex={1}>
             {isLoading && <Spinner />}
             {isSuccess && (
-                <InstanceForm
-                    programTrackedEntityAttributes={
-                        data.program.programTrackedEntityAttributes
-                    }
-                    instance={data.instance}
-                />
+                <Stack>
+                    <InstanceForm
+                        programTrackedEntityAttributes={
+                            data.program.programTrackedEntityAttributes
+                        }
+                        instance={data.instance}
+                    />
+                    <pre>{JSON.stringify(data.instance, null, 2)}</pre>
+                </Stack>
             )}
             {isError && <div>{error.message}</div>}
         </Box>
