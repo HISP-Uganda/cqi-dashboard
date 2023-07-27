@@ -24,4 +24,4 @@ export const changeInstance = domain.createEvent<string>();
 export const changeOus = domain.createEvent<any>();
 export const changeLevels = domain.createEvent<any[]>();
 export const changeLevel = domain.createEvent<string>();
-export const addIndicator = domain.createEvent<string[]>();
+export const addIndicator = domain.createEvent<any>();

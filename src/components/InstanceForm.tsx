@@ -44,9 +44,7 @@ export default function InstanceForm({
     const queryClient = useQueryClient();
     const [modalVisible, setModalVisible] = useState(false);
     const [submitting, setSubmitting] = useState<boolean>(false);
-    const [currentGroup, setCurrentGroup] = useState<string>(
-        store.indicatorGroup
-    );
+
     const engine = useDataEngine();
     const {
         control,
@@ -176,7 +174,10 @@ export default function InstanceForm({
                 valueType,
                 optionSetValue,
                 options: optionSetValue
-                    ? optionSet.options.map((o: any) => [o.code, o.name])
+                    ? optionSet.options.map((o: any) => ({
+                          value: o.code,
+                          label: o.name,
+                      }))
                     : null,
             };
 
@@ -201,25 +202,31 @@ export default function InstanceForm({
                 },
                 {
                     dataElement: "kuVtv8R9n8q",
-                    value: TG1QzFgGTex,
+                    value: store.indicatorGroup,
                 },
             ],
         };
         await insertEvent(event);
+        setValue("kHRn35W3Gq4", eventId);
         changeIndicatorGroup(TG1QzFgGTex);
         addIndicator([eventId, values.name]);
-        setFields((prev) =>
-            prev.map((p) => {
+        setFields((prev) => {
+            return prev.map((p) => {
                 if (p.id === "kHRn35W3Gq4") {
                     return {
                         ...p,
-                        options: [[eventId, values.name], ...indicators],
+                        options: [
+                            { value: eventId, label: values.name },
+                            ...indicators.map((row: any) => ({
+                                value: row.event,
+                                label: row.kToJ1rk0fwY,
+                            })),
+                        ],
                     };
                 }
                 return p;
-            })
-        );
-        setValue("kHRn35W3Gq4", eventId);
+            });
+        });
     };
 
     const getField = (f: ProjectField) => {
@@ -320,19 +327,15 @@ export default function InstanceForm({
                                     if (f.id === "TG1QzFgGTex") {
                                         setValue("kHRn35W3Gq4", undefined);
                                         changeIndicatorGroup(e?.value || "");
-                                        setCurrentGroup(() => e?.value || "");
                                         const indicators = store.indicators
                                             .filter(
                                                 (row: any) =>
-                                                    row[
-                                                    store
-                                                        .indicatorGroupIndex
-                                                    ] === e?.value
+                                                    row.kuVtv8R9n8q === e?.value
                                             )
-                                            .map((row: any) => [
-                                                row[0],
-                                                row[store.indicatorIndex],
-                                            ]);
+                                            .map((row: any) => ({
+                                                value: row.event,
+                                                label: row.kToJ1rk0fwY,
+                                            }));
                                         setFields((prev) =>
                                             prev.map((p) => {
                                                 if (p.id === "kHRn35W3Gq4") {
@@ -340,10 +343,10 @@ export default function InstanceForm({
                                                         ...p,
                                                         options: [
                                                             ...indicators,
-                                                            [
-                                                                "add",
-                                                                "Add new indicator",
-                                                            ],
+                                                            {
+                                                                value: "add",
+                                                                label: "Add new indicator",
+                                                            },
                                                         ],
                                                     };
                                                 }
@@ -352,13 +355,8 @@ export default function InstanceForm({
                                         );
                                     }
                                 }}
-                                options={f.options?.map((o: string[]) => {
-                                    return {
-                                        label: o[1],
-                                        value: o[0],
-                                    };
-                                })}
-                            // size="sm"
+                                options={f.options as Array<Option>}
+                                // size="sm"
                             />
                         );
                     }}
@@ -390,7 +388,7 @@ export default function InstanceForm({
     };
 
     useEffect(() => {
-        const subscription = watch((value, { name, type }) => { });
+        const subscription = watch((value, { name, type }) => {});
         return () => subscription.unsubscribe();
     }, [watch]);
 
@@ -401,9 +399,9 @@ export default function InstanceForm({
     }, [kHRn35W3Gq4]);
 
     return (
-        <Stack bg="white">
-            <form onSubmit={handleSubmit(onSubmit)} >
-                <SimpleGrid spacing="30px" columns={3} mb="30px"  >
+        <Stack bg="white" p="10px">
+            <form onSubmit={handleSubmit(onSubmit)}>
+                <SimpleGrid spacing="30px" columns={3} mb="30px">
                     {fields.map((field) => {
                         return (
                             <FormControl
@@ -437,7 +435,8 @@ export default function InstanceForm({
                                     return {
                                         ou: search.ou,
                                         program: search.program,
-                                        trackedEntityType: search.trackedEntityType,
+                                        trackedEntityType:
+                                            search.trackedEntityType,
                                         page: 1,
                                         pageSize: 10,
                                         ouMode: "DESCENDANTS",
@@ -450,7 +449,11 @@ export default function InstanceForm({
                         Cancel
                     </Button>
                     <Spacer />
-                    <Button type="submit" colorScheme="green">
+                    <Button
+                        type="submit"
+                        colorScheme="green"
+                        isLoading={submitting}
+                    >
                         Save Project
                     </Button>
                 </Stack>

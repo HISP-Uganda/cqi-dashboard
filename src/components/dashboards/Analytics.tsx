@@ -1,40 +1,16 @@
-import { Box, Button, Stack, Text } from "@chakra-ui/react";
+import { Box, Stack, Text } from "@chakra-ui/react";
 import { Responsive, WidthProvider } from "react-grid-layout";
-// import {
-//     Menu,
-//     Item,
-//     Separator,
-//     Submenu,
-//     useContextMenu,
-// } from "react-contexify";
+import { useStore } from "effector-react";
+import { useState } from "react";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
+import { changeOus } from "../../Events";
+import { dashboards } from "../../Store";
 import Graph from "../Graph";
-import PeriodPicker from "../PeriodPicker";
-import { dashboards, indicatorForGroup } from "../../Store";
-import { useStore } from "effector-react";
-import OrgUnitTreeSelect from "../OrgUnitTreeSelect";
-import {
-    changeFilterBy,
-    changeIndicator,
-    changeIndicatorGroup,
-    changeLevel,
-    changeOus,
-    changeUrl,
-} from "../../Events";
 import OrganisationLevel from "../OrganisationLevel";
-import Indicator from "../Indicator";
-import IndicatorGroup from "../IndicatorGroup";
-import { useState } from "react";
-import LineGraph from "../LineGraph";
-//import "react-contexify/dist/ReactContexify.css";
+import OrgUnitTreeSelect from "../OrgUnitTreeSelect";
+import PeriodPicker from "../PeriodPicker";
 const ResponsiveGridLayout = WidthProvider(Responsive);
-
-const MENU_ID = "menu-id";
-
-// const { Menu, Item, Separator, Submenu, useContextMenu } = contextMenu;
-
-// console.log(contextMenu);
 
 const layouts = [
     {
@@ -120,7 +96,8 @@ const layouts = [
         filterBy: "period",
         indicator: "XmIxXHdi5gN",
         title: "% of child deaths that occur during child birth or immediately after birth",
-        yAxisTitle: "% of child deaths that occur during child birth or immediately after birth",
+        yAxisTitle:
+            "% of child deaths that occur during child birth or immediately after birth",
     },
     {
         i: "h",
@@ -132,7 +109,8 @@ const layouts = [
         filterBy: "orgUnit",
         indicator: "IT1dzrw61Rq",
         title: "% of service providers trained in family planning and reproductive health",
-        yAxisTitle: "% of service providers trained in family planning and reproductive health",
+        yAxisTitle:
+            "% of service providers trained in family planning and reproductive health",
     },
     {
         i: "j",
@@ -144,7 +122,8 @@ const layouts = [
         filterBy: "orgUnit",
         indicator: "OYXUlCeYvI0",
         title: "% of babies born to HIV positive mothers who have received a standard ARV regimen at birth in a given quarter",
-        yAxisTitle: "% of babies born to HIV positive mothers who have received a standard ARV regimen at birth in a given quarter",
+        yAxisTitle:
+            "% of babies born to HIV positive mothers who have received a standard ARV regimen at birth in a given quarter",
     },
     {
         i: "k",
@@ -156,10 +135,9 @@ const layouts = [
         filterBy: "period",
         indicator: "E5QoZ13hM4L",
         title: "% of HIV positive mothers found to be undernourished and receive therapeutic or",
-        yAxisTitle: "% of HIV positive mothers found to be undernourished and receive therapeutic or",
+        yAxisTitle:
+            "% of HIV positive mothers found to be undernourished and receive therapeutic or",
     },
-
-
 ];
 const Analytics = () => {
     const store = useStore(dashboards);
@@ -187,7 +165,7 @@ const Analytics = () => {
                     direction="row"
                     alignItems="center"
                     flex={1}
-                // onContextMenu={displayMenu}
+                    // onContextMenu={displayMenu}
                 >
                     <Text color="#0b72ef" fontWeight="bold">
                         Organisation
@@ -280,7 +258,6 @@ const Analytics = () => {
                                 title={l.title}
                             />
                         </Stack>
-
                     );
                 })}
             </ResponsiveGridLayout>
