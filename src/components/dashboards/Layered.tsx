@@ -89,33 +89,6 @@ const Layered = () => {
                         onChange={(value) => changeIndicator(value)}
                     />
                 </Stack>
-                <Stack direction="row" alignItems="center" flex={1}>
-                    <Text color="#0b72ef" fontWeight="bold">
-                        Organisation
-                    </Text>
-                    <OrgUnitTreeSelect
-                        multiple={true}
-                        value={store.ous}
-                        onChange={changeOus}
-                    />
-                </Stack>
-                <Stack
-                    direction="row"
-                    alignItems="center"
-                    flex={1}
-                    zIndex="10000"
-                >
-                    <Text color="#0b72ef" fontWeight="bold">
-                        Level
-                    </Text>
-                    <OrganisationLevel />
-                </Stack>
-                <Stack direction="row" alignItems="center">
-                    <Text color="#0b72ef" fontWeight="bold">
-                        Period
-                    </Text>
-                    <PeriodPicker />
-                </Stack>
             </Stack>
             {isLoading && (
                 <Flex
@@ -132,18 +105,47 @@ const Layered = () => {
                 </Flex>
             )}
             <Stack w="100%" px="5px" spacing="10px" bgColor="white">
-                <Stack direction="row">
-                    <Spacer />
-                    <Button
-                        colorScheme="blue"
-                        size="sm"
-                        onClick={() => {
-                            const wb = utils.table_to_book(tbl.current);
-                            writeFile(wb, "Table.xlsx");
-                        }}
+                <Stack direction="row" p="15px">
+                    <Stack
+                        direction="row"
+                        alignItems="center"
+                        flex={1}
+                        zIndex="10000"
                     >
-                        Download Indicators
-                    </Button>
+                        <Text color="#0b72ef" fontWeight="bold">
+                            Level
+                        </Text>
+                        <OrganisationLevel />
+                    </Stack>
+                    <Stack direction="row" alignItems="center" flex={1}>
+                        <Text color="#0b72ef" fontWeight="bold">
+                            Period
+                        </Text>
+                        <PeriodPicker />
+                    </Stack>
+                    <Stack direction="row" alignItems="center" flex={1}>
+                        <Text color="#0b72ef" fontWeight="bold">
+                            Organisation
+                        </Text>
+                        <OrgUnitTreeSelect
+                            multiple={true}
+                            value={store.ous}
+                            onChange={changeOus}
+                        />
+                    </Stack>
+                    <Spacer />
+                    <Stack>
+                        <Button
+                            colorScheme="blue"
+                            size="sm"
+                            onClick={() => {
+                                const wb = utils.table_to_book(tbl.current);
+                                writeFile(wb, "Table.xlsx");
+                            }}
+                        >
+                            Download Indicators
+                        </Button>
+                    </Stack>
                 </Stack>
                 <Box
                     position="relative"
@@ -202,7 +204,7 @@ const Layered = () => {
                                             <Td
                                                 bg={colors(
                                                     data.data[ou.id][pe.id][
-                                                        "indicator"
+                                                    "indicator"
                                                     ]
                                                 )}
                                                 textAlign="center"
@@ -211,14 +213,13 @@ const Layered = () => {
                                                 {data.data[ou.id][pe.id][
                                                     "indicator"
                                                 ] !== "-"
-                                                    ? `${
-                                                          data.data[ou.id][
-                                                              pe.id
-                                                          ]["indicator"]
-                                                      }%`
+                                                    ? `${data.data[ou.id][
+                                                    pe.id
+                                                    ]["indicator"]
+                                                    }%`
                                                     : data.data[ou.id][pe.id][
-                                                          "indicator"
-                                                      ]}
+                                                    "indicator"
+                                                    ]}
                                             </Td>
                                         ))}
                                     </Tr>

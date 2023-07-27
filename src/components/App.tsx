@@ -136,7 +136,7 @@ const App = () => {
         },
     ];
     return (
-        <Stack bg="gray.300" h="calc(100vh - 48px)">
+        <Stack bg="gray.300" h="calc(100vh - 8px)">
             {isLoading && (
                 <Flex
                     w="100%"
@@ -149,7 +149,7 @@ const App = () => {
             )}
             {isSuccess && (
                 <Router location={location} routes={routes}>
-                    <Stack h="calc(100vh - 48px)" spacing="2px">
+                    <Stack h="calc(100vh - 8px)" spacing="2px">
                         <Menus searchOu={data.searchOu} />
                         <Outlet />
                     </Stack>

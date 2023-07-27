@@ -51,6 +51,11 @@ const AllIndicators: FC<AllIndicatorsProps> = () => {
     };
     const { data, isError, isLoading, error, isSuccess } =
         useAnalyticsStructure(units, pes);
+    console.log(data)
+
+    const tableFunction = () => {
+
+    }
     return (
         <Stack p="5px" flex={1} spacing="0">
             <Stack flex={1} bg="white" p="5px">
@@ -143,7 +148,7 @@ const AllIndicators: FC<AllIndicatorsProps> = () => {
                 >
                     {isLoading && <Spinner />}
                     {isSuccess && (
-                        <Table variant="unstyled">
+                        <Table variant="unstyled" ref={tbl}>
                             <Thead
                                 position="sticky"
                                 top={0}

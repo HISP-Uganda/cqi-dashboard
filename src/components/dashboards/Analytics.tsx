@@ -1,12 +1,12 @@
 import { Box, Button, Stack, Text } from "@chakra-ui/react";
 import { Responsive, WidthProvider } from "react-grid-layout";
-import {
-    Menu,
-    Item,
-    Separator,
-    Submenu,
-    useContextMenu,
-} from "react-contexify";
+// import {
+//     Menu,
+//     Item,
+//     Separator,
+//     Submenu,
+//     useContextMenu,
+// } from "react-contexify";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import Graph from "../Graph";
@@ -26,7 +26,8 @@ import OrganisationLevel from "../OrganisationLevel";
 import Indicator from "../Indicator";
 import IndicatorGroup from "../IndicatorGroup";
 import { useState } from "react";
-import "react-contexify/dist/ReactContexify.css";
+import LineGraph from "../LineGraph";
+//import "react-contexify/dist/ReactContexify.css";
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const MENU_ID = "menu-id";
@@ -67,10 +68,11 @@ const layouts = [
         w: 6,
         h: 11,
         static: true,
-        filterBy: "orgUnit",
-        indicator: "VK1uxyAT5EU",
-        title: "% of clients failing on treatment",
-        yAxisTitle: "Clients failing on treatment(%)",
+        filterBy: "period",
+        indicator: "uzGKjRbMUsE",
+        title: "% of HIV+ patients on ART who have missed their scheduled appointments in the reporting period",
+        yAxisTitle:
+            "% of HIV+ patients on ART who have missed their scheduled appointments in the reporting period",
     },
     {
         i: "d",
@@ -79,20 +81,93 @@ const layouts = [
         w: 6,
         h: 11,
         static: true,
-        filterBy: "period",
-        indicator: "A64EEs9MUqf",
-        title: "% of patients diagnosed with TB that were initiated on TB treatment",
-        yAxisTitle:
-            "% of patients diagnosed with TB that were initiated on TB treatment",
+        filterBy: "orgUnit",
+        indicator: "VK1uxyAT5EU",
+        title: "% of clients failing on treatment",
+        yAxisTitle: "Clients failing on treatment(%)",
     },
+    {
+        i: "e",
+        x: 0,
+        y: 22,
+        w: 6,
+        h: 11,
+        static: true,
+        filterBy: "orgUnit",
+        indicator: "W1Rp3iv7ZuV",
+        title: "TB Defaulter rate",
+        yAxisTitle: "TB Defaulter rate",
+    },
+    {
+        i: "f",
+        x: 11,
+        y: 22,
+        w: 6,
+        h: 11,
+        static: true,
+        filterBy: "period",
+        indicator: "Wcb8ZgHAN3a",
+        title: "TB Transfer out rate",
+        yAxisTitle: "TB Transfer out rate",
+    },
+    {
+        i: "g",
+        x: 0,
+        y: 33,
+        w: 6,
+        h: 11,
+        static: true,
+        filterBy: "period",
+        indicator: "XmIxXHdi5gN",
+        title: "% of child deaths that occur during child birth or immediately after birth",
+        yAxisTitle: "% of child deaths that occur during child birth or immediately after birth",
+    },
+    {
+        i: "h",
+        x: 11,
+        y: 33,
+        w: 6,
+        h: 11,
+        static: true,
+        filterBy: "orgUnit",
+        indicator: "IT1dzrw61Rq",
+        title: "% of service providers trained in family planning and reproductive health",
+        yAxisTitle: "% of service providers trained in family planning and reproductive health",
+    },
+    {
+        i: "j",
+        x: 0,
+        y: 44,
+        w: 6,
+        h: 11,
+        static: true,
+        filterBy: "orgUnit",
+        indicator: "OYXUlCeYvI0",
+        title: "% of babies born to HIV positive mothers who have received a standard ARV regimen at birth in a given quarter",
+        yAxisTitle: "% of babies born to HIV positive mothers who have received a standard ARV regimen at birth in a given quarter",
+    },
+    {
+        i: "k",
+        x: 11,
+        y: 44,
+        w: 6,
+        h: 11,
+        static: true,
+        filterBy: "period",
+        indicator: "E5QoZ13hM4L",
+        title: "% of HIV positive mothers found to be undernourished and receive therapeutic or",
+        yAxisTitle: "% of HIV positive mothers found to be undernourished and receive therapeutic or",
+    },
+
+
 ];
 const Analytics = () => {
     const store = useStore(dashboards);
     const [indicator, setIndicator] = useState<string>("");
     const [indicatorGroup, setIndicatorGroup] = useState<string>("");
-    const { show, hideAll } = useContextMenu<any>({
-        id: MENU_ID,
-    });
+    // const { show, hideAll } = useContextMenu<any>({
+    //     id: MENU_ID,
+    // });
 
     function handleItemClick({ event, props, triggerEvent, data }: any) {
         console.log(event, props, triggerEvent, data);
@@ -107,12 +182,12 @@ const Analytics = () => {
     // }
     return (
         <Stack p="5px">
-            <Stack direction="row" bg="white" p="15px">
+            <Stack direction="row" bg="white" p="20px">
                 <Stack
                     direction="row"
                     alignItems="center"
                     flex={1}
-                    // onContextMenu={displayMenu}
+                // onContextMenu={displayMenu}
                 >
                     <Text color="#0b72ef" fontWeight="bold">
                         Organisation
@@ -149,7 +224,7 @@ const Analytics = () => {
                         <Item onClick={handleItemClick}>Sub Item 2</Item>
                     </Submenu>
                 </Menu> */}
-                <Stack
+                {/* <Stack
                     direction="row"
                     zIndex="10000"
                     alignItems="center"
@@ -176,7 +251,7 @@ const Analytics = () => {
                             onChange={(value) => setIndicator(() => value)}
                         />
                     </Box>
-                </Stack>
+                </Stack> */}
             </Stack>
             <ResponsiveGridLayout
                 isDraggable={false}
@@ -205,6 +280,7 @@ const Analytics = () => {
                                 title={l.title}
                             />
                         </Stack>
+
                     );
                 })}
             </ResponsiveGridLayout>
