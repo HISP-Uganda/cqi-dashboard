@@ -24,7 +24,7 @@ const TrackedEntityInstanceForm = () => {
                         }
                         instance={data.instance}
                     />
-                    <pre>{JSON.stringify(data.instance, null, 2)}</pre>
+                    {/* <pre>{JSON.stringify(data.instance, null, 2)}</pre> */}
                 </Stack>
             )}
             {isError && <div>{error.message}</div>}

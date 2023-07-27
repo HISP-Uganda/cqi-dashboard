@@ -325,8 +325,8 @@ export default function InstanceForm({
                                             .filter(
                                                 (row: any) =>
                                                     row[
-                                                        store
-                                                            .indicatorGroupIndex
+                                                    store
+                                                        .indicatorGroupIndex
                                                     ] === e?.value
                                             )
                                             .map((row: any) => [
@@ -358,7 +358,7 @@ export default function InstanceForm({
                                         value: o[0],
                                     };
                                 })}
-                                // size="sm"
+                            // size="sm"
                             />
                         );
                     }}
@@ -390,7 +390,7 @@ export default function InstanceForm({
     };
 
     useEffect(() => {
-        const subscription = watch((value, { name, type }) => {});
+        const subscription = watch((value, { name, type }) => { });
         return () => subscription.unsubscribe();
     }, [watch]);
 
@@ -401,58 +401,60 @@ export default function InstanceForm({
     }, [kHRn35W3Gq4]);
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)}>
-            <SimpleGrid spacing="30px" columns={3} mb="30px">
-                {fields.map((field) => {
-                    return (
-                        <FormControl
-                            isInvalid={!!errors[field.id]}
-                            key={field.id}
-                        >
-                            <FormLabel htmlFor={field.id}>
-                                {field.name}
-                            </FormLabel>
-                            {getField(field)}
-                            <FormErrorMessage>
-                                {errors[field.id]?.message}
-                            </FormErrorMessage>
-                        </FormControl>
-                    );
-                })}
-            </SimpleGrid>
-            <NewIndicator
-                onInsert={onInsert}
-                modalVisible={modalVisible}
-                setModalVisible={setModalVisible}
-            />
-            <Stack direction="row">
-                <Button
-                    type="button"
-                    colorScheme="red"
-                    onClick={() =>
-                        navigate({
-                            to: "/data-entry",
-                            search: (prev) => {
-                                return {
-                                    ou: search.ou,
-                                    program: search.program,
-                                    trackedEntityType: search.trackedEntityType,
-                                    page: 1,
-                                    pageSize: 10,
-                                    ouMode: "DESCENDANTS",
-                                };
-                            },
-                            replace: true,
-                        })
-                    }
-                >
-                    Cancel
-                </Button>
-                <Spacer />
-                <Button type="submit" colorScheme="green">
-                    Save Project
-                </Button>
-            </Stack>
-        </form>
+        <Stack bg="white">
+            <form onSubmit={handleSubmit(onSubmit)} >
+                <SimpleGrid spacing="30px" columns={3} mb="30px"  >
+                    {fields.map((field) => {
+                        return (
+                            <FormControl
+                                isInvalid={!!errors[field.id]}
+                                key={field.id}
+                            >
+                                <FormLabel htmlFor={field.id}>
+                                    {field.name}
+                                </FormLabel>
+                                {getField(field)}
+                                <FormErrorMessage>
+                                    {errors[field.id]?.message}
+                                </FormErrorMessage>
+                            </FormControl>
+                        );
+                    })}
+                </SimpleGrid>
+                <NewIndicator
+                    onInsert={onInsert}
+                    modalVisible={modalVisible}
+                    setModalVisible={setModalVisible}
+                />
+                <Stack direction="row">
+                    <Button
+                        type="button"
+                        colorScheme="red"
+                        onClick={() =>
+                            navigate({
+                                to: "/data-entry",
+                                search: (prev) => {
+                                    return {
+                                        ou: search.ou,
+                                        program: search.program,
+                                        trackedEntityType: search.trackedEntityType,
+                                        page: 1,
+                                        pageSize: 10,
+                                        ouMode: "DESCENDANTS",
+                                    };
+                                },
+                                replace: true,
+                            })
+                        }
+                    >
+                        Cancel
+                    </Button>
+                    <Spacer />
+                    <Button type="submit" colorScheme="green">
+                        Save Project
+                    </Button>
+                </Stack>
+            </form>
+        </Stack>
     );
 }

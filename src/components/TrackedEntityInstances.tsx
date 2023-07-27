@@ -268,7 +268,7 @@ const TrackedEntityInstances = () => {
                 {search.program && search.program === "vMfIVFcRWlu" && (
                     <Stack direction="row" spacing="10px">
                         <Checkbox onChange={onlyCompleted}>
-                            Only Completed Projects
+                            Completed Projects
                         </Checkbox>
                         <Input
                             placeholder="Search Project"

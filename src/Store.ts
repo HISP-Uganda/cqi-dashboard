@@ -42,8 +42,8 @@ export const dashboards = domain
         indicators: [],
         period: [
             {
-                value: "LAST_12_MONTHS",
-                label: "Last 12 months",
+                value: "LAST_10_YEARS",
+                label: "Last 10 years",
                 type: "relative",
             },
         ],
@@ -56,7 +56,7 @@ export const dashboards = domain
         programEntity: "KSy4dEvpMWi,vMfIVFcRWlu",
         instance: "",
         project: {},
-        level: "",
+        level: "Regional",
         levels: [],
         descendants: [],
         indicatorIndex: -1,

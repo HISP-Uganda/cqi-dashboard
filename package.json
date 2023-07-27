@@ -61,7 +61,6 @@
         "lodash": "^4.17.21",
         "plotly.js": "^2.17.0",
         "react-bootstrap": "^2.7.4",
-        "react-contexify": "^6.0.0",
         "react-ellipsis-with-tooltip": "^1.1.1",
         "react-grid-layout": "^1.2.4",
         "react-hook-form": "^7.41.5",
