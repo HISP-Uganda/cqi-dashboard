@@ -353,7 +353,7 @@ const Projects = () => {
                                             p="2px"
                                             fontWeight="bold"
                                         >
-                                            Organisation
+                                            Organisation Unit
                                         </Text>
                                         <Box flex={1}>
                                             <OrgUnitTreeSelect
@@ -384,7 +384,7 @@ const Projects = () => {
                                                 search.trackedEntityType || ""
                                             }
                                             handleChange={handleChange}
-                                            onClear={() => {}}
+                                            onClear={() => { }}
                                         />
                                     </Stack>
                                     <Stack direction="row">
@@ -422,8 +422,8 @@ const Projects = () => {
                                         colorScheme="gray"
                                         textTransform="none"
                                     >
-                                        <Thead>
-                                            <Tr py={1}>
+                                        <Thead >
+                                            <Tr py={1} position="sticky" top="0" background="white" zIndex={10}>
                                                 {store.columns
                                                     .filter(
                                                         (s: any) =>

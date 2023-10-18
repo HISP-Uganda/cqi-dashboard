@@ -86,6 +86,7 @@ export function useProgram(currentProgram: string) {
                         },
                     },
                 });
+                console.log(programTrackedEntityAttributes);
                 changeColumns([
                     {
                         id: "ouPath",
@@ -428,7 +429,7 @@ export function useUserUnits() {
         me: {
             resource: "me.json",
             params: {
-                fields: "organisationUnits,teiSearchOrganisationUnits,dataViewOrganisationUnits",
+                fields: "organisationUnits[id,name],teiSearchOrganisationUnits,dataViewOrganisationUnits",
             },
         },
         units: {
@@ -467,46 +468,54 @@ export function useUserUnits() {
         },
     };
 
-    return useQuery<{ searchOu: string }, Error>(["initial data"], async () => {
-        const {
-            me: { organisationUnits },
-            events: { headers, rows },
-            options: { options },
-            programs: { programs },
-            levels: { organisationUnitLevels },
-            units: { organisationUnits: allUnits },
-        }: any = await engine.query(query);
+    return useQuery<{ searchOu: string; orgUnitName: string }, Error>(
+        ["initial data"],
+        async () => {
+            const {
+                me: { organisationUnits },
+                events: { headers, rows },
+                options: { options },
+                programs: { programs },
+                levels: { organisationUnitLevels },
+                units: { organisationUnits: allUnits },
+            }: any = await engine.query(query);
 
-        const indicators = rows.map((row: string[]) => {
-            return fromPairs(row.map((r, index) => [headers[index].name, r]));
-        });
-        // const index = headers.findIndex(
-        //     (header: any) => header.name === "kToJ1rk0fwY"
-        // );
-        // const groupIndex = headers.findIndex(
-        //     (header: any) => header.name === "kuVtv8R9n8q"
-        // );
-        await db.organisations.bulkPut(allUnits);
-        const availablePrograms = programs.filter(
-            (p: any) => !p.withoutRegistration
-        );
-        changeOus(organisationUnits.map((ou: any) => ou.id));
-        changeInitialPrograms(availablePrograms);
-        changeIndicatorGroups(options);
-        changeIndicatorGroup(options[0].code);
-        // changeIndicatorGroupIndex(groupIndex);
-        changeOu(organisationUnits[0].id);
-        // changeIndicatorIndex(index);
-        changeIndicators(indicators);
-        changeLevels(organisationUnitLevels);
-        const currentIndicator = indicators.find(
-            (row: any) => row.kuVtv8R9n8q === options[0].code
-        );
-        if (currentIndicator) {
-            changeIndicator(currentIndicator.event);
+            const indicators = rows.map((row: string[]) => {
+                return fromPairs(
+                    row.map((r, index) => [headers[index].name, r])
+                );
+            });
+            // const index = headers.findIndex(
+            //     (header: any) => header.name === "kToJ1rk0fwY"
+            // );
+            // const groupIndex = headers.findIndex(
+            //     (header: any) => header.name === "kuVtv8R9n8q"
+            // );
+            await db.organisations.bulkPut(allUnits);
+            const availablePrograms = programs.filter(
+                (p: any) => !p.withoutRegistration
+            );
+            changeOus(organisationUnits.map((ou: any) => ou.id));
+            changeInitialPrograms(availablePrograms);
+            changeIndicatorGroups(options);
+            changeIndicatorGroup(options[0].code);
+            // changeIndicatorGroupIndex(groupIndex);
+            changeOu(organisationUnits[0].id);
+            // changeIndicatorIndex(index);
+            changeIndicators(indicators);
+            changeLevels(organisationUnitLevels);
+            const currentIndicator = indicators.find(
+                (row: any) => row.kuVtv8R9n8q === options[0].code
+            );
+            if (currentIndicator) {
+                changeIndicator(currentIndicator.event);
+            }
+            return {
+                searchOu: organisationUnits?.[0].id || "",
+                orgUnitName: organisationUnits?.[0].name,
+            };
         }
-        return { searchOu: organisationUnits?.[0].id || "" };
-    });
+    );
 }
 
 export function useAnalyticsStructure(
