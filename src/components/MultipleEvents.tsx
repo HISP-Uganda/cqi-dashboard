@@ -20,6 +20,7 @@ import { Project, RunChart } from "../interfaces";
 import { dashboards } from "../Store";
 import { reviewPeriodString } from "../utils/common";
 import { generateUid } from "../utils/uid";
+import moment, { Moment } from 'moment';
 import DatePicker from "./DatePicker";
 
 interface MultipleProps {
@@ -28,6 +29,15 @@ interface MultipleProps {
     title?: string;
     stageData: Array<Partial<RunChart>>;
     project: Partial<Project>;
+}
+
+function disabledDate(current: Moment | null): boolean {
+    if (!current) return false;
+
+    const currentDate = moment().endOf('day');
+
+    // Disable all dates in the future
+    return current.isAfter(currentDate);
 }
 
 const MultipleEvents: FC<MultipleProps> = ({
@@ -199,6 +209,7 @@ const MultipleEvents: FC<MultipleProps> = ({
                                                 | "year"
                                                 | undefined
                                             }
+                                            disabledDate={(current) => disabledDate(moment(current))}
                                             value={
                                                 e.eventDate
                                                     ? parseISO(e.eventDate)

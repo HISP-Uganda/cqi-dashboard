@@ -1,4 +1,4 @@
-import { Box, Spinner, Stack } from "@chakra-ui/react";
+import { Box, Spinner, Stack, Text } from "@chakra-ui/react";
 import { useSearch } from "@tanstack/react-location";
 import { LocationGenerics } from "../interfaces";
 import { useProgramAttributes } from "../Queries";
@@ -15,6 +15,7 @@ const TrackedEntityInstanceForm = () => {
 
     return (
         <Box m="auto" w="100%" padding="10px" flex={1}>
+            <Text fontSize='3xl' backgroundColor="gray.200" color="blue.600">{search["ou-name"]}</Text>
             {isLoading && <Spinner />}
             {isSuccess && (
                 <Stack>

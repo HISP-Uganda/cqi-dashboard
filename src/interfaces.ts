@@ -165,6 +165,7 @@ export type LocationGenerics = MakeGenerics<{
         isNew: boolean;
         query: string;
         onlyCompleted: boolean;
+        "ou-name": string;
     };
 }>;
 

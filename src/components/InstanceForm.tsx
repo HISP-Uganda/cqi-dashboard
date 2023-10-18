@@ -175,9 +175,9 @@ export default function InstanceForm({
                 optionSetValue,
                 options: optionSetValue
                     ? optionSet.options.map((o: any) => ({
-                          value: o.code,
-                          label: o.name,
-                      }))
+                        value: o.code,
+                        label: o.name,
+                    }))
                     : null,
             };
 
@@ -356,7 +356,7 @@ export default function InstanceForm({
                                     }
                                 }}
                                 options={f.options as Array<Option>}
-                                // size="sm"
+                            // size="sm"
                             />
                         );
                     }}
@@ -388,7 +388,7 @@ export default function InstanceForm({
     };
 
     useEffect(() => {
-        const subscription = watch((value, { name, type }) => {});
+        const subscription = watch((value, { name, type }) => { });
         return () => subscription.unsubscribe();
     }, [watch]);
 
@@ -440,6 +440,7 @@ export default function InstanceForm({
                                         page: 1,
                                         pageSize: 10,
                                         ouMode: "DESCENDANTS",
+                                        "ou-name": search["ou-name"]
                                     };
                                 },
                                 replace: true,

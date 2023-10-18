@@ -33,7 +33,7 @@ import PeriodPicker from "./PeriodPicker";
 
 const { Option } = Select;
 
-const Menus = ({ searchOu }: { searchOu: string }) => {
+const Menus = ({ searchOu, orgUnitName }: { searchOu: string, orgUnitName: string }) => {
     const navigate = useNavigate<LocationGenerics>();
     const { isOpen, onToggle, onOpen, onClose } = useDisclosure();
     const store = useStore(dashboards);
@@ -66,6 +66,7 @@ const Menus = ({ searchOu }: { searchOu: string }) => {
             ouMode: string;
             programStartDate: string;
             programEndDate: string;
+            "ou-name": string
         }> = {}
     ) => {
         changeUrl(to);
@@ -112,6 +113,7 @@ const Menus = ({ searchOu }: { searchOu: string }) => {
                                 page: 1,
                                 pageSize: 10,
                                 ouMode: "DESCENDANTS",
+                                "ou-name": orgUnitName
                             })
                         }
                         colorScheme={

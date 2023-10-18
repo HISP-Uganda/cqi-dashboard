@@ -150,7 +150,7 @@ const App = () => {
             {isSuccess && (
                 <Router location={location} routes={routes}>
                     <Stack h="calc(100vh - 8px)" spacing="2px">
-                        <Menus searchOu={data.searchOu} />
+                        <Menus searchOu={data.searchOu} orgUnitName={data.orgUnitName} />
                         <Outlet />
                     </Stack>
                 </Router>

@@ -17,6 +17,8 @@ const OrgUnitTreeSelect: FC<{
             <TreeSelect<string | string[] | undefined>
                 allowClear={true}
                 treeDataSimpleMode
+                showCheckedStrategy="SHOW_ALL"
+                showSearch={true}
                 multiple={multiple}
                 style={{ width: "100%" }}
                 value={value}
@@ -33,7 +35,7 @@ const OrgUnitTreeSelect: FC<{
                     pId: parent ? parent.id : "",
                     value: id,
                     isLeaf: leaf,
-                }))}
+                })).sort((a, b) => a.title.localeCompare(b.title))}
                 size="middle"
             />
         </Box>

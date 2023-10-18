@@ -30,6 +30,7 @@ import {
 import { useNavigate, useSearch } from "@tanstack/react-location";
 import { useStore } from "effector-react";
 import { ChangeEvent } from "react";
+import { db } from "../db";
 
 import {
     changeIndicatorGroup,
@@ -133,6 +134,7 @@ const TrackedEntityInstances = () => {
                 program: search.program,
                 isNew: true,
                 trackedEntityInstance,
+                "ou-name": search["ou-name"]
             },
         });
     };
@@ -148,6 +150,7 @@ const TrackedEntityInstances = () => {
                 ou: instance.ou,
                 trackedEntityType: search.trackedEntityType,
                 trackedEntityInstance: instance.instance,
+                "ou-name": search["ou-name"]
             },
         });
     };
@@ -173,7 +176,8 @@ const TrackedEntityInstances = () => {
         }
     };
 
-    const changeOu = (ou: string | string[] | undefined) => {
+    const changeOu = async (ou: string | string[] | undefined) => {
+        const ou1 = await db.organisations.where("id").equals(ou ?? "").first()
         if (Array.isArray(ou)) {
             navigate({
                 search: (old) => ({ ...old, ou: ou.join(",") }),
@@ -181,7 +185,7 @@ const TrackedEntityInstances = () => {
             });
         } else {
             navigate({
-                search: (old) => ({ ...old, ou }),
+                search: (old) => ({ ...old, ou, "ou-name": ou1?.name ?? "" }),
                 replace: true,
             });
         }
@@ -234,7 +238,7 @@ const TrackedEntityInstances = () => {
         <Stack h="calc(100vh - 110px)" spacing="0px" p="5px">
             <Stack direction="row" spacing="20px" p="5px" bg="white">
                 <Stack direction="row" alignItems="center">
-                    <Text>Organisation</Text>
+                    <Text>Organisation Unit</Text>
                     <Box flex={1}>
                         <OrgUnitTreeSelect
                             multiple={false}
@@ -305,7 +309,7 @@ const TrackedEntityInstances = () => {
                         textTransform="none"
                     >
                         <Thead>
-                            <Tr py={1}>
+                            <Tr py={1} position="sticky" top="0" background="white" zIndex={10}>
                                 {store.columns
                                     .filter((s: any) => s.displayInList)
                                     .map((column: any) => (

@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import React, { useRef } from "react";
 import { useStore } from "effector-react";
-import { changeIndicator, changeIndicatorGroup, changeOus } from "../../Events";
+import { changeIndicator, changeIndicatorGroup, changeOus, changeFilterBy } from "../../Events";
 import { useAnalytics } from "../../Queries";
 import { dashboards, indicatorForGroup, orgUnits, periods } from "../../Store";
 import { colors } from "../../utils/common";
@@ -106,6 +106,16 @@ const Layered = () => {
             )}
             <Stack w="100%" px="5px" spacing="10px" bgColor="white">
                 <Stack direction="row" p="15px">
+                    <Stack direction="row" alignItems="center" flex={1}>
+                        <Text color="#0b72ef" fontWeight="bold">
+                            Organisation Unit
+                        </Text>
+                        <OrgUnitTreeSelect
+                            multiple={true}
+                            value={store.ous}
+                            onChange={changeOus}
+                        />
+                    </Stack>
                     <Stack
                         direction="row"
                         alignItems="center"
@@ -113,7 +123,7 @@ const Layered = () => {
                         zIndex="10000"
                     >
                         <Text color="#0b72ef" fontWeight="bold">
-                            Level
+                            Organisation Unit Level
                         </Text>
                         <OrganisationLevel />
                     </Stack>
@@ -122,16 +132,6 @@ const Layered = () => {
                             Period
                         </Text>
                         <PeriodPicker />
-                    </Stack>
-                    <Stack direction="row" alignItems="center" flex={1}>
-                        <Text color="#0b72ef" fontWeight="bold">
-                            Organisation
-                        </Text>
-                        <OrgUnitTreeSelect
-                            multiple={true}
-                            value={store.ous}
-                            onChange={changeOus}
-                        />
                     </Stack>
                     <Spacer />
                     <Stack>
