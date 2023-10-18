@@ -165,10 +165,10 @@ const Analytics = () => {
                     direction="row"
                     alignItems="center"
                     flex={1}
-                    // onContextMenu={displayMenu}
+                // onContextMenu={displayMenu}
                 >
                     <Text color="#0b72ef" fontWeight="bold">
-                        Organisation
+                        Organisation Unit
                     </Text>
                     <OrgUnitTreeSelect
                         multiple={true}
@@ -178,7 +178,7 @@ const Analytics = () => {
                 </Stack>
                 <Stack direction="row" alignItems="center" flex={1}>
                     <Text color="#0b72ef" fontWeight="bold">
-                        Level
+                        Organisation Unit Level
                     </Text>
                     <OrganisationLevel />
                 </Stack>

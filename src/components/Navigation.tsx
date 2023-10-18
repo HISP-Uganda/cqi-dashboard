@@ -80,7 +80,7 @@ const Navigation: FC<HeaderProps> = () => {
           )}
 
           <Stack direction="row">
-            <Text>Organisation</Text>
+            <Text>Organisation Unit</Text>
             <OrgUnitTreeSelect
               multiple={true}
               value={store.ous}

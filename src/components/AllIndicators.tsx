@@ -29,6 +29,7 @@ import {
     orgUnits,
     periods,
 } from "../Store";
+import DownloadTable from "./DownloadTable";
 import IndicatorGroup from "./IndicatorGroup";
 import OrganisationLevel from "./OrganisationLevel";
 import OrgUnitTreeSelect from "./OrgUnitTreeSelect";
@@ -51,7 +52,6 @@ const AllIndicators: FC<AllIndicatorsProps> = () => {
     };
     const { data, isError, isLoading, error, isSuccess } =
         useAnalyticsStructure(units, pes);
-    console.log(data)
 
     const tableFunction = () => {
 
@@ -93,7 +93,7 @@ const AllIndicators: FC<AllIndicatorsProps> = () => {
                                 Filter By Period
                             </Button>
                         )}
-                        <Button
+                        {/* <Button
                             colorScheme="blue"
                             onClick={() => {
                                 const wb = utils.table_to_book(tbl.current);
@@ -102,14 +102,18 @@ const AllIndicators: FC<AllIndicatorsProps> = () => {
                             size="sm"
                         >
                             Download Indicators
-                        </Button>
+                        </Button> */}
+                        <DownloadTable label={"Download Indicators"} onClick={() => {
+                            const wb = utils.table_to_book(tbl.current);
+                            writeFile(wb, "Table.xlsx");
+                        }} colorScheme="blue" />
                     </Stack>
                 </Stack>
 
                 <Stack direction="row" alignItems="center" flex={1}>
                     <Stack direction="row" flex={1} alignItems="center">
                         <Text color="#0b72ef" fontWeight="bold">
-                            Organisation
+                            Organisation Unit
                         </Text>
                         <Box flex={1}>
                             <OrgUnitTreeSelect
@@ -126,7 +130,7 @@ const AllIndicators: FC<AllIndicatorsProps> = () => {
                         zIndex={1000}
                     >
                         <Text color="#0b72ef" fontWeight="bold">
-                            Level
+                            Organisation Unit Level
                         </Text>
                         <OrganisationLevel />
                     </Stack>
