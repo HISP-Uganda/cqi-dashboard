@@ -7,9 +7,7 @@ import {
     changeColumns,
     changeIndicator,
     changeIndicatorGroup,
-    changeIndicatorGroupIndex,
     changeIndicatorGroups,
-    changeIndicatorIndex,
     changeIndicators,
     changeInitialPrograms,
     changeLevels,
@@ -433,7 +431,11 @@ export function useUserUnits() {
         },
         units: {
             resource: "organisationUnits.json",
-            params: { fields: "id,name,leaf,path,parent", paging: "false" },
+            params: {
+                fields: "id,name,leaf,path,parent",
+                withinUserHierarchy: "true",
+                paging: "false",
+            },
         },
         events: {
             resource: "events/query.json",
@@ -480,12 +482,6 @@ export function useUserUnits() {
         const indicators = rows.map((row: string[]) => {
             return fromPairs(row.map((r, index) => [headers[index].name, r]));
         });
-        // const index = headers.findIndex(
-        //     (header: any) => header.name === "kToJ1rk0fwY"
-        // );
-        // const groupIndex = headers.findIndex(
-        //     (header: any) => header.name === "kuVtv8R9n8q"
-        // );
         await db.organisations.bulkPut(allUnits);
         const availablePrograms = programs.filter(
             (p: any) => !p.withoutRegistration
@@ -494,9 +490,7 @@ export function useUserUnits() {
         changeInitialPrograms(availablePrograms);
         changeIndicatorGroups(options);
         changeIndicatorGroup(options[0].code);
-        // changeIndicatorGroupIndex(groupIndex);
         changeOu(organisationUnits[0].id);
-        // changeIndicatorIndex(index);
         changeIndicators(indicators);
         changeLevels(organisationUnitLevels);
         const currentIndicator = indicators.find(

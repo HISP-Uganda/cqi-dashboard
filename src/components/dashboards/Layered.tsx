@@ -110,7 +110,7 @@ const Layered = () => {
                         direction="row"
                         alignItems="center"
                         flex={1}
-                        zIndex="10000"
+                        zIndex="9000"
                     >
                         <Text color="#0b72ef" fontWeight="bold">
                             Level
@@ -204,7 +204,7 @@ const Layered = () => {
                                             <Td
                                                 bg={colors(
                                                     data.data[ou.id][pe.id][
-                                                    "indicator"
+                                                        "indicator"
                                                     ]
                                                 )}
                                                 textAlign="center"
@@ -213,13 +213,14 @@ const Layered = () => {
                                                 {data.data[ou.id][pe.id][
                                                     "indicator"
                                                 ] !== "-"
-                                                    ? `${data.data[ou.id][
-                                                    pe.id
-                                                    ]["indicator"]
-                                                    }%`
+                                                    ? `${
+                                                          data.data[ou.id][
+                                                              pe.id
+                                                          ]["indicator"]
+                                                      }%`
                                                     : data.data[ou.id][pe.id][
-                                                    "indicator"
-                                                    ]}
+                                                          "indicator"
+                                                      ]}
                                             </Td>
                                         ))}
                                     </Tr>
