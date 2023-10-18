@@ -84,7 +84,6 @@ export function useProgram(currentProgram: string) {
                         },
                     },
                 });
-                console.log(programTrackedEntityAttributes);
                 changeColumns([
                     {
                         id: "ouPath",

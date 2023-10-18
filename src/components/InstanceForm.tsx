@@ -1,15 +1,14 @@
 import {
     Button,
+    Checkbox,
     FormControl,
     FormErrorMessage,
     FormLabel,
     Input,
     SimpleGrid,
-    Text,
     Spacer,
     Stack,
     Textarea,
-    Checkbox,
 } from "@chakra-ui/react";
 import { useDataEngine } from "@dhis2/app-runtime";
 import { useNavigate, useSearch } from "@tanstack/react-location";
@@ -51,6 +50,7 @@ export default function InstanceForm({
         handleSubmit,
         watch,
         setValue,
+        getValues,
         formState: { errors },
     } = useForm<Partial<QIProject>>({ defaultValues: instance });
 
@@ -175,9 +175,9 @@ export default function InstanceForm({
                 optionSetValue,
                 options: optionSetValue
                     ? optionSet.options.map((o: any) => ({
-                        value: o.code,
-                        label: o.name,
-                    }))
+                          value: o.code,
+                          label: o.name,
+                      }))
                     : null,
             };
 
@@ -193,7 +193,7 @@ export default function InstanceForm({
         const event = {
             event: eventId,
             program: "eQf9K4L2yxE",
-            orgUnit: "akV6429SUqu",
+            orgUnit: search.ou,
             eventDate: new Date().toISOString(),
             dataValues: [
                 {
@@ -202,14 +202,11 @@ export default function InstanceForm({
                 },
                 {
                     dataElement: "kuVtv8R9n8q",
-                    value: store.indicatorGroup,
+                    value: getValues("TG1QzFgGTex"),
                 },
             ],
         };
         await insertEvent(event);
-        setValue("kHRn35W3Gq4", eventId);
-        changeIndicatorGroup(TG1QzFgGTex);
-        addIndicator([eventId, values.name]);
         setFields((prev) => {
             return prev.map((p) => {
                 if (p.id === "kHRn35W3Gq4") {
@@ -227,6 +224,8 @@ export default function InstanceForm({
                 return p;
             });
         });
+        setValue("kHRn35W3Gq4", eventId);
+        addIndicator([eventId, values.name]);
     };
 
     const getField = (f: ProjectField) => {
@@ -356,7 +355,7 @@ export default function InstanceForm({
                                     }
                                 }}
                                 options={f.options as Array<Option>}
-                            // size="sm"
+                                // size="sm"
                             />
                         );
                     }}
@@ -388,7 +387,7 @@ export default function InstanceForm({
     };
 
     useEffect(() => {
-        const subscription = watch((value, { name, type }) => { });
+        const subscription = watch((value, { name, type }) => {});
         return () => subscription.unsubscribe();
     }, [watch]);
 
@@ -440,7 +439,7 @@ export default function InstanceForm({
                                         page: 1,
                                         pageSize: 10,
                                         ouMode: "DESCENDANTS",
-                                        "ou-name": search["ou-name"]
+                                        "ou-name": search["ou-name"],
                                     };
                                 },
                                 replace: true,
