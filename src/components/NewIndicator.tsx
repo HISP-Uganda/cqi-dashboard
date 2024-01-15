@@ -30,19 +30,20 @@ const NewIndicator: FC<NewIndicatorProps> = ({
                 content: "Submit success.",
                 onOk: hideModal,
             });
-            form.setFieldsValue({ name: "" });
+            form.setFieldsValue({ name: "", numerator: "", denominator: "" });
         },
         [setPending, hideModal]
     );
+
+
 
     const meta: any = {
         disabled: pending,
         columns: 1,
         formItemLayout: null,
         colon: true,
-        fields: [{ key: "name", label: "Indicator Name", required: true }],
+        fields: [{ key: "name", label: "Indicator Name", required: true }, { key: "numerator", label: "Numerator", required: true }, { key: "denominator", label: "Denominator", required: true }],
     };
-
     return (
         <Modal
             title="New Indicator"

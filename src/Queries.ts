@@ -935,3 +935,30 @@ export function useEventAndOption(
         }
     );
 }
+export function useEvent(programStage: string, event?: string) {
+    const engine = useDataEngine();
+    return useQuery<any, Error>(["events", event, programStage], async () => {
+        if (event) {
+            const {
+                events: { headers, rows },
+            }: any = await engine.query({
+                events: {
+                    resource: "events/query.json",
+                    params: {
+                        programStage,
+                        event,
+                        includeAllDataElements: "true",
+                    },
+                },
+            });
+
+            const processed = rows.map((row: string[]) =>
+                fromPairs(row.map((r, i) => [headers[i].name, r]))
+            );
+            if (processed.length > 0) {
+                return processed[0];
+            }
+        }
+        return {};
+    });
+}

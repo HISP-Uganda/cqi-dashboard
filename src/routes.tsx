@@ -6,6 +6,7 @@ import TrackedEntityInstance from "./components/TrackedEntityInstance";
 import TrackedEntityInstanceForm from "./components/TrackedEntityInstanceForm";
 import TrackedEntityInstances from "./components/TrackedEntityInstances";
 import { changeUrl } from "./Events";
+import AdminDashboard from "./components/dashboards/AdminDashboard";
 
 export const routes: Route<any>[] = [
   {
@@ -31,6 +32,14 @@ export const routes: Route<any>[] = [
       return {};
     },
     children: [{ path: "/", element: <Indicators /> }],
+  },
+  {
+    path: "/adminDashboard",
+    loader: async ({ params: { teamId } }) => {
+      changeUrl("/adminDashboard");
+      return {};
+    },
+    children: [{ path: "/", element: <AdminDashboard /> }],
   },
   {
     path: "/data-entry",

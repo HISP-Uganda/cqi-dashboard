@@ -153,6 +153,15 @@ const Menus = ({ searchOu, orgUnitName }: { searchOu: string, orgUnitName: strin
                     >
                         Projects
                     </Button>
+                    <Button
+                        size="sm"
+                        onClick={() => handleClick("/adminDashboard")}
+                        colorScheme={
+                            store.url === "/adminDashboard" ? "blue" : "gray"
+                        }
+                    >
+                        Admin Dashboard
+                    </Button>
                 </Stack>
             </Stack>
 
