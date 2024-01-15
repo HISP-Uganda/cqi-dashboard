@@ -7,6 +7,7 @@ import {
     TableContainer,
     Tbody,
     Td,
+    Text,
     Tr,
 } from "@chakra-ui/react";
 import { useDataEngine } from "@dhis2/app-runtime";
@@ -22,6 +23,7 @@ import { reviewPeriodString } from "../utils/common";
 import { generateUid } from "../utils/uid";
 import moment, { Moment } from 'moment';
 import DatePicker from "./DatePicker";
+import { useEvent } from "../Queries";
 
 interface MultipleProps {
     tei: string;
@@ -47,6 +49,7 @@ const MultipleEvents: FC<MultipleProps> = ({
     title,
     project,
 }) => {
+    const { isLoading, isError, data, error, isSuccess } = useEvent("vPQxfsUQLEy", project.kHRn35W3Gq4)
     const [events, setEvents] = useState<Array<Partial<RunChart>>>(
         () => stageData
     );
@@ -124,170 +127,185 @@ const MultipleEvents: FC<MultipleProps> = ({
                 style: "percent",
             }).format(e.rVZlkzOwWhi / e.RgNQcLejbwX);
         }
+
         return "-";
     };
-
-    return (
-        <Stack>
-            <Box
-                style={{ height: "100%", marginBottom: 20, paddingLeft: 60 }}
-                flex={1}
-            >
-                <Plot
-                    data={[
-                        {
-                            x: events.map((e, index) => String(index)),
-                            y: Object.values(
-                                events.map((e) => {
-                                    if (e.RgNQcLejbwX && e.rVZlkzOwWhi) {
-                                        return String(
-                                            (e.rVZlkzOwWhi * 100) /
-                                            e.RgNQcLejbwX
-                                        );
-                                    }
-                                    return "-";
-                                })
-                            ),
-                            type: "scatter",
-                            mode: "lines+markers",
-                            marker: { color: "red" },
-                        },
-                    ]}
-                    layout={{
-                        autosize: true,
-                        title,
-                        legend: {
-                            orientation: "h",
-                            yanchor: "bottom",
-                            y: 1,
-                            xanchor: "right",
-                            x: 1,
-                        },
-                        margin: {
-                            pad: 5,
-                            r: 0,
-                            t: 50,
-                            l: 40,
-                            b: 20,
-                        },
-                        xaxis: {
-                            showgrid: false,
-                            zeroline: false,
-                            type: "category",
-                        },
-                        yaxis: {
-                            showgrid: true,
-                            zeroline: true,
-                            gridcolor: "LightGray",
-                            zerolinecolor: "black",
-                            rangemode: "tozero",
-                        },
-                    }}
-                    useResizeHandler={true}
-                    style={{ width: "100%", height: "100%" }}
-                    config={{ displayModeBar: false }}
-                />
-            </Box>
+    if (isError) return <pre>{JSON.stringify(error)}</pre>
+    if (isLoading) return <Text>Loading</Text>
+    if (isSuccess)
+        return (
             <Stack>
-                <TableContainer>
-                    <Table variant="simple">
-                        <Tbody>
-                            <Tr>
-                                <Td w="60px">Review Period</Td>
-                                {events.map((e) => (
-                                    <Td key={e.event} textAlign="center">
-                                        <DatePicker
-                                            picker={
-                                                reviewPeriodString(
-                                                    project.WQcY6nfPouv
-                                                ).toLowerCase() as
-                                                | "time"
-                                                | "date"
-                                                | "week"
-                                                | "month"
-                                                | "quarter"
-                                                | "year"
-                                                | undefined
-                                            }
-                                            disabledDate={(current) => disabledDate(moment(current))}
-                                            value={
-                                                e.eventDate
-                                                    ? parseISO(e.eventDate)
-                                                    : undefined
-                                            }
-                                            onChange={(value) =>
-                                                changeIndicator(
-                                                    e.event || "",
-                                                    value
-                                                        ? value.toISOString()
-                                                        : undefined,
-                                                    "eventDate"
-                                                )
-                                            }
-                                        />
+                <Box
+                    style={{ height: "100%", marginBottom: 20, paddingLeft: 60 }}
+                    flex={1}
+                >
+                    <Plot
+                        data={[
+                            {
+                                x: events.map((e, index) => String(index)),
+                                y: Object.values(
+                                    events.map((e) => {
+                                        if (e.RgNQcLejbwX && e.rVZlkzOwWhi) {
+                                            return String(
+                                                (e.rVZlkzOwWhi * 100) /
+                                                e.RgNQcLejbwX
+                                            );
+                                        }
+                                        return "-";
+                                    })
+                                ),
+                                type: "scatter",
+                                mode: "lines+markers",
+                                marker: { color: "red" },
+                            },
+                        ]}
+                        layout={{
+                            autosize: true,
+                            title,
+                            legend: {
+                                orientation: "h",
+                                yanchor: "bottom",
+                                y: 1,
+                                xanchor: "right",
+                                x: 1,
+                            },
+                            margin: {
+                                pad: 5,
+                                r: 0,
+                                t: 50,
+                                l: 40,
+                                b: 20,
+                            },
+                            xaxis: {
+                                showgrid: false,
+                                zeroline: false,
+                                type: "category",
+                            },
+                            yaxis: {
+                                showgrid: true,
+                                zeroline: true,
+                                gridcolor: "LightGray",
+                                zerolinecolor: "black",
+                                rangemode: "tozero",
+                            },
+                        }}
+                        useResizeHandler={true}
+                        style={{ width: "100%", height: "100%" }}
+                        config={{ displayModeBar: false }}
+                    />
+                </Box>
+                <Stack>
+                    <TableContainer>
+                        <Table variant="simple">
+                            <Tbody>
+                                <Tr>
+                                    <Td w="60px">Review Period</Td>
+                                    {events.map((e) => (
+                                        <Td key={e.event} textAlign="center">
+                                            <DatePicker
+                                                picker={
+                                                    reviewPeriodString(
+                                                        project.WQcY6nfPouv
+                                                    ).toLowerCase() as
+                                                    | "time"
+                                                    | "date"
+                                                    | "week"
+                                                    | "month"
+                                                    | "quarter"
+                                                    | "year"
+                                                    | undefined
+                                                }
+                                                disabledDate={(current) => disabledDate(moment(current))}
+                                                value={
+                                                    e.eventDate
+                                                        ? parseISO(e.eventDate)
+                                                        : undefined
+                                                }
+                                                onChange={(value) =>
+                                                    changeIndicator(
+                                                        e.event || "",
+                                                        value
+                                                            ? value.toISOString()
+                                                            : undefined,
+                                                        "eventDate"
+                                                    )
+                                                }
+                                            />
+                                        </Td>
+                                    ))}
+                                </Tr>
+                                <Tr>
+                                    <Td w="60px">Numerator</Td>
+                                    {events.map((e) => (
+                                        <Td key={e.event} textAlign="center">
+                                            <InputNumber
+                                                min={0}
+                                                style={{ textAlign: "center" }}
+                                                value={e.rVZlkzOwWhi}
+                                                onChange={(value) =>
+                                                    changeIndicator(
+                                                        e.event || "",
+                                                        value,
+                                                        "rVZlkzOwWhi"
+                                                    )
+                                                }
+                                                onBlur={onBlur(e)}
+                                            />
+                                        </Td>
+                                    ))}
+                                </Tr>
+                                <Tr>
+                                    <Td w="60px">Denominator</Td>
+                                    {events.map((e) => (
+                                        <Td key={e.event} textAlign="center">
+                                            <InputNumber
+                                                min={0}
+                                                style={{ textAlign: "center" }}
+                                                value={e.RgNQcLejbwX}
+                                                onChange={(value) =>
+                                                    changeIndicator(
+                                                        e.event || "",
+                                                        value,
+                                                        "RgNQcLejbwX"
+                                                    )
+                                                }
+                                                onBlur={onBlur(e)}
+                                            />
+                                        </Td>
+                                    ))}
+                                </Tr>
+                                <Tr>
+                                    <Td w="60px">%</Td>
+                                    {events.map((e) => (
+                                        <Td key={e.event} textAlign="center">
+                                            {display(e)}
+                                        </Td>
+                                    ))}
+                                </Tr>
+                                <Tr>
+
+                                    <Td w="60px">
+                                        <Text fontSize='lg'>Numerator Name</Text>
+                                        {data["WI6Qp8gcZFX"]}
                                     </Td>
-                                ))}
-                            </Tr>
-                            <Tr>
-                                <Td w="60px">Numerator</Td>
-                                {events.map((e) => (
-                                    <Td key={e.event} textAlign="center">
-                                        <InputNumber
-                                            min={0}
-                                            style={{ textAlign: "center" }}
-                                            value={e.rVZlkzOwWhi}
-                                            onChange={(value) =>
-                                                changeIndicator(
-                                                    e.event || "",
-                                                    value,
-                                                    "rVZlkzOwWhi"
-                                                )
-                                            }
-                                            onBlur={onBlur(e)}
-                                        />
+                                    <Td w="60px" >
+                                        <Text fontSize='lg'>Denominator Name</Text>
+                                        {data["krwzUepGwj7"]}
                                     </Td>
-                                ))}
-                            </Tr>
-                            <Tr>
-                                <Td w="60px">Denominator</Td>
-                                {events.map((e) => (
-                                    <Td key={e.event} textAlign="center">
-                                        <InputNumber
-                                            min={0}
-                                            style={{ textAlign: "center" }}
-                                            value={e.RgNQcLejbwX}
-                                            onChange={(value) =>
-                                                changeIndicator(
-                                                    e.event || "",
-                                                    value,
-                                                    "RgNQcLejbwX"
-                                                )
-                                            }
-                                            onBlur={onBlur(e)}
-                                        />
-                                    </Td>
-                                ))}
-                            </Tr>
-                            <Tr>
-                                <Td w="60px">%</Td>
-                                {events.map((e) => (
-                                    <Td key={e.event} textAlign="center">
-                                        {display(e)}
-                                    </Td>
-                                ))}
-                            </Tr>
-                        </Tbody>
-                    </Table>
-                </TableContainer>
-                <Stack direction="row">
-                    <Spacer />
-                    <Box>
-                        <Button onClick={add}>Add Review</Button>
-                    </Box>
+                                </Tr>
+                            </Tbody>
+                        </Table>
+                    </TableContainer>
+                    <Stack direction="row">
+                        <Spacer />
+                        <Box>
+                            <Button onClick={add}>Add Review</Button>
+                        </Box>
+                    </Stack>
                 </Stack>
             </Stack>
-        </Stack>
-    );
+        );
+    return null
 };
 
 export default MultipleEvents;

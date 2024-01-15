@@ -1,4 +1,5 @@
 import {
+    Box,
     Button,
     Checkbox,
     FormControl,
@@ -8,6 +9,7 @@ import {
     SimpleGrid,
     Spacer,
     Stack,
+
     Textarea,
 } from "@chakra-ui/react";
 import { useDataEngine } from "@dhis2/app-runtime";
@@ -141,6 +143,7 @@ export default function InstanceForm({
         return await engine.mutate(mutation);
     };
 
+
     const { mutateAsync } = useMutation(addTrackedEntityInstance);
 
     const { mutateAsync: insertEvent } = useMutation(addEvent, {
@@ -175,9 +178,9 @@ export default function InstanceForm({
                 optionSetValue,
                 options: optionSetValue
                     ? optionSet.options.map((o: any) => ({
-                          value: o.code,
-                          label: o.name,
-                      }))
+                        value: o.code,
+                        label: o.name,
+                    }))
                     : null,
             };
 
@@ -204,9 +207,18 @@ export default function InstanceForm({
                     dataElement: "kuVtv8R9n8q",
                     value: getValues("TG1QzFgGTex"),
                 },
+                {
+                    dataElement: "WI6Qp8gcZFX",
+                    value: values.numerator,
+                },
+                {
+                    dataElement: "krwzUepGwj7",
+                    value: values.denominator,
+                },
             ],
         };
         await insertEvent(event);
+
         setFields((prev) => {
             return prev.map((p) => {
                 if (p.id === "kHRn35W3Gq4") {
@@ -224,6 +236,7 @@ export default function InstanceForm({
                 return p;
             });
         });
+
         setValue("kHRn35W3Gq4", eventId);
         addIndicator([eventId, values.name]);
     };
@@ -355,7 +368,7 @@ export default function InstanceForm({
                                     }
                                 }}
                                 options={f.options as Array<Option>}
-                                // size="sm"
+                            // size="sm"
                             />
                         );
                     }}
@@ -387,7 +400,7 @@ export default function InstanceForm({
     };
 
     useEffect(() => {
-        const subscription = watch((value, { name, type }) => {});
+        const subscription = watch((value, { name, type }) => { });
         return () => subscription.unsubscribe();
     }, [watch]);
 
@@ -456,6 +469,10 @@ export default function InstanceForm({
                     >
                         Save Project
                     </Button>
+                    <Stack direction="row">
+                        <Box></Box>
+                        <Box></Box>
+                    </Stack>
                 </Stack>
             </form>
         </Stack>

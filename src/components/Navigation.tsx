@@ -61,6 +61,9 @@ const Navigation: FC<HeaderProps> = () => {
         <Button onClick={() => handleClick("indicators")}>
           All Indicators
         </Button>
+        <Button onClick={() => handleClick("adminDashboard")}>
+          Admin Dashboard
+        </Button>
         <Spacer />
         {["analytics", "layered", "indicators"].indexOf(store.url) !== -1 && (
           <Button onClick={() => onToggle()} colorScheme="blue">Filters</Button>
@@ -75,7 +78,9 @@ const Navigation: FC<HeaderProps> = () => {
                 value={store.indicatorGroup}
                 onChange={onIndicatorGroupChange}
               />
-              <Indicator />
+              <Indicator onChange={function (option: string): void {
+                throw new Error("Function not implemented.");
+              }} value={""} indicatorGroup={""} />
             </>
           )}
 
