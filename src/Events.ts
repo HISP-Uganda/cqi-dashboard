@@ -1,7 +1,7 @@
 import { domain } from "./Domains";
-import { ColumnProps, Project } from "./interfaces";
+import { ColumnProps, Project, Store } from "./interfaces";
 export const changePeriod = domain.createEvent<any[]>();
-export const changeIndicator = domain.createEvent<string>();
+export const changeIndicator = domain.createEvent<string | undefined>();
 export const changeIndicatorGroup = domain.createEvent<string | undefined>();
 export const changeUrl = domain.createEvent<string>();
 export const changeDataEntryPage = domain.createEvent<string>();
@@ -25,3 +25,9 @@ export const changeOus = domain.createEvent<any>();
 export const changeLevels = domain.createEvent<any[]>();
 export const changeLevel = domain.createEvent<string>();
 export const addIndicator = domain.createEvent<any>();
+export const changeAttribute = domain.createEvent<{
+    attribute: keyof Store;
+    value: any;
+}>();
+
+export const toggleCount = domain.createEvent<void>();

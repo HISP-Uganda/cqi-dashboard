@@ -1,8 +1,6 @@
-import { useDataEngine } from "@dhis2/app-runtime";
+import { Box } from "@chakra-ui/react";
 import { TreeSelect } from "antd";
 import { useLiveQuery } from "dexie-react-hooks";
-import { Box } from "@chakra-ui/react";
-import { flatten } from "lodash";
 import { FC } from "react";
 import { db } from "../db";
 
@@ -29,13 +27,15 @@ const OrgUnitTreeSelect: FC<{
                 }}
                 placeholder="Please select organisation unit"
                 onChange={onChange}
-                treeData={organisations?.map(({ id, name, parent, leaf }) => ({
-                    id,
-                    title: name,
-                    pId: parent ? parent.id : "",
-                    value: id,
-                    isLeaf: leaf,
-                })).sort((a, b) => a.title.localeCompare(b.title))}
+                treeData={organisations
+                    ?.map(({ id, name, parent, leaf }) => ({
+                        id,
+                        title: name,
+                        pId: parent ? parent.id : "",
+                        value: id,
+                        isLeaf: leaf,
+                    }))
+                    .sort((a, b) => a.title.localeCompare(b.title))}
                 size="middle"
             />
         </Box>

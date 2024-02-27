@@ -12,6 +12,7 @@ import {
     Box,
     Button,
     Center,
+    Checkbox,
     Heading,
     Input,
     Select,
@@ -25,7 +26,6 @@ import {
     Th,
     Thead,
     Tr,
-    Checkbox,
 } from "@chakra-ui/react";
 import { useNavigate, useSearch } from "@tanstack/react-location";
 import { useStore } from "effector-react";
@@ -134,7 +134,7 @@ const TrackedEntityInstances = () => {
                 program: search.program,
                 isNew: true,
                 trackedEntityInstance,
-                "ou-name": search["ou-name"]
+                "ou-name": search["ou-name"],
             },
         });
     };
@@ -150,7 +150,7 @@ const TrackedEntityInstances = () => {
                 ou: instance.ou,
                 trackedEntityType: search.trackedEntityType,
                 trackedEntityInstance: instance.instance,
-                "ou-name": search["ou-name"]
+                "ou-name": search["ou-name"],
             },
         });
     };
@@ -177,7 +177,10 @@ const TrackedEntityInstances = () => {
     };
 
     const changeOu = async (ou: string | string[] | undefined) => {
-        const ou1 = await db.organisations.where("id").equals(ou ?? "").first()
+        const ou1 = await db.organisations
+            .where("id")
+            .equals(ou ?? "")
+            .first();
         if (Array.isArray(ou)) {
             navigate({
                 search: (old) => ({ ...old, ou: ou.join(",") }),
@@ -309,7 +312,13 @@ const TrackedEntityInstances = () => {
                         textTransform="none"
                     >
                         <Thead>
-                            <Tr py={1} position="sticky" top="0" background="white" zIndex={10}>
+                            <Tr
+                                py={1}
+                                position="sticky"
+                                top="0"
+                                background="white"
+                                zIndex={10}
+                            >
                                 {store.columns
                                     .filter((s: any) => s.displayInList)
                                     .map((column: any) => (

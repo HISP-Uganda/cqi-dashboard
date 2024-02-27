@@ -25,6 +25,8 @@ import {
     changeLevels,
     changeLevel,
     addIndicator,
+    changeAttribute,
+    toggleCount,
 } from "./Events";
 import { Period, Store } from "./interfaces";
 
@@ -32,18 +34,23 @@ export const dashboards = domain
     .createStore<Store>({
         url: "/",
         filterBy: "orgUnit",
-        indicator: "",
+        indicator: undefined,
         ou: "",
         ous: [],
-        indicatorGroup: "",
+        indicatorGroup: undefined,
         indicatorGroups: [],
         program: "vMfIVFcRWlu",
         trackedEntityType: "KSy4dEvpMWi",
         indicators: [],
         period: [
             {
-                value: "LAST_10_YEARS",
-                label: "Last 10 years",
+                value: "THIS_YEAR",
+                label: "This year",
+                type: "relative",
+            },
+            {
+                value: "LAST_YEAR",
+                label: "Last year",
                 type: "relative",
             },
         ],
@@ -56,13 +63,16 @@ export const dashboards = domain
         programEntity: "KSy4dEvpMWi,vMfIVFcRWlu",
         instance: "",
         project: {},
-        level: "Regional",
+        level: "",
         levels: [],
         descendants: [],
         indicatorIndex: -1,
         indicatorGroupIndex: -1,
+        relativePeriodType: "YEARLY",
+        fixedPeriodType: "MONTHLY",
+        countUnits: false,
     })
-    .on(changeIndicator, (state, indicator: string) => {
+    .on(changeIndicator, (state, indicator: string | undefined) => {
         return { ...state, indicator };
     })
     .on(changeIndicatorGroup, (state, indicatorGroup: string | undefined) => {
@@ -180,7 +190,17 @@ export const dashboards = domain
             ...state,
             level,
         };
-    });
+    })
+    .on(
+        changeAttribute,
+        (
+            state,
+            { attribute, value }: { attribute: keyof Store; value: any }
+        ) => {
+            return { ...state, [attribute]: value };
+        }
+    )
+    .on(toggleCount, (state) => ({ ...state, countUnits: !state.countUnits }));
 
 export const orgUnits = dashboards.map((state) => {
     if (state.level) {
@@ -245,4 +265,13 @@ export const $selectedIndicators = dashboards.map((state) => {
     return state.indicators.filter((x) => {
         return state.indicatorGroup === x["kuVtv8R9n8q"];
     });
+});
+
+export const $availableIndicators = dashboards.map((state) => {
+    if (state.indicatorGroup) {
+        return state.indicators.filter(
+            (row: any) => row.kuVtv8R9n8q === state.indicatorGroup
+        );
+    }
+    return state.indicators;
 });

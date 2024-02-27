@@ -1,5 +1,7 @@
 import {
+    Box,
     Button,
+    IconButton,
     NumberDecrementStepper,
     NumberIncrementStepper,
     NumberInput,
@@ -13,10 +15,7 @@ import {
     Tabs,
     Text,
     useDisclosure,
-    Box,
-    IconButton,
 } from "@chakra-ui/react";
-import { BiArrowToRight, BiArrowToLeft } from "react-icons/bi";
 import { generateFixedPeriods } from "@dhis2/multi-calendar-dates";
 import { DatePicker } from "antd";
 import { GroupBase, Select } from "chakra-react-select";
@@ -25,7 +24,8 @@ import dayjs from "dayjs";
 import { useStore } from "effector-react";
 import EllipsisTooltip from "ellipsis-tooltip-react-chan";
 import { useEffect, useState } from "react";
-import { changePeriod } from "../Events";
+import { BiArrowToLeft, BiArrowToRight } from "react-icons/bi";
+import { changeAttribute, changePeriod } from "../Events";
 import {
     FixedPeriod,
     FixedPeriodType,
@@ -87,22 +87,20 @@ const fixedPeriodTypeOptions = createOptions2(
     fixedPeriods
 );
 
-const PeriodPicker = () => {
+const PeriodPicker = ({
+    fixed = false,
+    relative = false,
+    range = true,
+}: Partial<{
+    fixed: boolean;
+    relative: boolean;
+    range: boolean;
+}>) => {
     const store = useStore(dashboards);
     const { isOpen, onToggle } = useDisclosure();
-    const onRangeChange = (
-        dates: null | (Dayjs | null)[],
-        dateStrings: string[]
-    ) => {
-        if (dates) {
-            console.log("From: ", dates[0], ", to: ", dates[1]);
-            console.log("From: ", dateStrings[0], ", to: ", dateStrings[1]);
-        } else {
-            console.log("Clear");
-        }
-    };
+
     const [relativePeriodType, setRelativePeriodType] =
-        useState<RelativePeriodType>("MONTHLY");
+        useState<RelativePeriodType>("YEARLY");
     const [fixedPeriodType, setFixedPeriodType] =
         useState<FixedPeriodType>("MONTHLY");
 
@@ -170,9 +168,11 @@ const PeriodPicker = () => {
                         >
                             <Tabs onChange={(index) => setTabIndex(index)}>
                                 <TabList>
-                                    <Tab fontSize="xs">Relative Periods</Tab>
-                                    <Tab fontSize="xs">Fixed Periods</Tab>
-                                    <Tab fontSize="xs">Date Range</Tab>
+                                    <Tab>Relative Periods</Tab>
+                                    <Tab>Fixed Periods</Tab>
+                                    {/* {range && (
+                                        <Tab fontSize="xs">Date Range</Tab>
+                                    )} */}
                                 </TabList>
                                 <TabPanels>
                                     <TabPanel>
@@ -185,13 +185,18 @@ const PeriodPicker = () => {
                                                     GroupBase<Option>
                                                 >
                                                     isClearable
-                                                    onChange={(e) =>
+                                                    onChange={(e) => {
                                                         setRelativePeriodType(
                                                             () =>
                                                                 (e?.value as RelativePeriodType) ||
                                                                 "MONTHLY"
-                                                        )
-                                                    }
+                                                        );
+                                                        changeAttribute({
+                                                            attribute:
+                                                                "relativePeriodType",
+                                                            value: e?.value,
+                                                        });
+                                                    }}
                                                     value={relativePeriodTypeOptions.find(
                                                         ({ value }) =>
                                                             value ===
@@ -229,6 +234,7 @@ const PeriodPicker = () => {
                                             </Stack>
                                         </Stack>
                                     </TabPanel>
+
                                     <TabPanel>
                                         <Stack>
                                             <Stack direction="row">
@@ -245,6 +251,14 @@ const PeriodPicker = () => {
                                                                 () =>
                                                                     (e?.value as FixedPeriodType) ||
                                                                     "MONTHLY"
+                                                            );
+                                                            changeAttribute({
+                                                                attribute:
+                                                                    "fixedPeriodType",
+                                                                value: e?.value,
+                                                            });
+                                                            console.log(
+                                                                e?.value
                                                             );
                                                         }}
                                                         value={fixedPeriodTypeOptions.find(
@@ -303,7 +317,8 @@ const PeriodPicker = () => {
                                             </Stack>
                                         </Stack>
                                     </TabPanel>
-                                    <TabPanel zIndex={1000}>
+
+                                    {/* {range && TabPanel zIndex={1000}>
                                         <Stack>
                                             <Text>Select Date Range</Text>
                                             <RangePicker
@@ -311,7 +326,7 @@ const PeriodPicker = () => {
                                                 onChange={onRangeChange}
                                             />
                                         </Stack>
-                                    </TabPanel>
+                                    </TabPanel>} */}
                                 </TabPanels>
                             </Tabs>
                         </Stack>

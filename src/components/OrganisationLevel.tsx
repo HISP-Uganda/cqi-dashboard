@@ -1,4 +1,4 @@
-import { Box, Stack, Text } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 
 import { changeLevel } from "../Events";
 import { dashboards } from "../Store";

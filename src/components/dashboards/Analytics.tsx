@@ -1,7 +1,7 @@
 import { Box, Stack, Text } from "@chakra-ui/react";
-import { Responsive, WidthProvider } from "react-grid-layout";
 import { useStore } from "effector-react";
 import { useState } from "react";
+import { Responsive, WidthProvider } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import { changeOus } from "../../Events";
@@ -165,7 +165,7 @@ const Analytics = () => {
                     direction="row"
                     alignItems="center"
                     flex={1}
-                // onContextMenu={displayMenu}
+                    // onContextMenu={displayMenu}
                 >
                     <Text color="#0b72ef" fontWeight="bold">
                         Organisation Unit

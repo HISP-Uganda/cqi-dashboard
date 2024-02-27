@@ -1,6 +1,5 @@
-import { Box, Center, Stack } from "@chakra-ui/react";
+import { Box, Center } from "@chakra-ui/react";
 import { Spinner } from "@chakra-ui/spinner";
-import { useEffect, useState } from "react";
 import { useEventOptions } from "../../Queries";
 import AllIndicators from "../AllIndicators";
 

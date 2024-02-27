@@ -3,13 +3,12 @@ import { Drawer, Space } from "antd";
 import {
     Box,
     Button,
+    Image,
     Spacer,
     Stack,
-    Image,
     Text,
     useDisclosure,
 } from "@chakra-ui/react";
-import { DropdownButton } from "@dhis2/ui";
 import { useNavigate } from "@tanstack/react-location";
 import { Select } from "antd";
 import { useStore } from "effector-react";
@@ -33,14 +32,22 @@ import PeriodPicker from "./PeriodPicker";
 
 const { Option } = Select;
 
-const Menus = ({ searchOu, orgUnitName }: { searchOu: string, orgUnitName: string }) => {
+const Menus = ({
+    searchOu,
+    orgUnitName,
+}: {
+    searchOu: string;
+    orgUnitName: string;
+}) => {
     const navigate = useNavigate<LocationGenerics>();
     const { isOpen, onToggle, onOpen, onClose } = useDisclosure();
     const store = useStore(dashboards);
     const indicators = useStore(indicatorForGroup);
-    const onIndicatorGroupChange = (value: string) => {
+    const onIndicatorGroupChange = (value: string | undefined) => {
         changeIndicatorGroup(value);
-        changeIndicator(indicators[0][0]);
+        if (value) {
+            changeIndicator(indicators[0][0]);
+        }
     };
     const [selectedPeriods, setSelectedPeriods] = useState<any[]>(
         () => store.period
@@ -66,7 +73,7 @@ const Menus = ({ searchOu, orgUnitName }: { searchOu: string, orgUnitName: strin
             ouMode: string;
             programStartDate: string;
             programEndDate: string;
-            "ou-name": string
+            "ou-name": string;
         }> = {}
     ) => {
         changeUrl(to);
@@ -113,7 +120,7 @@ const Menus = ({ searchOu, orgUnitName }: { searchOu: string, orgUnitName: strin
                                 page: 1,
                                 pageSize: 10,
                                 ouMode: "DESCENDANTS",
-                                "ou-name": orgUnitName
+                                "ou-name": orgUnitName,
                             })
                         }
                         colorScheme={
@@ -155,9 +162,9 @@ const Menus = ({ searchOu, orgUnitName }: { searchOu: string, orgUnitName: strin
                     </Button>
                     <Button
                         size="sm"
-                        onClick={() => handleClick("/adminDashboard")}
+                        onClick={() => handleClick("/admin-dashboard")}
                         colorScheme={
-                            store.url === "/adminDashboard" ? "blue" : "gray"
+                            store.url === "/admin-dashboard" ? "blue" : "gray"
                         }
                     >
                         Admin Dashboard
@@ -189,7 +196,9 @@ const Menus = ({ searchOu, orgUnitName }: { searchOu: string, orgUnitName: strin
                             <Indicator
                                 value={store.indicator}
                                 indicatorGroup={store.indicator}
-                                onChange={(val: string) => changeIndicator(val)}
+                                onChange={(val: string | undefined) =>
+                                    changeIndicator(val)
+                                }
                             />
                         </>
                     )}
@@ -215,10 +224,7 @@ const Menus = ({ searchOu, orgUnitName }: { searchOu: string, orgUnitName: strin
                     </Select>
 
                     <Box zIndex={10000}>
-                        <PeriodPicker
-                        // selectedPeriods={selectedPeriods}
-                        // onChange={onSelect}
-                        />
+                        <PeriodPicker />
                     </Box>
                     {store.url === "/indicators" && (
                         <>
@@ -246,5 +252,4 @@ const Menus = ({ searchOu, orgUnitName }: { searchOu: string, orgUnitName: strin
         </Stack>
     );
 };
-
 export default Menus;

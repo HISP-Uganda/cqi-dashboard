@@ -1,12 +1,18 @@
 import { useDataEngine } from "@dhis2/app-runtime";
 import { useQuery } from "@tanstack/react-query";
-import { fromPairs, groupBy, uniq } from "lodash";
+import dayjs from "dayjs";
+import { fromPairs, groupBy, setWith, uniq } from "lodash";
+import { Subject } from "rxjs";
+
+const subject = new Subject<number>();
+
+subject.subscribe({
+    next: (v) => console.log(`observerA: ${v}`),
+});
 
 import { db } from "./db";
 import {
     changeColumns,
-    changeIndicator,
-    changeIndicatorGroup,
     changeIndicatorGroups,
     changeIndicators,
     changeInitialPrograms,
@@ -19,32 +25,196 @@ import { Column, Project } from "./interfaces";
 import { convertParent } from "./utils";
 import { getRule } from "./utils/common";
 
-export function useUserOrgUnit() {
-    const engine = useDataEngine();
-    const query = {
-        me: {
-            resource: "me.json",
-            params: {
-                fields: "organisationUnits[id,name,leaf]",
-            },
+export const makeSQLQuery = async (
+    engine: any,
+    id: string,
+    query: string,
+    name: string
+) => {
+    const sqlQuery = {
+        description: name,
+        type: "QUERY",
+        id,
+        sqlQuery: query,
+        sharing: {
+            public: "rwrw----",
         },
+        name,
+        cacheStrategy: "NO_CACHE",
     };
-    return useQuery<any, Error>(["userOrganisations"], async () => {
-        const {
-            me: { organisationUnits },
-        }: any = await engine.query(query);
-        changeOu(organisationUnits.map(({ id }: any) => id));
-        return organisationUnits.map((unit: any) => {
-            return {
-                id: unit.id,
-                pId: unit.pId || "",
-                value: unit.id,
-                title: unit.name,
-                isLeaf: unit.leaf,
-            };
-        });
-    });
-}
+
+    const mutation: any = {
+        type: "create",
+        resource: `metadata`,
+        data: { sqlViews: [sqlQuery] },
+    };
+    await engine.mutate(mutation);
+};
+
+export const useCountFacilities = ({
+    program,
+    indicator,
+    period,
+    unit,
+    level,
+}: Partial<{
+    program: string;
+    indicator: string;
+    unit: string;
+    level: string;
+    period: string;
+}>) => {
+    const engine = useDataEngine();
+    return useQuery<any, Error>(
+        ["count-facilities", program, indicator, period, unit, level],
+        async () => {
+            if (program && unit && period) {
+                let dimensions: string[] = [
+                    `dimension=pe:${period}`,
+                    "dimension=eZrfD4QnQfl",
+                ];
+
+                let ous: string[] = [unit];
+                let filters: string[] = [`filter=kHRn35W3Gq4:EQ:${indicator}`];
+
+                if (level) {
+                    ous = [...ous, `LEVEL-${level}`];
+                }
+                dimensions = [...dimensions, `dimension=ou:${ous.join(";")}`];
+
+                const {
+                    data: { rows, headers, ...rest },
+                }: any = await engine.query({
+                    data: {
+                        resource: `analytics/enrollments/query/${program}?${[
+                            ...dimensions,
+                            ...filters,
+                            "showHierarchy=true",
+                        ].join("&")}`,
+                    },
+                });
+
+                const ouIndex = headers.findIndex(
+                    (header: any) => header.name === "ou"
+                );
+                const completeIndex = headers.findIndex(
+                    (header: any) => header.name === "eZrfD4QnQfl"
+                );
+
+                if (ouIndex !== -1 && rows.length > 0) {
+                    const total = uniq(
+                        rows.map((row: string[]) => row[ouIndex])
+                    ).length;
+
+                    const completed = uniq(
+                        rows
+                            .filter(
+                                (row: string[]) => row[completeIndex] === "1"
+                            )
+                            .map((row: string[]) => row[ouIndex])
+                    ).length;
+
+                    return { total, completed, running: total - completed };
+                }
+            }
+
+            return { total: 0, completed: 0, running: 0 };
+        }
+    );
+};
+
+export const useSQLViewMetadata = ({
+    program,
+    indicator,
+    indicatorGroup,
+    period,
+    unit,
+    level,
+    periodType,
+    countUnits,
+}: Partial<{
+    program: string;
+    id: string;
+    indicator: string;
+    unit: string;
+    indicatorGroup: string;
+    level: string;
+    period: string;
+    periodType: string;
+    countUnits: boolean;
+}>) => {
+    const engine = useDataEngine();
+    return useQuery<any, Error>(
+        [
+            "sql-view-metadata",
+            program,
+            indicator,
+            indicatorGroup,
+            period,
+            unit,
+            level,
+            periodType,
+        ],
+        async () => {
+            if (program && unit && period) {
+                let dimensions: string[] = [
+                    `dimension=pe:${period}`,
+                    "dimension=eZrfD4QnQfl",
+                    // "dimension=TG1QzFgGTex",
+                    // "dimension=kHRn35W3Gq4",
+                ];
+
+                let ous: string[] = [unit];
+                let filters: string[] = [];
+                if (indicatorGroup && indicator) {
+                    filters = [
+                        ...filters,
+                        `filter=kHRn35W3Gq4:EQ:${indicator}`,
+                    ];
+                } else if (indicatorGroup) {
+                    filters = [
+                        ...filters,
+                        `filter=TG1QzFgGTex:EQ:${indicatorGroup}`,
+                    ];
+                }
+                if (level) {
+                    ous = [...ous, `LEVEL-${level}`];
+                }
+                dimensions = [...dimensions, `dimension=ou:${ous.join(";")}`];
+
+                const {
+                    data: { rows },
+                }: any = await engine.query({
+                    data: {
+                        resource: `analytics/events/aggregate/${program}?${[
+                            ...dimensions,
+                            ...filters,
+                            "showHierarchy=true",
+                            "outputType=TRACKED_ENTITY_INSTANCE",
+                        ].join("&")}`,
+                    },
+                });
+
+                let obj = {};
+                for (const row of rows) {
+                    const k = row
+                        .slice(0, row.length - 1)
+                        .map((a: string) => {
+                            if (a) {
+                                return `[${a}]`;
+                            }
+                            return "[0]";
+                        })
+                        .join("");
+                    setWith(obj, k, row[row.length - 1], Object);
+                }
+                return obj;
+            }
+
+            return {};
+        }
+    );
+};
 
 export function usePrograms() {
     const engine = useDataEngine();
@@ -132,11 +302,55 @@ export function useProgramAttributes(
                 };
             }
             let { prog, instance }: any = await engine.query(queries);
+            const all = fromPairs<{
+                valueType: string;
+                optionSetValue: boolean;
+                options: Array<{ code: string; name: string }>;
+            }>(
+                prog.programTrackedEntityAttributes.map(
+                    ({
+                        trackedEntityAttribute: {
+                            id,
+                            valueType,
+                            optionSetValue,
+                            optionSet,
+                        },
+                    }: any) => [
+                        id,
+                        {
+                            valueType,
+                            optionSetValue,
+                            options: optionSetValue ? optionSet.options : [],
+                        },
+                    ]
+                )
+            );
+
             if (instance) {
                 const { rows, headers } = instance;
                 const obj: any[] = rows.map((r: string[]) => {
                     return fromPairs(
-                        headers.map(({ name }: any, i: number) => [name, r[i]])
+                        headers.map(({ name }: any, i: number) => {
+                            if (
+                                all[name]?.valueType === "DATE" ||
+                                all[name]?.valueType === "DATETIME"
+                            ) {
+                                return [name, dayjs(r[i])];
+                            }
+                            if (all[name]?.optionSetValue) {
+                                console.log(r[i]);
+                                const val = all[name].options.find(
+                                    (a) => a.code === r[i]
+                                );
+                                if (val) {
+                                    return [
+                                        name,
+                                        { label: val.name, value: val.code },
+                                    ];
+                                }
+                            }
+                            return [name, r[i]];
+                        })
                     );
                 });
 
@@ -420,6 +634,33 @@ export function useEvents(stage: string, tei: string, indicator: string = "") {
     });
 }
 
+const fetchOrganisations = async (engine: any) => {
+    let allOrganisationUnits: any[] = [];
+
+    let total = 1;
+    let page = 0;
+
+    do {
+        const {
+            units: { organisationUnits },
+        }: any = await engine.query({
+            units: {
+                resource: "organisationUnits.json",
+                params: {
+                    fields: "id,name,leaf,path,parent",
+                    withinUserHierarchy: "true",
+                    pageSize: 500,
+                    page: ++page,
+                },
+            },
+        });
+        total = organisationUnits.length;
+        allOrganisationUnits = allOrganisationUnits.concat(organisationUnits);
+        subject.next(page);
+    } while (total > 1);
+    return allOrganisationUnits;
+};
+
 export function useUserUnits() {
     const engine = useDataEngine();
     const query = {
@@ -429,19 +670,11 @@ export function useUserUnits() {
                 fields: "organisationUnits[id,name],teiSearchOrganisationUnits,dataViewOrganisationUnits",
             },
         },
-        units: {
-            resource: "organisationUnits.json",
-            params: {
-                fields: "id,name,leaf,path,parent",
-                withinUserHierarchy: "true",
-                paging: "false",
-            },
-        },
+
         events: {
             resource: "events/query.json",
             params: {
                 ouMode: "ALL",
-                // dataElement: "kToJ1rk0fwY,kuVtv8R9n8q",
                 programStage: "vPQxfsUQLEy",
                 includeAllDataElements: "true",
                 skipPaging: "true",
@@ -478,7 +711,6 @@ export function useUserUnits() {
                 options: { options },
                 programs: { programs },
                 levels: { organisationUnitLevels },
-                units: { organisationUnits: allUnits },
             }: any = await engine.query(query);
 
             const indicators = rows.map((row: string[]) => {
@@ -486,30 +718,27 @@ export function useUserUnits() {
                     row.map((r, index) => [headers[index].name, r])
                 );
             });
-            // const index = headers.findIndex(
-            //     (header: any) => header.name === "kToJ1rk0fwY"
-            // );
-            // const groupIndex = headers.findIndex(
-            //     (header: any) => header.name === "kuVtv8R9n8q"
-            // );
-            await db.organisations.bulkPut(allUnits);
+
+            const units = await db.organisations.count();
+            if (units === 0) {
+                const units = await fetchOrganisations(engine);
+                await db.organisations.bulkPut(units);
+            }
             const availablePrograms = programs.filter(
                 (p: any) => !p.withoutRegistration
             );
             changeOus(organisationUnits.map((ou: any) => ou.id));
             changeInitialPrograms(availablePrograms);
             changeIndicatorGroups(options);
-            changeIndicatorGroup(options[0].code);
-            // changeIndicatorGroupIndex(groupIndex);
+            // changeIndicatorGroup(options[0].code);
             changeOu(organisationUnits[0].id);
-            // changeIndicatorIndex(index);
             changeIndicators(indicators);
             changeLevels(organisationUnitLevels);
             const currentIndicator = indicators.find(
                 (row: any) => row.kuVtv8R9n8q === options[0].code
             );
             if (currentIndicator) {
-                changeIndicator(currentIndicator.event);
+                // changeIndicator(currentIndicator.event);
             }
             return {
                 searchOu: organisationUnits?.[0].id || "",
@@ -520,15 +749,11 @@ export function useUserUnits() {
 }
 
 export function useAnalyticsStructure(
-    organisationUnits: string,
-    periods: string
+    periods: string,
+    organisationUnits?: string
 ) {
     const engine = useDataEngine();
-    const params = [
-        {
-            param: "dimension",
-            value: `ou:${organisationUnits}`,
-        },
+    let params = [
         {
             param: "dimension",
             value: `pe:${periods}`,
@@ -538,6 +763,16 @@ export function useAnalyticsStructure(
             value: true,
         },
     ];
+
+    if (organisationUnits) {
+        params = [
+            {
+                param: "dimension",
+                value: `ou:${organisationUnits}`,
+            },
+            ...params,
+        ];
+    }
 
     const allParams = params
         .map((s: any) => {
@@ -582,10 +817,7 @@ export function useAnalytics(
             param: "aggregationType",
             value: aggregationType,
         },
-        {
-            param: `filter`,
-            value: `${searchParam}:EQ:${search}`,
-        },
+
         {
             param: "hierarchyMeta",
             value: hierarchyMeta,
@@ -595,6 +827,16 @@ export function useAnalytics(
             value: showHierarchy,
         },
     ];
+
+    if (search) {
+        params = [
+            ...params,
+            {
+                param: `filter`,
+                value: `${searchParam}:EQ:${search}`,
+            },
+        ];
+    }
 
     if (filterBy === "orgUnit") {
         params = [

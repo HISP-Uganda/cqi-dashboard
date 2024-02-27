@@ -15,7 +15,9 @@ const TrackedEntityInstanceForm = () => {
 
     return (
         <Box m="auto" w="100%" padding="10px" flex={1}>
-            <Text fontSize='3xl' backgroundColor="gray.200" color="blue.600">{search["ou-name"]}</Text>
+            <Text fontSize="3xl" backgroundColor="gray.200" color="blue.600">
+                {search["ou-name"]}
+            </Text>
             {isLoading && <Spinner />}
             {isSuccess && (
                 <Stack>
@@ -25,7 +27,6 @@ const TrackedEntityInstanceForm = () => {
                         }
                         instance={data.instance}
                     />
-                    {/* <pre>{JSON.stringify(data.instance, null, 2)}</pre> */}
                 </Stack>
             )}
             {isError && <div>{error.message}</div>}

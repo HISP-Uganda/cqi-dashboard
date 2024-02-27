@@ -1,12 +1,12 @@
+import { Box } from "@chakra-ui/react";
 import { GroupBase, Select } from "chakra-react-select";
-import { Box, Stack } from "@chakra-ui/react";
 import { useStore } from "effector-react";
 import { FC } from "react";
-import { dashboards } from "../Store";
 import { Option } from "../interfaces";
+import { dashboards } from "../Store";
 interface IndicatorGroupProps {
-    value: string;
-    onChange: (value: string) => void;
+    value: string | undefined;
+    onChange: (value: string | undefined) => void;
 }
 
 const IndicatorGroup: FC<IndicatorGroupProps> = ({ value, onChange }) => {
@@ -23,9 +23,7 @@ const IndicatorGroup: FC<IndicatorGroupProps> = ({ value, onChange }) => {
                 }
                 isClearable
                 onChange={(e) => {
-                    if (e?.value) {
-                        onChange(e.value);
-                    }
+                    onChange(e?.value);
                 }}
                 options={store.indicatorGroups.map((o: any) => {
                     return {

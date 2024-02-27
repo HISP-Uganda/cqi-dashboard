@@ -9,13 +9,14 @@ import { changeTrackedEntityType } from "./Events";
 import { MakeGenerics } from "@tanstack/react-location";
 import { OptionBase } from "chakra-react-select";
 import { fixedPeriods } from "./utils";
+import { Dayjs } from "dayjs";
 
 // }
 export interface Store {
     loading: boolean;
     url: string;
-    indicator: string;
-    indicatorGroup: string;
+    indicator: string | undefined;
+    indicatorGroup: string | undefined;
     indicatorGroups: any[];
     period: Period[];
     filterBy: string;
@@ -37,6 +38,9 @@ export interface Store {
     instance: string;
     level: string;
     levels: any[];
+    relativePeriodType: string;
+    fixedPeriodType: string;
+    countUnits: boolean;
 }
 export interface ColumnProps {
     id: string;
@@ -50,7 +54,7 @@ interface LastUpdatedByUserInfo {
 }
 export interface ChangeWorkSheet {
     storedBy: string;
-    dueDate: string;
+    dueDate: Dayjs;
     program: string;
     href: string;
     event: string;
@@ -62,9 +66,9 @@ export interface ChangeWorkSheet {
     enrollmentStatus: string;
     status: string;
     orgUnitName: string;
-    eventDate: string;
+    eventDate: Dayjs;
     attributeCategoryOptions: string;
-    lastUpdated: string;
+    lastUpdated: Dayjs;
     created: string;
     followup: string;
     deleted: string;
@@ -75,8 +79,8 @@ export interface ChangeWorkSheet {
     // relationships: any[];
     f9bjMbi3j3j: string;
     vlcuyaFe8XA: string;
-    TY4BoFr95UI: string;
-    megrn75m57y: string;
+    TY4BoFr95UI: Dayjs;
+    megrn75m57y: Dayjs;
     vj0HLP3eHbe: string;
 }
 

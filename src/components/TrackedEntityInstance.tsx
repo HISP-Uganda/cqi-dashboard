@@ -1,8 +1,7 @@
 import { Box, Spacer, Stack } from "@chakra-ui/layout";
 import { Button, Text } from "@chakra-ui/react";
-import { useMatch } from "@tanstack/react-location";
+import { useMatch, useSearch } from "@tanstack/react-location";
 import { Tabs } from "antd";
-import { useSearch } from "@tanstack/react-location";
 import { useStore } from "effector-react";
 import { LocationGenerics } from "../interfaces";
 import { useProgramStages } from "../Queries";
@@ -23,10 +22,16 @@ const TrackedEntityInstance = () => {
         <Box bg="white" p="10px" flex={1}>
             {isLoading && <div>Loading</div>}
             {isSuccess && (
-                <Stack >
+                <Stack>
                     <Stack w="100%" direction="row">
                         <Stack w="100%" direction="row">
-                            <Text fontSize='3xl' backgroundColor="gray.200" color="blue.600">{search["ou-name"]}</Text>
+                            <Text
+                                fontSize="3xl"
+                                backgroundColor="gray.200"
+                                color="blue.600"
+                            >
+                                {search["ou-name"]}
+                            </Text>
                         </Stack>
                         <Stack w="100%" direction="row">
                             <Spacer />

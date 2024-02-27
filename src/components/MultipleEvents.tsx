@@ -12,18 +12,17 @@ import {
 } from "@chakra-ui/react";
 import { useDataEngine } from "@dhis2/app-runtime";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { InputNumber } from "antd";
-import { parseISO } from "date-fns";
+import { DatePicker, InputNumber } from "antd";
+import dayjs from "dayjs";
 import { useStore } from "effector-react";
+import moment, { Moment } from "moment";
 import { ChangeEvent, FC, useState } from "react";
 import Plot from "react-plotly.js";
 import { Project, RunChart } from "../interfaces";
+import { useEvent } from "../Queries";
 import { dashboards } from "../Store";
 import { reviewPeriodString } from "../utils/common";
 import { generateUid } from "../utils/uid";
-import moment, { Moment } from 'moment';
-import DatePicker from "./DatePicker";
-import { useEvent } from "../Queries";
 
 interface MultipleProps {
     tei: string;
@@ -36,7 +35,7 @@ interface MultipleProps {
 function disabledDate(current: Moment | null): boolean {
     if (!current) return false;
 
-    const currentDate = moment().endOf('day');
+    const currentDate = moment().endOf("day");
 
     // Disable all dates in the future
     return current.isAfter(currentDate);
@@ -49,7 +48,10 @@ const MultipleEvents: FC<MultipleProps> = ({
     title,
     project,
 }) => {
-    const { isLoading, isError, data, error, isSuccess } = useEvent("vPQxfsUQLEy", project.kHRn35W3Gq4)
+    const { isLoading, isError, data, error, isSuccess } = useEvent(
+        "vPQxfsUQLEy",
+        project.kHRn35W3Gq4
+    );
     const [events, setEvents] = useState<Array<Partial<RunChart>>>(
         () => stageData
     );
@@ -100,22 +102,22 @@ const MultipleEvents: FC<MultipleProps> = ({
 
     const onBlur =
         (event: Partial<RunChart>) =>
-            async (e: ChangeEvent<HTMLInputElement>) => {
-                e.persist();
-                const { rVZlkzOwWhi, RgNQcLejbwX, ...rest } = event;
+        async (e: ChangeEvent<HTMLInputElement>) => {
+            e.persist();
+            const { rVZlkzOwWhi, RgNQcLejbwX, ...rest } = event;
 
-                const dataValues = [
-                    {
-                        dataElement: "rVZlkzOwWhi",
-                        value: rVZlkzOwWhi || "",
-                    },
-                    {
-                        dataElement: "RgNQcLejbwX",
-                        value: RgNQcLejbwX || "",
-                    },
-                ];
-                await mutateAsync({ ...rest, dataValues });
-            };
+            const dataValues = [
+                {
+                    dataElement: "rVZlkzOwWhi",
+                    value: rVZlkzOwWhi || "",
+                },
+                {
+                    dataElement: "RgNQcLejbwX",
+                    value: RgNQcLejbwX || "",
+                },
+            ];
+            await mutateAsync({ ...rest, dataValues });
+        };
 
     const display = (e: Partial<RunChart>) => {
         if (e.rVZlkzOwWhi === 0) {
@@ -130,13 +132,17 @@ const MultipleEvents: FC<MultipleProps> = ({
 
         return "-";
     };
-    if (isError) return <pre>{JSON.stringify(error)}</pre>
-    if (isLoading) return <Text>Loading</Text>
+    if (isError) return <pre>{JSON.stringify(error)}</pre>;
+    if (isLoading) return <Text>Loading</Text>;
     if (isSuccess)
         return (
             <Stack>
                 <Box
-                    style={{ height: "100%", marginBottom: 20, paddingLeft: 60 }}
+                    style={{
+                        height: "100%",
+                        marginBottom: 20,
+                        paddingLeft: 60,
+                    }}
                     flex={1}
                 >
                     <Plot
@@ -148,7 +154,7 @@ const MultipleEvents: FC<MultipleProps> = ({
                                         if (e.RgNQcLejbwX && e.rVZlkzOwWhi) {
                                             return String(
                                                 (e.rVZlkzOwWhi * 100) /
-                                                e.RgNQcLejbwX
+                                                    e.RgNQcLejbwX
                                             );
                                         }
                                         return "-";
@@ -207,18 +213,22 @@ const MultipleEvents: FC<MultipleProps> = ({
                                                     reviewPeriodString(
                                                         project.WQcY6nfPouv
                                                     ).toLowerCase() as
-                                                    | "time"
-                                                    | "date"
-                                                    | "week"
-                                                    | "month"
-                                                    | "quarter"
-                                                    | "year"
-                                                    | undefined
+                                                        | "time"
+                                                        | "date"
+                                                        | "week"
+                                                        | "month"
+                                                        | "quarter"
+                                                        | "year"
+                                                        | undefined
                                                 }
-                                                disabledDate={(current) => disabledDate(moment(current))}
+                                                disabledDate={(current) =>
+                                                    disabledDate(
+                                                        moment(current.date())
+                                                    )
+                                                }
                                                 value={
                                                     e.eventDate
-                                                        ? parseISO(e.eventDate)
+                                                        ? dayjs(e.eventDate)
                                                         : undefined
                                                 }
                                                 onChange={(value) =>
@@ -283,13 +293,16 @@ const MultipleEvents: FC<MultipleProps> = ({
                                     ))}
                                 </Tr>
                                 <Tr>
-
                                     <Td w="60px">
-                                        <Text fontSize='lg'>Numerator Name</Text>
+                                        <Text fontSize="lg">
+                                            Numerator Name
+                                        </Text>
                                         {data["WI6Qp8gcZFX"]}
                                     </Td>
-                                    <Td w="60px" >
-                                        <Text fontSize='lg'>Denominator Name</Text>
+                                    <Td w="60px">
+                                        <Text fontSize="lg">
+                                            Denominator Name
+                                        </Text>
                                         {data["krwzUepGwj7"]}
                                     </Td>
                                 </Tr>
@@ -305,7 +318,7 @@ const MultipleEvents: FC<MultipleProps> = ({
                 </Stack>
             </Stack>
         );
-    return null
+    return null;
 };
 
 export default MultipleEvents;

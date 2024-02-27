@@ -13,22 +13,11 @@ import {
 } from "@chakra-ui/react";
 import { useStore } from "effector-react";
 import EllipsisTooltip from "ellipsis-tooltip-react-chan";
-import { FC, useRef, useState } from "react";
+import { FC, useRef } from "react";
 import { utils, writeFile } from "xlsx";
-import {
-    changeFilterBy,
-    changeIndicator,
-    changeIndicatorGroup,
-    changeOus,
-} from "../Events";
+import { changeFilterBy, changeIndicatorGroup, changeOus } from "../Events";
 import { useAnalyticsStructure } from "../Queries";
-import {
-    $selectedIndicators,
-    dashboards,
-    indicatorForGroup,
-    orgUnits,
-    periods,
-} from "../Store";
+import { $selectedIndicators, dashboards, orgUnits, periods } from "../Store";
 import DownloadTable from "./DownloadTable";
 import IndicatorGroup from "./IndicatorGroup";
 import OrganisationLevel from "./OrganisationLevel";
@@ -46,16 +35,14 @@ const AllIndicators: FC<AllIndicatorsProps> = () => {
     const pes = useStore(periods);
     const tbl = useRef(null);
     const selectedIndicators = useStore($selectedIndicators);
-    const onIndicatorGroupChange = (value: string) => {
+    const onIndicatorGroupChange = (value: string | undefined) => {
         changeIndicatorGroup(value);
         // changeIndicator(indicators[0][0]);
     };
     const { data, isError, isLoading, error, isSuccess } =
-        useAnalyticsStructure(units, pes);
+        useAnalyticsStructure(pes, units);
 
-    const tableFunction = () => {
-
-    }
+    const tableFunction = () => {};
     return (
         <Stack p="5px" flex={1} spacing="0">
             <Stack flex={1} bg="white" p="5px">
@@ -93,20 +80,14 @@ const AllIndicators: FC<AllIndicatorsProps> = () => {
                                 Filter By Period
                             </Button>
                         )}
-                        {/* <Button
-                            colorScheme="blue"
+                        <DownloadTable
+                            label={"Download Indicators"}
                             onClick={() => {
                                 const wb = utils.table_to_book(tbl.current);
                                 writeFile(wb, "Table.xlsx");
                             }}
-                            size="sm"
-                        >
-                            Download Indicators
-                        </Button> */}
-                        <DownloadTable label={"Download Indicators"} onClick={() => {
-                            const wb = utils.table_to_book(tbl.current);
-                            writeFile(wb, "Table.xlsx");
-                        }} colorScheme="blue" />
+                            colorScheme="blue"
+                        />
                     </Stack>
                 </Stack>
 

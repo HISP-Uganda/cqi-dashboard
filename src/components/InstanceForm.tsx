@@ -9,7 +9,6 @@ import {
     SimpleGrid,
     Spacer,
     Stack,
-
     Textarea,
 } from "@chakra-ui/react";
 import { useDataEngine } from "@dhis2/app-runtime";
@@ -17,7 +16,7 @@ import { useNavigate, useSearch } from "@tanstack/react-location";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DatePicker } from "antd";
 import { GroupBase, Select } from "chakra-react-select";
-import dayjs from "dayjs";
+import { Dayjs } from "dayjs";
 import { useStore } from "effector-react";
 import { useEffect, useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
@@ -143,7 +142,6 @@ export default function InstanceForm({
         return await engine.mutate(mutation);
     };
 
-
     const { mutateAsync } = useMutation(addTrackedEntityInstance);
 
     const { mutateAsync: insertEvent } = useMutation(addEvent, {
@@ -178,9 +176,9 @@ export default function InstanceForm({
                 optionSetValue,
                 options: optionSetValue
                     ? optionSet.options.map((o: any) => ({
-                        value: o.code,
-                        label: o.name,
-                    }))
+                          value: o.code,
+                          label: o.name,
+                      }))
                     : null,
             };
 
@@ -250,7 +248,7 @@ export default function InstanceForm({
                     render={({ field }) => (
                         <DatePicker
                             name={field.name}
-                            value={field.value ? dayjs(field.value) : null}
+                            value={field.value as unknown as Dayjs}
                             onChange={(e) => {
                                 field.onChange(e);
                             }}
@@ -271,7 +269,7 @@ export default function InstanceForm({
                     render={({ field }) => (
                         <DatePicker
                             name={field.name}
-                            value={field.value ? dayjs(field.value) : null}
+                            value={field.value as unknown as Dayjs}
                             onChange={(e) => {
                                 field.onChange(e);
                             }}
@@ -368,7 +366,7 @@ export default function InstanceForm({
                                     }
                                 }}
                                 options={f.options as Array<Option>}
-                            // size="sm"
+                                // size="sm"
                             />
                         );
                     }}
@@ -400,7 +398,7 @@ export default function InstanceForm({
     };
 
     useEffect(() => {
-        const subscription = watch((value, { name, type }) => { });
+        const subscription = watch((value, { name, type }) => {});
         return () => subscription.unsubscribe();
     }, [watch]);
 

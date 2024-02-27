@@ -35,14 +35,16 @@ const NewIndicator: FC<NewIndicatorProps> = ({
         [setPending, hideModal]
     );
 
-
-
     const meta: any = {
         disabled: pending,
         columns: 1,
         formItemLayout: null,
         colon: true,
-        fields: [{ key: "name", label: "Indicator Name", required: true }, { key: "numerator", label: "Numerator", required: true }, { key: "denominator", label: "Denominator", required: true }],
+        fields: [
+            { key: "name", label: "Indicator Name", required: true },
+            { key: "numerator", label: "Numerator", required: true },
+            { key: "denominator", label: "Denominator", required: true },
+        ],
     };
     return (
         <Modal

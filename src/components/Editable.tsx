@@ -1,25 +1,23 @@
 import {
     Button,
     Input,
-    Stack,
     Table,
     TableContainer,
     Tbody,
     Td,
     Textarea,
+    Tfoot,
     Th,
     Thead,
     Tr,
-    Box,
-    Tfoot,
 } from "@chakra-ui/react";
+import { useDataEngine } from "@dhis2/app-runtime";
+import { useMutation } from "@tanstack/react-query";
 import { Checkbox, DatePicker, InputNumber, Select } from "antd";
-import dayjs from "dayjs";
+import { Dayjs } from "dayjs";
 import { useStore } from "effector-react";
 import { fromPairs } from "lodash";
 import { ChangeEvent, useState } from "react";
-import { useDataEngine } from "@dhis2/app-runtime";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ChangeWorkSheet, Column, Project } from "../interfaces";
 import { dashboards } from "../Store";
 import { generateUid } from "../utils/uid";
@@ -42,10 +40,9 @@ export default function Editable({
     project: Partial<Project>;
 }) {
     const engine = useDataEngine();
-    const queryClient = useQueryClient();
-
     const store = useStore(dashboards);
     const [id, setId] = useState<string>("");
+    console.log(data);
     const [events, setEvents] = useState<Partial<ChangeWorkSheet>[]>(
         () => data
     );
@@ -117,7 +114,7 @@ export default function Editable({
     const handleChange = (
         col: Column,
         record: Partial<ChangeWorkSheet>,
-        value: string
+        value: string | Dayjs | null
     ) => {
         const processedEvents = events.map((event) => {
             if (event.event === record.event) {
@@ -129,34 +126,36 @@ export default function Editable({
     };
 
     const getInput2 = (col: Column, record: Partial<ChangeWorkSheet>) => {
+        let value = record[col.key];
+        let otherDate = null;
+
+        if (
+            col.inputType === "DATE" ||
+            (col.inputType === "DATETIME" && value)
+        ) {
+            const val = value as unknown as Dayjs;
+            otherDate = val;
+        }
         const Opts: any = {
             DATE: (
                 <DatePicker
-                    value={
-                        record[`${col.key}`]
-                            ? dayjs(record[`${col.key}`])
-                            : undefined
-                    }
-                    onChange={(_, dateString) => {
-                        handleChange(col, record, dateString);
+                    value={otherDate}
+                    onChange={(val) => {
+                        handleChange(col, record, val as unknown as Dayjs);
                     }}
                 />
             ),
             DATETIME: (
                 <DatePicker
-                    value={
-                        record[`${col.key}`]
-                            ? dayjs(record[`${col.key}`])
-                            : undefined
-                    }
-                    onChange={(_, dateString) => {
-                        handleChange(col, record, dateString);
+                    value={otherDate}
+                    onChange={(val) => {
+                        handleChange(col, record, val as unknown as Dayjs);
                     }}
                 />
             ),
             LONG_TEXT: (
                 <Textarea
-                    value={record[`${col.key}`]}
+                    value={String(record[`${col.key}`])}
                     onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
                         handleChange(col, record, e.target.value)
                     }
@@ -164,7 +163,7 @@ export default function Editable({
             ),
             NUMBER: (
                 <InputNumber
-                    value={record[`${col.key}`]}
+                    value={String(record[`${col.key}`])}
                     onChange={(value) => handleChange(col, record, value || "")}
                 />
             ),
@@ -176,7 +175,9 @@ export default function Editable({
             return (
                 <Select
                     value={record[`${col.key}`]}
-                    onChange={(value) => handleChange(col, record, value || "")}
+                    onChange={(value) =>
+                        handleChange(col, record, String(value || ""))
+                    }
                     style={{ width: "100%" }}
                 >
                     {col.options?.map((o: any) => (
@@ -191,7 +192,7 @@ export default function Editable({
         return (
             Opts[col.inputType] || (
                 <Input
-                    value={record[`${col.key}`]}
+                    value={String(record[`${col.key}`])}
                     onChange={(e: ChangeEvent<HTMLInputElement>) =>
                         handleChange(col, record, e.target.value)
                     }
@@ -205,15 +206,16 @@ export default function Editable({
             ["DATE", "DATETIME"].indexOf(col.inputType) !== -1 &&
             !!hold[`${col.dataIndex}`]
         ) {
-            return (
-                <Td key={col.key}>
-                    {dateFormat.format(
-                        new Date(hold[`${col.dataIndex}`] || "")
-                    )}
-                </Td>
-            );
+            let val = "";
+            if (hold[`${col.dataIndex}`]) {
+                const current: Dayjs = hold[
+                    `${col.dataIndex}`
+                ] as unknown as Dayjs;
+                val = dateFormat.format(current.toDate());
+            }
+            return <Td key={col.key}>{val}</Td>;
         }
-        return <Td key={col.key}>{hold[`${col.dataIndex}`]}</Td>;
+        return <Td key={col.key}>{String(hold[`${col.dataIndex}`])}</Td>;
     };
 
     return (

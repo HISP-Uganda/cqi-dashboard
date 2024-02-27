@@ -1,7 +1,7 @@
-import { indicatorForGroup, dashboards } from "../Store";
+import { dashboards } from "../Store";
 
+import { Box } from "@chakra-ui/react";
 import { GroupBase, Select } from "chakra-react-select";
-import { Stack, Box } from "@chakra-ui/react";
 import { useStore } from "effector-react";
 import { Option } from "../interfaces";
 
@@ -10,9 +10,9 @@ const Indicator = ({
     value,
     indicatorGroup,
 }: {
-    onChange: (option: string) => void;
-    value: string;
-    indicatorGroup: string;
+    onChange: (option: string | undefined) => void;
+    value: string | undefined;
+    indicatorGroup: string | undefined;
 }) => {
     const store = useStore(dashboards);
     const options: Option[] = store.indicators

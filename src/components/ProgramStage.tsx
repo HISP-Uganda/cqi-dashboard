@@ -1,4 +1,4 @@
-import { Box, Spinner } from "@chakra-ui/react";
+import { Spinner } from "@chakra-ui/react";
 import { fromPairs } from "lodash";
 import { Column, Project } from "../interfaces";
 import { useStage } from "../Queries";

@@ -21,39 +21,33 @@ import {
     Spinner,
     Stack,
     Table,
+    TabList,
+    TabPanel,
+    TabPanels,
+    Tabs,
     Tbody,
     Td,
     Text,
     Th,
     Thead,
     Tr,
-    Tabs,
-    TabList,
-    TabPanels,
-    Tab,
-    TabPanel,
 } from "@chakra-ui/react";
 import { useDataEngine } from "@dhis2/app-runtime";
+import { useNavigate, useSearch } from "@tanstack/react-location";
 import { DatePicker } from "antd";
 import { useStore } from "effector-react";
 import { fromPairs } from "lodash";
 import moment from "moment";
 import * as XLSX from "xlsx";
-import IndicatorGroup from "./IndicatorGroup";
-import OrgUnitTreeSelect from "./OrgUnitTreeSelect";
-import OrganisationLevel from "./OrganisationLevel";
-import PeriodPicker from "./PeriodPicker";
 import {
-    changeOu,
-    changeFilterBy,
     changeIndicator,
     changeIndicatorGroup,
     changeOus,
     changeProgram,
     changeProgramEntity,
-    changeProject,
     changeTrackedEntityType,
 } from "../Events";
+import { LocationGenerics } from "../interfaces";
 import { useInstances } from "../Queries";
 import {
     $withOptionSet,
@@ -64,12 +58,11 @@ import {
 import { withAttributesAsEvent } from "../utils/common";
 import ColumnDrawer from "./ColumnDrawer";
 import DisplayEvent from "./DisplayEvent";
+import IndicatorGroup from "./IndicatorGroup";
 import OptionDisplay from "./OptionDisplay";
+import OrgUnitTreeSelect from "./OrgUnitTreeSelect";
+import PeriodPicker from "./PeriodPicker";
 import ProgramSelect from "./ProgramSelect";
-import { useNavigate, useSearch } from "@tanstack/react-location";
-import { LocationGenerics } from "../interfaces";
-import Summaries from "./Summaries";
-import Units from "./Units";
 
 const OUTER_LIMIT = 4;
 const INNER_LIMIT = 4;
@@ -88,9 +81,11 @@ const Projects = () => {
     ]);
     const [downloading, setDownloading] = useState<boolean>(false);
     const availableIndicators = useStore(allIndicators);
-    const onIndicatorGroupChange = (value: string) => {
+    const onIndicatorGroupChange = (value: string | undefined) => {
         changeIndicatorGroup(value);
-        changeIndicator(indicators[0][0]);
+        if (value) {
+            changeIndicator(indicators[0][0]);
+        }
     };
     const withOptionSet = useStore($withOptionSet);
     const {
@@ -384,7 +379,7 @@ const Projects = () => {
                                                 search.trackedEntityType || ""
                                             }
                                             handleChange={handleChange}
-                                            onClear={() => { }}
+                                            onClear={() => {}}
                                         />
                                     </Stack>
                                     <Stack direction="row">
@@ -422,8 +417,14 @@ const Projects = () => {
                                         colorScheme="gray"
                                         textTransform="none"
                                     >
-                                        <Thead >
-                                            <Tr py={1} position="sticky" top="0" background="white" zIndex={10}>
+                                        <Thead>
+                                            <Tr
+                                                py={1}
+                                                position="sticky"
+                                                top="0"
+                                                background="white"
+                                                zIndex={10}
+                                            >
                                                 {store.columns
                                                     .filter(
                                                         (s: any) =>

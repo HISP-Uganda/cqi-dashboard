@@ -1,4 +1,4 @@
-import { Box, Flex, Stack, Text } from "@chakra-ui/react";
+import { Box, Flex, Stack } from "@chakra-ui/react";
 import { Spinner } from "@chakra-ui/spinner";
 import {
     createHashHistory,
@@ -25,6 +25,7 @@ import { useDataEngine } from "@dhis2/app-runtime";
 import { QueryClient } from "@tanstack/react-query";
 import { LocationGenerics } from "../interfaces";
 import { decodeFromBinary, encodeToBinary } from "../utils";
+import AdminDashboard from "./dashboards/AdminDashboard";
 import Menus from "./Menus";
 
 const history = createHashHistory();
@@ -134,6 +135,14 @@ const App = () => {
                 },
             ],
         },
+        {
+            path: "/admin-dashboard",
+            loader: async () => {
+                changeUrl("/admin-dashboard");
+                return {};
+            },
+            children: [{ path: "/", element: <AdminDashboard /> }],
+        },
     ];
     return (
         <Stack bg="gray.300" h="calc(100vh - 8px)">
@@ -150,7 +159,10 @@ const App = () => {
             {isSuccess && (
                 <Router location={location} routes={routes}>
                     <Stack h="calc(100vh - 8px)" spacing="2px">
-                        <Menus searchOu={data.searchOu} orgUnitName={data.orgUnitName} />
+                        <Menus
+                            searchOu={data.searchOu}
+                            orgUnitName={data.orgUnitName}
+                        />
                         <Outlet />
                     </Stack>
                 </Router>

@@ -14,13 +14,13 @@ import {
     Thead,
     Tr,
 } from "@chakra-ui/react";
-import React, { useRef } from "react";
 import { useStore } from "effector-react";
-import { changeIndicator, changeIndicatorGroup, changeOus, changeFilterBy } from "../../Events";
+import { useRef } from "react";
+import { utils, writeFile } from "xlsx";
+import { changeIndicator, changeIndicatorGroup, changeOus } from "../../Events";
 import { useAnalytics } from "../../Queries";
 import { dashboards, indicatorForGroup, orgUnits, periods } from "../../Store";
 import { colors } from "../../utils/common";
-import { utils, writeFile } from "xlsx";
 import Indicator from "../Indicator";
 import IndicatorGroup from "../IndicatorGroup";
 import OrganisationLevel from "../OrganisationLevel";
@@ -31,7 +31,7 @@ const Layered = () => {
     const orgUnits$ = useStore(orgUnits);
     const indicators = useStore(indicatorForGroup);
     const tbl = useRef(null);
-    const onIndicatorGroupChange = (value: string) => {
+    const onIndicatorGroupChange = (value: string | undefined) => {
         changeIndicatorGroup(value);
         changeIndicator(indicators[0].event);
     };
@@ -39,7 +39,7 @@ const Layered = () => {
     const { data, isError, isLoading, error, isSuccess } = useAnalytics(
         "vMfIVFcRWlu",
         "kHRn35W3Gq4",
-        store.indicator,
+        store.indicator ?? "",
         "rVZlkzOwWhi",
         "RgNQcLejbwX",
         orgUnits$,

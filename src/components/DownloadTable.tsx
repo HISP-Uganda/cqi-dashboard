@@ -1,5 +1,5 @@
-import { Button } from '@chakra-ui/react';
-import React from 'react';
+import { Button } from "@chakra-ui/react";
+import React from "react";
 
 type ButtonProps = {
     label: string;
@@ -7,7 +7,11 @@ type ButtonProps = {
     colorScheme: string;
 };
 
-const DownloadTable: React.FC<ButtonProps> = ({ label, colorScheme, onClick }) => {
+const DownloadTable: React.FC<ButtonProps> = ({
+    label,
+    colorScheme,
+    onClick,
+}) => {
     return (
         <Button onClick={onClick} type="button" colorScheme={colorScheme}>
             {label}

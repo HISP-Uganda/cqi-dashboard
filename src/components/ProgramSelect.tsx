@@ -1,10 +1,5 @@
 import { Select } from "antd";
 import { useStore } from "effector-react";
-import {
-    changeProgram,
-    changeProgramEntity,
-    changeTrackedEntityType,
-} from "../Events";
 import { dashboards } from "../Store";
 
 const { Option } = Select;
