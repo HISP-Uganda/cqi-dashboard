@@ -31,3 +31,5 @@ export const changeAttribute = domain.createEvent<{
 }>();
 
 export const toggleCount = domain.createEvent<void>();
+
+export const changeAnalyticsPeriods = domain.createEvent<string[]>();

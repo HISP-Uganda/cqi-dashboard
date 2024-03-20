@@ -1,35 +1,35 @@
 Arguments: 
-  /Users/carapai/.local/share/nvm/v18.16.0/bin/node /Users/carapai/.local/share/nvm/v18.16.0/bin/yarn add react-contextfy
+  /Users/carapai/.local/share/nvm/v16.13.0/bin/node /Users/carapai/.local/share/nvm/v16.13.0/bin/yarn add @types/save-as
 
 PATH: 
-  /emulator:/Users/carapai/Library/pnpm:/Users/carapai/.local/share/nvm/v18.16.0/bin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/Library/Apple/usr/bin:/usr/local/share/dotnet:~/.dotnet/tools:/Library/Frameworks/Mono.framework/Versions/Current/Commands
+  /Users/carapai/.local/share/nvm/v16.13.0/bin:/Users/carapai/.bun/bin:/emulator:/Users/carapai/Library/pnpm:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/Library/Apple/usr/bin:/usr/local/share/dotnet:~/.dotnet/tools:/Library/Frameworks/Mono.framework/Versions/Current/Commands
 
 Yarn version: 
-  1.22.19
+  1.22.17
 
 Node version: 
-  18.16.0
+  16.13.0
 
 Platform: 
   darwin x64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/react-contextfy: Not found
-      at params.callback [as _callback] (/Users/carapai/.local/share/nvm/v18.16.0/lib/node_modules/yarn/lib/cli.js:66145:18)
-      at self.callback (/Users/carapai/.local/share/nvm/v18.16.0/lib/node_modules/yarn/lib/cli.js:140890:22)
-      at Request.emit (node:events:513:28)
-      at Request.<anonymous> (/Users/carapai/.local/share/nvm/v18.16.0/lib/node_modules/yarn/lib/cli.js:141862:10)
-      at Request.emit (node:events:513:28)
-      at IncomingMessage.<anonymous> (/Users/carapai/.local/share/nvm/v18.16.0/lib/node_modules/yarn/lib/cli.js:141784:12)
-      at Object.onceWrapper (node:events:627:28)
-      at IncomingMessage.emit (node:events:525:35)
-      at endReadableNT (node:internal/streams/readable:1359:12)
-      at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+  Error: https://registry.yarnpkg.com/@types%2fsave-as: Not found
+      at Request.params.callback [as _callback] (/Users/carapai/.local/share/nvm/v16.13.0/lib/node_modules/yarn/lib/cli.js:67029:18)
+      at Request.self.callback (/Users/carapai/.local/share/nvm/v16.13.0/lib/node_modules/yarn/lib/cli.js:140883:22)
+      at Request.emit (node:events:390:28)
+      at Request.<anonymous> (/Users/carapai/.local/share/nvm/v16.13.0/lib/node_modules/yarn/lib/cli.js:141855:10)
+      at Request.emit (node:events:390:28)
+      at IncomingMessage.<anonymous> (/Users/carapai/.local/share/nvm/v16.13.0/lib/node_modules/yarn/lib/cli.js:141777:12)
+      at Object.onceWrapper (node:events:509:28)
+      at IncomingMessage.emit (node:events:402:35)
+      at endReadableNT (node:internal/streams/readable:1343:12)
+      at processTicksAndRejections (node:internal/process/task_queues:83:21)
 
 npm manifest: 
   {
       "name": "cqi",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "description": "",
       "license": "BSD-3-Clause",
       "private": true,
@@ -73,11 +73,11 @@ npm manifest:
           "@tanstack/react-query": "^4.20.9",
           "antd": "^5.1.2",
           "antd-form-builder": "^2.1.2",
-          "chakra-react-select": "3.3.7",
+          "chakra-react-select": "3.3.10",
           "cors": "^2.8.5",
           "d2": "^31.9.3",
           "date-fns": "^2.29.3",
-          "dayjs": "^1.11.7",
+          "dayjs": "^1.11.10",
           "dexie": "^3.2.2",
           "dexie-react-hooks": "^1.1.1",
           "effector": "^21.8.11",
@@ -97,6 +97,8 @@ npm manifest:
           "react-plotly.js": "^2.6.0",
           "react-router-dom": "^5.2.0",
           "react-sizeme": "^3.0.1",
+          "rxjs": "^7.8.1",
+          "save-as": "^0.1.8",
           "sizeme": "^1.0.2",
           "xlsx": "^0.18.5",
           "zod": "^3.20.2"
@@ -6227,6 +6229,11 @@ Lockfile:
       object-assign "^4.1.1"
       util "0.10.3"
   
+  assertion-error@^2.0.1:
+    version "2.0.1"
+    resolved "https://registry.yarnpkg.com/assertion-error/-/assertion-error-2.0.1.tgz#f641a196b335690b1070bf00b6e7593fec190bf7"
+    integrity sha512-Izi8RQcffqCeNVgFigKli1ssklIbpHnCYc6AknXGYoB6grJqyeby7jv12JUQgmTAnIDnbck1uxksT4dzN3PWBA==
+  
   assign-symbols@^1.0.0:
     version "1.0.0"
     resolved "https://registry.yarnpkg.com/assign-symbols/-/assign-symbols-1.0.0.tgz#59667f41fadd4f20ccbc2bb96b8d4f7f78ec0367"
@@ -7233,10 +7240,21 @@ Lockfile:
       adler-32 "~1.3.0"
       crc-32 "~1.2.0"
   
-  chakra-react-select@3.3.7:
-    version "3.3.7"
-    resolved "https://registry.yarnpkg.com/chakra-react-select/-/chakra-react-select-3.3.7.tgz#9fea6fe305f1e92fb2d705c4f09460764e8269ea"
-    integrity sha512-WuvvGRlt6sxiuspHdEdbGSy0o0ZV5fRrc8ys2vLUSFpvhmkvNOJEQylyrmE0WrIOeLJd1CYqszepp1367KMH3g==
+  chai@*:
+    version "5.1.0"
+    resolved "https://registry.yarnpkg.com/chai/-/chai-5.1.0.tgz#648cf2d8b5d16f32646612e22ffd12dc617ef960"
+    integrity sha512-kDZ7MZyM6Q1DhR9jy7dalKohXQ2yrlXkk59CR52aRKxJrobmlBNqnFQxX9xOX8w+4mz8SYlKJa/7D7ddltFXCw==
+    dependencies:
+      assertion-error "^2.0.1"
+      check-error "^2.0.0"
+      deep-eql "^5.0.1"
+      loupe "^3.1.0"
+      pathval "^2.0.0"
+  
+  chakra-react-select@3.3.10:
+    version "3.3.10"
+    resolved "https://registry.yarnpkg.com/chakra-react-select/-/chakra-react-select-3.3.10.tgz#794f0fd6542a401b6941af216236fe4b17008a93"
+    integrity sha512-ElVwJchXgGkMQbehJ+EF6HIRfZh0w1i01J7P9W/8jqDN7jjhJJOFLQRV72Udjds8Q6YZ4DivuEtKLdyQvDutHQ==
     dependencies:
       "@chakra-ui/form-control" "^1.0.0"
       "@chakra-ui/icon" "^2.0.0"
@@ -7244,7 +7262,7 @@ Lockfile:
       "@chakra-ui/menu" "^1.0.0"
       "@chakra-ui/spinner" "^1.0.0"
       "@chakra-ui/system" "^1.2.0"
-      react-select "^5.3.2"
+      react-select "5.7.0"
   
   chalk@2.4.2, chalk@^2.0.0, chalk@^2.0.1, chalk@^2.3.2, chalk@^2.4.1, chalk@^2.4.2:
     version "2.4.2"
@@ -7280,6 +7298,11 @@ Lockfile:
     version "0.7.0"
     resolved "https://registry.yarnpkg.com/chardet/-/chardet-0.7.0.tgz#90094849f0937f2eedc2425d0d28a9e5f0cbad9e"
     integrity sha512-mT8iDcrh03qDGRRmoA2hmBJnxpllMR+0/0qlzjqZES6NdiWDcZkCNAk4rPFZ9Q85r27unkiNNg8ZOiwZXBHwcA==
+  
+  check-error@^2.0.0:
+    version "2.0.0"
+    resolved "https://registry.yarnpkg.com/check-error/-/check-error-2.0.0.tgz#589a4f201b6256fd93a2d165089fe43d2676d8c6"
+    integrity sha512-tjLAOBHKVxtPoHe/SA7kNOMvhCRdCJ3vETdeY0RuAc9popf+hyaSV6ZEg9hr4cpWF7jmo/JSWEnLDrnijS9Tog==
   
   check-types@^11.1.1:
     version "11.2.2"
@@ -8734,10 +8757,15 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/dateformat/-/dateformat-3.0.3.tgz#a6e37499a4d9a9cf85ef5872044d62901c9889ae"
     integrity sha512-jyCETtSl3VMZMWeRo7iY1FL19ges1t55hMo5yaam4Jrsm5EPL89UQkoQRyiI+Yf4k8r2ZpdngkV8hr1lIdjb3Q==
   
-  dayjs@^1.11.1, dayjs@^1.11.7:
+  dayjs@^1.11.1:
     version "1.11.7"
     resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.7.tgz#4b296922642f70999544d1144a2c25730fce63e2"
     integrity sha512-+Yw9U6YO5TQohxLcIkrXBeY73WP3ejHWVvx8XCk3gxvQDCTEmS48ZrSZCKciI7Bhl/uCMyxYtE9UqRILmFphkQ==
+  
+  dayjs@^1.11.10:
+    version "1.11.10"
+    resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.10.tgz#68acea85317a6e164457d6d6947564029a6a16a0"
+    integrity sha512-vjAczensTgRcqDERK0SR2XMwsF/tSvnvlv6VcF2GIhg6Sx4yOIt/irsr1RDJsKiIyBzJDpCoXiWWq28MqH2cnQ==
   
   debug@2, debug@2.6.9, debug@^2.2.0, debug@^2.3.3, debug@^2.6.0, debug@^2.6.9:
     version "2.6.9"
@@ -8806,6 +8834,11 @@ Lockfile:
     version "0.7.0"
     resolved "https://registry.yarnpkg.com/dedent/-/dedent-0.7.0.tgz#2495ddbaf6eb874abb0e1be9df22d2e5a544326c"
     integrity sha512-Q6fKUPqnAHAyhiUgFU7BUzLiv0kd8saH9al7tnu5Q/okj6dnupxyTgFIBjVzJATdfIAm9NAsvXNzjaKa+bxVyA==
+  
+  deep-eql@^5.0.1:
+    version "5.0.1"
+    resolved "https://registry.yarnpkg.com/deep-eql/-/deep-eql-5.0.1.tgz#21ea2c0d561a4d08cdd99c417ac584e0fb121385"
+    integrity sha512-nwQCf6ne2gez3o1MxWifqkciwt0zhl0LO1/UwVu4uMBuPmflWM4oQ70XMqHqnBJA+nhzncaqL9HVL6KkHJ28lw==
   
   deep-equal@^1.0.1:
     version "1.1.1"
@@ -10829,6 +10862,11 @@ Lockfile:
     version "1.0.2"
     resolved "https://registry.yarnpkg.com/get-canvas-context/-/get-canvas-context-1.0.2.tgz#d6e7b50bc4e4c86357cd39f22647a84b73601e93"
     integrity sha512-LnpfLf/TNzr9zVOGiIY6aKCz8EKuXmlYNV7CM2pUjBa/B+c2I15tS7KLySep75+FuerJdmArvJLcsAXWEy2H0A==
+  
+  get-func-name@^2.0.1:
+    version "2.0.2"
+    resolved "https://registry.yarnpkg.com/get-func-name/-/get-func-name-2.0.2.tgz#0d7cf20cd13fda808669ffa88f4ffc7a3943fc41"
+    integrity sha512-8vXOvuE167CtIc3OyItco7N/dpRtBbYOsPsXCz7X/PMnlGjYjSGuZJgM1Y7mmew7BKf9BqvLX2tnOVy1BBUsxQ==
   
   get-intrinsic@^1.0.2, get-intrinsic@^1.1.0, get-intrinsic@^1.1.1, get-intrinsic@^1.1.3:
     version "1.1.3"
@@ -14559,6 +14597,13 @@ Lockfile:
     dependencies:
       js-tokens "^3.0.0 || ^4.0.0"
   
+  loupe@^3.1.0:
+    version "3.1.0"
+    resolved "https://registry.yarnpkg.com/loupe/-/loupe-3.1.0.tgz#46ef1a4ffee73145f5c0a627536d754787c1ea2a"
+    integrity sha512-qKl+FrLXUhFuHUoDJG7f8P8gEMHq9NFS0c6ghXG1J0rldmZFQZoNVv/vyirE9qwCIhWZDsvEFd1sbFu3GvRQFg==
+    dependencies:
+      get-func-name "^2.0.1"
+  
   lower-case@^2.0.2:
     version "2.0.2"
     resolved "https://registry.yarnpkg.com/lower-case/-/lower-case-2.0.2.tgz#6fa237c63dbdc4a82ca0fd882e4722dc5e634e28"
@@ -16452,6 +16497,11 @@ Lockfile:
     version "4.0.0"
     resolved "https://registry.yarnpkg.com/path-type/-/path-type-4.0.0.tgz#84ed01c0a7ba380afe09d90a8c180dcd9d03043b"
     integrity sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==
+  
+  pathval@^2.0.0:
+    version "2.0.0"
+    resolved "https://registry.yarnpkg.com/pathval/-/pathval-2.0.0.tgz#7e2550b422601d4f6b8e26f1301bc8f15a741a25"
+    integrity sha512-vE7JKRyES09KiunauX7nd2Q9/L7lhok4smP9RZTDeD4MVs72Dp2qNFVz39Nz5a0FVEW0BJR6C0DYrq6unoziZA==
   
   pbf@^3.2.1:
     version "3.2.1"
@@ -18453,7 +18503,7 @@ Lockfile:
     optionalDependencies:
       fsevents "^2.1.3"
   
-  react-select@^5.3.2:
+  react-select@5.7.0:
     version "5.7.0"
     resolved "https://registry.yarnpkg.com/react-select/-/react-select-5.7.0.tgz#82921b38f1fcf1471a0b62304da01f2896cd8ce6"
     integrity sha512-lJGiMxCa3cqnUr2Jjtg9YHsaytiZqeNOKeibv6WF5zbK/fPegZ1hg3y/9P1RZVLhqBTs0PfqQLKuAACednYGhQ==
@@ -19327,7 +19377,7 @@ Lockfile:
     dependencies:
       tslib "^1.9.0"
   
-  rxjs@^7.5.5:
+  rxjs@^7.5.5, rxjs@^7.8.1:
     version "7.8.1"
     resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-7.8.1.tgz#6f6f3d99ea8044291efd92e7c7fcf562c4057543"
     integrity sha512-AA3TVj+0A2iuIoQkWEK/tqFjBq2j+6PO6Y0zJcvzLAFhEFIO3HL0vls9hWLncZbAAbK0mar7oZ4V079I/qPMxg==
@@ -19395,6 +19445,13 @@ Lockfile:
       neo-async "^2.6.2"
       schema-utils "^3.0.0"
       semver "^7.3.2"
+  
+  save-as@^0.1.8:
+    version "0.1.8"
+    resolved "https://registry.yarnpkg.com/save-as/-/save-as-0.1.8.tgz#765f947b7878bab233e1952bbc9120e1c3f041be"
+    integrity sha512-yLmK2ETTnmPXuTCM2am8F1M2CU6+uURAJywVVe0nqTlugGL7NHUmshrdCePDm1w66ZBpDmrEGEW2jDUQiTCg1w==
+    dependencies:
+      chai "*"
   
   sax@^1.2.4, sax@~1.2.4:
     version "1.2.4"

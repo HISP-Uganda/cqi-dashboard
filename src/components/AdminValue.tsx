@@ -25,7 +25,6 @@ export default function AdminValue({
         period: pe,
         indicatorGroup,
         indicator,
-        countUnits: store.countUnits,
     });
     if (isError) return <pre>{JSON.stringify(error)}</pre>;
     if (isLoading) return <Spinner />;

@@ -27,6 +27,7 @@ import {
     addIndicator,
     changeAttribute,
     toggleCount,
+    changeAnalyticsPeriods,
 } from "./Events";
 import { Period, Store } from "./interfaces";
 
@@ -275,3 +276,7 @@ export const $availableIndicators = dashboards.map((state) => {
     }
     return state.indicators;
 });
+
+export const $analyticsPeriods = domain
+    .createStore<string[]>([])
+    .on(changeAnalyticsPeriods, (_, payload) => payload);

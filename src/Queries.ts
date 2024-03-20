@@ -1,7 +1,7 @@
 import { useDataEngine } from "@dhis2/app-runtime";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
-import { fromPairs, groupBy, setWith, uniq } from "lodash";
+import { chunk, fromPairs, groupBy, set, setWith, uniq } from "lodash";
 import { Subject } from "rxjs";
 
 const subject = new Subject<number>();
@@ -12,6 +12,7 @@ subject.subscribe({
 
 import { db } from "./db";
 import {
+    changeAnalyticsPeriods,
     changeColumns,
     changeIndicatorGroups,
     changeIndicators,
@@ -51,6 +52,100 @@ export const makeSQLQuery = async (
     await engine.mutate(mutation);
 };
 
+export const generateOuCountData = async ({
+    program,
+    indicator,
+    period,
+    unit,
+    level,
+    engine,
+}: Partial<{
+    program: string;
+    indicator: any[];
+    unit: string;
+    level: string;
+    period: string[];
+    engine: any;
+}>) => {
+    if (program && unit && period && period.length > 0) {
+        let dimensions: string[] = [
+            "dimension=eZrfD4QnQfl",
+            "dimension=kHRn35W3Gq4",
+        ];
+
+        let ous: string[] = [unit];
+        if (level) {
+            ous = [...ous, `LEVEL-${level}`];
+        }
+        dimensions = [...dimensions, `dimension=ou:${ous.join(";")}`];
+
+        const finalData: {
+            [key: string]: {
+                [key: string]: {
+                    total: number;
+                    completed: number;
+                    running: number;
+                };
+            };
+        } = {};
+
+        for (const currentIndicators of chunk(indicator, 25)) {
+            const queries = fromPairs(
+                period.map((p) => [
+                    p,
+                    {
+                        resource: `analytics/enrollments/query/${program}?${[
+                            ...dimensions,
+                            ...[
+                                `filter=kHRn35W3Gq4:IN:${currentIndicators
+                                    ?.map((i) => i.event)
+                                    .join(";")}`,
+                                `filter=pe:${p}`,
+                            ],
+                        ].join("&")}`,
+                    },
+                ])
+            );
+
+            const data: any = await engine.query(queries);
+
+            for (const [key, { headers, rows }] of Object.entries<any>(data)) {
+                const ouIndex = headers.findIndex(
+                    (header: any) => header.name === "ou"
+                );
+                const completeIndex = headers.findIndex(
+                    (header: any) => header.name === "eZrfD4QnQfl"
+                );
+                const indicatorIndex = headers.findIndex(
+                    (header: any) => header.name === "kHRn35W3Gq4"
+                );
+                const groupedData = groupBy(rows, (r) => r[indicatorIndex]);
+
+                for (const [i, currentRows] of Object.entries(groupedData)) {
+                    const total = uniq(
+                        currentRows.map((row: string[]) => row[ouIndex])
+                    ).length;
+                    const completed = uniq(
+                        currentRows
+                            .filter(
+                                (row: string[]) => row[completeIndex] === "1"
+                            )
+                            .map((row: string[]) => row[ouIndex])
+                    ).length;
+
+                    set(finalData, `${i}.pe${key}`, {
+                        total,
+                        completed,
+                        running: total - completed,
+                    });
+                }
+            }
+        }
+        return finalData;
+    }
+    return {};
+};
+
 export const useCountFacilities = ({
     program,
     indicator,
@@ -59,66 +154,23 @@ export const useCountFacilities = ({
     level,
 }: Partial<{
     program: string;
-    indicator: string;
+    indicator: any[];
     unit: string;
     level: string;
-    period: string;
+    period: string[];
 }>) => {
     const engine = useDataEngine();
     return useQuery<any, Error>(
         ["count-facilities", program, indicator, period, unit, level],
         async () => {
-            if (program && unit && period) {
-                let dimensions: string[] = [
-                    `dimension=pe:${period}`,
-                    "dimension=eZrfD4QnQfl",
-                ];
-
-                let ous: string[] = [unit];
-                let filters: string[] = [`filter=kHRn35W3Gq4:EQ:${indicator}`];
-
-                if (level) {
-                    ous = [...ous, `LEVEL-${level}`];
-                }
-                dimensions = [...dimensions, `dimension=ou:${ous.join(";")}`];
-
-                const {
-                    data: { rows, headers, ...rest },
-                }: any = await engine.query({
-                    data: {
-                        resource: `analytics/enrollments/query/${program}?${[
-                            ...dimensions,
-                            ...filters,
-                            "showHierarchy=true",
-                        ].join("&")}`,
-                    },
-                });
-
-                const ouIndex = headers.findIndex(
-                    (header: any) => header.name === "ou"
-                );
-                const completeIndex = headers.findIndex(
-                    (header: any) => header.name === "eZrfD4QnQfl"
-                );
-
-                if (ouIndex !== -1 && rows.length > 0) {
-                    const total = uniq(
-                        rows.map((row: string[]) => row[ouIndex])
-                    ).length;
-
-                    const completed = uniq(
-                        rows
-                            .filter(
-                                (row: string[]) => row[completeIndex] === "1"
-                            )
-                            .map((row: string[]) => row[ouIndex])
-                    ).length;
-
-                    return { total, completed, running: total - completed };
-                }
-            }
-
-            return { total: 0, completed: 0, running: 0 };
+            return generateOuCountData({
+                program,
+                indicator,
+                period,
+                unit,
+                level,
+                engine,
+            });
         }
     );
 };
@@ -131,7 +183,6 @@ export const useSQLViewMetadata = ({
     unit,
     level,
     periodType,
-    countUnits,
 }: Partial<{
     program: string;
     id: string;
@@ -141,7 +192,6 @@ export const useSQLViewMetadata = ({
     level: string;
     period: string;
     periodType: string;
-    countUnits: boolean;
 }>) => {
     const engine = useDataEngine();
     return useQuery<any, Error>(
@@ -160,8 +210,6 @@ export const useSQLViewMetadata = ({
                 let dimensions: string[] = [
                     `dimension=pe:${period}`,
                     "dimension=eZrfD4QnQfl",
-                    // "dimension=TG1QzFgGTex",
-                    // "dimension=kHRn35W3Gq4",
                 ];
 
                 let ous: string[] = [unit];
@@ -210,7 +258,6 @@ export const useSQLViewMetadata = ({
                 }
                 return obj;
             }
-
             return {};
         }
     );
@@ -790,6 +837,7 @@ export function useAnalyticsStructure(
         async () => {
             if (organisationUnits && periods) {
                 const { structure }: any = await engine.query(query);
+                changeAnalyticsPeriods(structure.metaData.dimensions.pe);
                 return structure;
             }
             return { metaData: { dimensions: { ou: [], pe: [] } } };

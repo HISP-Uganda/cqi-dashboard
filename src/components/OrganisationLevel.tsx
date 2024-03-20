@@ -24,6 +24,8 @@ export default function OrganisationLevel() {
                 onChange={(e) => {
                     if (e?.value) {
                         changeLevel(e.value);
+                    } else {
+                        changeLevel("");
                     }
                 }}
                 options={levels}
