@@ -317,16 +317,6 @@ const PeriodPicker = ({
                                             </Stack>
                                         </Stack>
                                     </TabPanel>
-
-                                    {/* {range && TabPanel zIndex={1000}>
-                                        <Stack>
-                                            <Text>Select Date Range</Text>
-                                            <RangePicker
-                                                presets={rangePresets}
-                                                onChange={onRangeChange}
-                                            />
-                                        </Stack>
-                                    </TabPanel>} */}
                                 </TabPanels>
                             </Tabs>
                         </Stack>

@@ -92,6 +92,7 @@ const AdminDashboard = () => {
                 new Blob([wbout], { type: "application/octet-stream" }),
                 `download.xlsx`
             );
+        } else {
         }
     };
     return (
