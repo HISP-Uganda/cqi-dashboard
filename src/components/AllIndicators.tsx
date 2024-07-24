@@ -42,7 +42,6 @@ const AllIndicators: FC<AllIndicatorsProps> = () => {
     const { data, isError, isLoading, error, isSuccess } =
         useAnalyticsStructure(pes, units);
 
-    const tableFunction = () => {};
     return (
         <Stack p="5px" flex={1} spacing="0">
             <Stack flex={1} bg="white" p="5px">
@@ -57,12 +56,13 @@ const AllIndicators: FC<AllIndicatorsProps> = () => {
                             Program Area
                         </Text>
                         <IndicatorGroup
-                            value={store.indicatorGroup}
+                            value={store.indicatorGroup ?? ""}
                             onChange={onIndicatorGroupChange}
+                            isMulti={true}
                         />
                     </Stack>
 
-                    <Stack direction="row">
+                    <Stack direction="row" alignItems="center">
                         {store.filterBy === "period" ? (
                             <Button
                                 colorScheme="green"
@@ -167,7 +167,7 @@ const AllIndicators: FC<AllIndicatorsProps> = () => {
                                                             .name
                                                     }
                                                 </Th>
-                                            )
+                                            ),
                                         )}
                                     {store.filterBy === "period" &&
                                         data.metaData.dimensions.ou.map(
@@ -183,7 +183,7 @@ const AllIndicators: FC<AllIndicatorsProps> = () => {
                                                             .name
                                                     }
                                                 </Th>
-                                            )
+                                            ),
                                         )}
                                 </Tr>
                                 <Tr>
@@ -198,7 +198,7 @@ const AllIndicators: FC<AllIndicatorsProps> = () => {
                                                 >
                                                     %
                                                 </Th>
-                                            )
+                                            ),
                                         )}
                                     {store.filterBy === "period" &&
                                         data.metaData.dimensions.ou.map(
@@ -211,7 +211,7 @@ const AllIndicators: FC<AllIndicatorsProps> = () => {
                                                 >
                                                     %
                                                 </Th>
-                                            )
+                                            ),
                                         )}
                                 </Tr>
                             </Thead>
@@ -239,7 +239,7 @@ const AllIndicators: FC<AllIndicatorsProps> = () => {
                                                         search={row.event}
                                                         what={pe}
                                                     />
-                                                )
+                                                ),
                                             )}
                                         {store.filterBy === "period" &&
                                             data.metaData.dimensions.ou.map(
@@ -249,7 +249,7 @@ const AllIndicators: FC<AllIndicatorsProps> = () => {
                                                         search={row.event}
                                                         what={ou}
                                                     />
-                                                )
+                                                ),
                                             )}
                                     </Tr>
                                 ))}

@@ -1,7 +1,7 @@
 import { useDataEngine } from "@dhis2/app-runtime";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
-import { chunk, fromPairs, groupBy, set, setWith, uniq } from "lodash";
+import { chunk, fromPairs, groupBy, orderBy, set, setWith, uniq } from "lodash";
 import { Subject } from "rxjs";
 
 const subject = new Subject<number>();
@@ -30,7 +30,7 @@ export const makeSQLQuery = async (
     engine: any,
     id: string,
     query: string,
-    name: string
+    name: string,
 ) => {
     const sqlQuery = {
         description: name,
@@ -104,33 +104,33 @@ export const generateOuCountData = async ({
                             ],
                         ].join("&")}`,
                     },
-                ])
+                ]),
             );
 
             const data: any = await engine.query(queries);
 
             for (const [key, { headers, rows }] of Object.entries<any>(data)) {
                 const ouIndex = headers.findIndex(
-                    (header: any) => header.name === "ou"
+                    (header: any) => header.name === "ou",
                 );
                 const completeIndex = headers.findIndex(
-                    (header: any) => header.name === "eZrfD4QnQfl"
+                    (header: any) => header.name === "eZrfD4QnQfl",
                 );
                 const indicatorIndex = headers.findIndex(
-                    (header: any) => header.name === "kHRn35W3Gq4"
+                    (header: any) => header.name === "kHRn35W3Gq4",
                 );
                 const groupedData = groupBy(rows, (r) => r[indicatorIndex]);
 
                 for (const [i, currentRows] of Object.entries(groupedData)) {
                     const total = uniq(
-                        currentRows.map((row: string[]) => row[ouIndex])
+                        currentRows.map((row: string[]) => row[ouIndex]),
                     ).length;
                     const completed = uniq(
                         currentRows
                             .filter(
-                                (row: string[]) => row[completeIndex] === "1"
+                                (row: string[]) => row[completeIndex] === "1",
                             )
-                            .map((row: string[]) => row[ouIndex])
+                            .map((row: string[]) => row[ouIndex]),
                     ).length;
 
                     set(finalData, `${i}.pe${key}`, {
@@ -171,7 +171,7 @@ export const useCountFacilities = ({
                 level,
                 engine,
             });
-        }
+        },
     );
 };
 
@@ -259,7 +259,7 @@ export const useSQLViewMetadata = ({
                 return obj;
             }
             return {};
-        }
+        },
     );
 };
 
@@ -281,7 +281,7 @@ export function usePrograms() {
             });
             return programs.filter((p: any) => !p.withoutRegistration);
         },
-        {}
+        {},
     );
 }
 
@@ -317,14 +317,14 @@ export function useProgram(currentProgram: string) {
             }
             changeColumns([]);
             return true;
-        }
+        },
     );
 }
 
 export function useProgramAttributes(
     program: string,
     tei: string,
-    isNew: boolean
+    isNew: boolean,
 ) {
     const engine = useDataEngine();
     return useQuery<{ program: any; instance: any }, Error>(
@@ -369,8 +369,8 @@ export function useProgramAttributes(
                             optionSetValue,
                             options: optionSetValue ? optionSet.options : [],
                         },
-                    ]
-                )
+                    ],
+                ),
             );
 
             if (instance) {
@@ -387,7 +387,7 @@ export function useProgramAttributes(
                             if (all[name]?.optionSetValue) {
                                 console.log(r[i]);
                                 const val = all[name].options.find(
-                                    (a) => a.code === r[i]
+                                    (a) => a.code === r[i],
                                 );
                                 if (val) {
                                     return [
@@ -397,14 +397,14 @@ export function useProgramAttributes(
                                 }
                             }
                             return [name, r[i]];
-                        })
+                        }),
                     );
                 });
 
                 return { program: prog, instance: obj[0] };
             }
             return { program: prog, instance: {} };
-        }
+        },
     );
 }
 
@@ -444,7 +444,7 @@ export function useProgramStages(program: string, tei: string) {
         });
         const stageData = groupBy(
             enrollments.flatMap(({ events }: any) => events),
-            "programStage"
+            "programStage",
         );
         const project: Partial<Project> = fromPairs([
             ...attributes.map(({ attribute, value }: any) => [
@@ -506,7 +506,7 @@ export function useStage(stage: string) {
                     options: optionSetValue ? optionSet.options : null,
                 };
                 return column;
-            }
+            },
         );
         const columns = [
             {
@@ -549,7 +549,7 @@ export function useOptionSet(optionSet: string) {
             });
             return options;
         },
-        {}
+        {},
     );
 }
 
@@ -576,7 +576,7 @@ export function useOption(code: string) {
             }
             return "";
         },
-        {}
+        {},
     );
 }
 
@@ -584,7 +584,7 @@ export function useEventOptions(
     programStage: string,
     dataElements: string,
     dataElement: string = "",
-    search: string = ""
+    search: string = "",
 ) {
     const engine = useDataEngine();
 
@@ -615,10 +615,10 @@ export function useEventOptions(
 
             return rows.map((row: string[]) => {
                 return fromPairs(
-                    row.map((r, index) => [headers[index].name, r])
+                    row.map((r, index) => [headers[index].name, r]),
                 );
             });
-        }
+        },
     );
 }
 
@@ -673,7 +673,7 @@ export function useEvents(stage: string, tei: string, indicator: string = "") {
         if (indicator) {
             const { indicatorInfo } = others;
             const de = indicatorInfo.dataValues.find(
-                (dv: any) => dv.dataElement === "kToJ1rk0fwY"
+                (dv: any) => dv.dataElement === "kToJ1rk0fwY",
             );
             return { ...events, title: de?.value };
         }
@@ -762,7 +762,7 @@ export function useUserUnits() {
 
             const indicators = rows.map((row: string[]) => {
                 return fromPairs(
-                    row.map((r, index) => [headers[index].name, r])
+                    row.map((r, index) => [headers[index].name, r]),
                 );
             });
 
@@ -772,7 +772,7 @@ export function useUserUnits() {
                 await db.organisations.bulkPut(units);
             }
             const availablePrograms = programs.filter(
-                (p: any) => !p.withoutRegistration
+                (p: any) => !p.withoutRegistration,
             );
             changeOus(organisationUnits.map((ou: any) => ou.id));
             changeInitialPrograms(availablePrograms);
@@ -782,7 +782,7 @@ export function useUserUnits() {
             changeIndicators(indicators);
             changeLevels(organisationUnitLevels);
             const currentIndicator = indicators.find(
-                (row: any) => row.kuVtv8R9n8q === options[0].code
+                (row: any) => row.kuVtv8R9n8q === options[0].code,
             );
             if (currentIndicator) {
                 // changeIndicator(currentIndicator.event);
@@ -791,13 +791,13 @@ export function useUserUnits() {
                 searchOu: organisationUnits?.[0].id || "",
                 orgUnitName: organisationUnits?.[0].name,
             };
-        }
+        },
     );
 }
 
 export function useAnalyticsStructure(
     periods: string,
-    organisationUnits?: string
+    organisationUnits?: string,
 ) {
     const engine = useDataEngine();
     let params = [
@@ -841,7 +841,7 @@ export function useAnalyticsStructure(
                 return structure;
             }
             return { metaData: { dimensions: { ou: [], pe: [] } } };
-        }
+        },
     );
 }
 
@@ -856,7 +856,7 @@ export function useAnalytics(
     filterBy: string,
     aggregationType: string = "SUM",
     hierarchyMeta = false,
-    showHierarchy = false
+    showHierarchy = false,
 ) {
     const engine = useDataEngine();
 
@@ -972,7 +972,7 @@ export function useAnalytics(
                     },
                 };
                 const { numerator, denominator }: any = await engine.query(
-                    query
+                    query,
                 );
                 if (filterBy === "period" || filterBy === "orgUnit") {
                     const groupedNumerator = fromPairs(numerator.rows);
@@ -1013,13 +1013,13 @@ export function useAnalytics(
                         numerator.rows.map((r: any[]) => [
                             `${r[0]}${r[1]}`,
                             r[2],
-                        ])
+                        ]),
                     );
                     const groupedDenominator = fromPairs(
                         denominator.rows.map((r: any[]) => [
                             `${r[0]}${r[1]}`,
                             r[2],
-                        ])
+                        ]),
                     );
 
                     const ous = numerator.metaData.dimensions.ou.map(
@@ -1029,10 +1029,10 @@ export function useAnalytics(
                                 name: numerator.metaData.items[ou].name,
                                 level:
                                     String(
-                                        numerator.metaData.ouHierarchy[ou]
+                                        numerator.metaData.ouHierarchy[ou],
                                     ).split("/").length + 2,
                             };
-                        }
+                        },
                     );
 
                     const pes = numerator.metaData.dimensions.pe.map(
@@ -1041,7 +1041,7 @@ export function useAnalytics(
                                 id: pe,
                                 name: numerator.metaData.items[pe].name,
                             };
-                        }
+                        },
                     );
                     let all: any[] = [];
                     for (const ou of numerator.metaData.dimensions.ou) {
@@ -1054,7 +1054,7 @@ export function useAnalytics(
                                 ind = "-";
                             } else if (den !== "-" && num !== "-") {
                                 ind = Number(
-                                    (Number(num) * 100) / Number(den)
+                                    (Number(num) * 100) / Number(den),
                                 ).toFixed(1);
                             }
                             obj = {
@@ -1080,7 +1080,7 @@ export function useAnalytics(
                 ous: [],
                 pes: [],
             };
-        }
+        },
     );
 }
 
@@ -1097,7 +1097,7 @@ export const fetchInstances = async (
         trackedEntityType: string;
         query: string;
         onlyCompleted: boolean;
-    }>
+    }>,
 ) => {
     const { ou, program, trackedEntityType, query, ...rest } = search;
 
@@ -1123,23 +1123,18 @@ export const fetchInstances = async (
         }
         const {
             instances: {
-                headers,
-                rows,
-                metaData: {
-                    pager: { total },
-                },
+                trackedEntityInstances,
+                pager: { total },
             },
         }: any = await engine.query({
             instances: {
-                resource: "trackedEntityInstances/query.json",
-                params,
+                resource: "trackedEntityInstances",
+                params: { ...params, fields: "*" },
             },
         });
-        const ouIndex =
-            headers.findIndex((header: any) => header.name === "ou") || 3;
 
         const allOrganizations = uniq(
-            rows.map((row: string[]) => row[ouIndex])
+            trackedEntityInstances.map(({ orgUnit }: any) => orgUnit),
         );
         const {
             data: { organisationUnits },
@@ -1159,14 +1154,42 @@ export const fetchInstances = async (
                     id,
                     [name, ...convertParent(parent, [])].reverse().join("/"),
                 ];
-            })
+            }),
         );
 
         changeTotal(total);
-        return rows.map((r: string[]) => {
+        return trackedEntityInstances.map(({ attributes, ...rest }: any) => {
+            const currentAttributes = fromPairs(
+                attributes.map(({ attribute, value }: any) => [
+                    attribute,
+                    value,
+                ]),
+            );
+            const events = rest.enrollments.flatMap(({ events }: any) => {
+                return events.flatMap(
+                    ({ dataValues, eventDate, ...e }: any) => {
+                        if (e.programStage === "eB7oMPVRytu") {
+                            return {
+                                eventDate,
+                                ...fromPairs(
+                                    dataValues.map(
+                                        ({ dataElement, value }: any) => [
+                                            dataElement,
+                                            value,
+                                        ],
+                                    ),
+                                ),
+                            };
+                        }
+                        return [];
+                    },
+                );
+            });
             return {
-                ...fromPairs(r.map((val, i: number) => [headers[i].name, val])),
-                path: facilities[r[ouIndex]],
+                ...rest,
+                ...currentAttributes,
+                path: facilities[rest.orgUnit],
+                events: orderBy(events, "eventDate"),
             };
         });
     }
@@ -1183,47 +1206,38 @@ export function useInstances(
         programStartDate: string;
         programEndDate: string;
         trackedEntityType: string;
-    }>
+    }>,
 ) {
     const engine = useDataEngine();
     return useQuery<any, Error>(
         ["tracked entity instances", ...Object.values(search)],
         async () => {
             return fetchInstances(engine, search);
-        }
+        },
     );
 }
 
-export function useEventAndOption(
-    event: string,
-    programStage: string,
-    dataElement: string
-) {
+export function useEventAndOption(event: string, programStage: string) {
     const engine = useDataEngine();
-    return useQuery<any, Error>(
-        ["events", event, programStage, dataElement],
-        async () => {
-            const {
-                events: { headers, rows },
-            }: any = await engine.query({
-                events: {
-                    resource: "events/query.json",
-                    params: {
-                        programStage,
-                        event,
-                        dataElement,
-                    },
+    return useQuery<any, Error>(["events", event, programStage], async () => {
+        const {
+            events: { headers, rows },
+        }: any = await engine.query({
+            events: {
+                resource: "events/query.json",
+                params: {
+                    programStage,
+                    event,
+                    includeAllDataElements: true,
                 },
-            });
-            const index = headers.findIndex(
-                (column: any) => column.name === dataElement
-            );
-            if (rows.length > 0 && index !== -1) {
-                return rows[0][index];
-            }
-            return "";
-        }
-    );
+            },
+        });
+
+        const all = rows.map((row: string[]) =>
+            fromPairs(row.map((r, index) => [headers[index].name, r])),
+        );
+        return all[0];
+    });
 }
 export function useEvent(programStage: string, event?: string) {
     const engine = useDataEngine();
@@ -1243,7 +1257,7 @@ export function useEvent(programStage: string, event?: string) {
             });
 
             const processed = rows.map((row: string[]) =>
-                fromPairs(row.map((r, i) => [headers[i].name, r]))
+                fromPairs(row.map((r, i) => [headers[i].name, r])),
             );
             if (processed.length > 0) {
                 return processed[0];

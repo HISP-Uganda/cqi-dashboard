@@ -196,10 +196,10 @@ export const dashboards = domain
         changeAttribute,
         (
             state,
-            { attribute, value }: { attribute: keyof Store; value: any }
+            { attribute, value }: { attribute: keyof Store; value: any },
         ) => {
             return { ...state, [attribute]: value };
-        }
+        },
     )
     .on(toggleCount, (state) => ({ ...state, countUnits: !state.countUnits }));
 
@@ -238,7 +238,7 @@ export const allIndicators = dashboards.map((state) => {
 
 export const currentIndicator = dashboards.map((state) => {
     const indic = state.indicators.find(
-        (row: any) => row[0] === state.indicator
+        (row: any) => row[0] === state.indicator,
     );
     if (indic && state.indicatorIndex) {
         return indic[state.indicatorIndex];
@@ -249,7 +249,7 @@ export const currentIndicator = dashboards.map((state) => {
 export const indicatorForGroup = dashboards
     .map((state) => {
         return state.indicators.filter(
-            (row: any) => row.kuVtv8R9n8q === state.indicatorGroup
+            (row: any) => row.kuVtv8R9n8q === state.indicatorGroup,
         );
     })
     .on(addIndicator, (state, indicator) => {
@@ -264,14 +264,16 @@ export const $withOptionSet = dashboards.map((state) => {
 
 export const $selectedIndicators = dashboards.map((state) => {
     return state.indicators.filter((x) => {
-        return state.indicatorGroup === x["kuVtv8R9n8q"];
+        return (
+            state.indicatorGroup?.split(",").indexOf(x["kuVtv8R9n8q"]) !== -1
+        );
     });
 });
 
 export const $availableIndicators = dashboards.map((state) => {
     if (state.indicatorGroup) {
         return state.indicators.filter(
-            (row: any) => row.kuVtv8R9n8q === state.indicatorGroup
+            (row: any) => row.kuVtv8R9n8q === state.indicatorGroup,
         );
     }
     return state.indicators;

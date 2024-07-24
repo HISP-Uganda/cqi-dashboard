@@ -7,20 +7,48 @@ import { dashboards } from "../Store";
 interface IndicatorGroupProps {
     value: string | undefined;
     onChange: (value: string | undefined) => void;
+    isMulti?: boolean;
 }
 
-const IndicatorGroup: FC<IndicatorGroupProps> = ({ value, onChange }) => {
+const IndicatorGroup: FC<IndicatorGroupProps> = ({
+    value,
+    onChange,
+    isMulti = false,
+}) => {
     const store = useStore(dashboards);
-    const realValue = store.indicatorGroups.find((v: any) => v.code === value);
+
+    const options = store.indicatorGroups.map((o: any) => {
+        return {
+            label: o.name,
+            value: o.code,
+        };
+    });
+    const realValue = isMulti
+        ? options.filter((v: any) => value?.split(",").indexOf(v.value) !== -1)
+        : options.find((v: any) => v.value === value);
+
+    if (isMulti) {
+        return (
+            <Box flex={1}>
+                <Select<Option, true, GroupBase<Option>>
+                    focusBorderColor="blue.500"
+                    value={realValue}
+                    isClearable
+                    onChange={(e) => {
+                        onChange(e?.map((a) => a.value).join(","));
+                    }}
+                    options={options}
+                    size="sm"
+                    isMulti
+                />
+            </Box>
+        );
+    }
     return (
         <Box flex={1}>
             <Select<Option, false, GroupBase<Option>>
                 focusBorderColor="blue.500"
-                value={
-                    realValue
-                        ? { value: realValue.code, label: realValue.name }
-                        : undefined
-                }
+                value={realValue}
                 isClearable
                 onChange={(e) => {
                     onChange(e?.value);

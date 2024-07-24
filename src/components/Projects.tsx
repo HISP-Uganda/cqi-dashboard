@@ -34,10 +34,8 @@ import {
 } from "@chakra-ui/react";
 import { useDataEngine } from "@dhis2/app-runtime";
 import { useNavigate, useSearch } from "@tanstack/react-location";
-import { DatePicker } from "antd";
 import { useStore } from "effector-react";
-import { fromPairs } from "lodash";
-import moment from "moment";
+import { fromPairs, range } from "lodash";
 import * as XLSX from "xlsx";
 import {
     changeIndicator,
@@ -55,7 +53,7 @@ import {
     dashboards,
     indicatorForGroup,
 } from "../Store";
-import { withAttributesAsEvent } from "../utils/common";
+import { truncateText, withAttributesAsEvent } from "../utils/common";
 import ColumnDrawer from "./ColumnDrawer";
 import DisplayEvent from "./DisplayEvent";
 import IndicatorGroup from "./IndicatorGroup";
@@ -67,24 +65,18 @@ import ProgramSelect from "./ProgramSelect";
 const OUTER_LIMIT = 4;
 const INNER_LIMIT = 4;
 
-const { RangePicker } = DatePicker;
-
 const Projects = () => {
     const store = useStore(dashboards);
     const navigate = useNavigate<LocationGenerics>();
     const engine = useDataEngine();
     const search = useSearch<LocationGenerics>();
     const indicators = useStore(indicatorForGroup);
-    const [selectedDates, setSelectedDates] = useState<any>([
-        moment().startOf("year"),
-        moment().endOf("year"),
-    ]);
     const [downloading, setDownloading] = useState<boolean>(false);
     const availableIndicators = useStore(allIndicators);
     const onIndicatorGroupChange = (value: string | undefined) => {
         changeIndicatorGroup(value);
-        if (value) {
-            changeIndicator(indicators[0][0]);
+        if (value && indicators.length > 0) {
+            changeIndicator(indicators[0].event);
         }
     };
     const withOptionSet = useStore($withOptionSet);
@@ -163,12 +155,37 @@ const Projects = () => {
             return (
                 <DisplayEvent
                     programStage={withEvent.programStage}
-                    dataElement={withEvent.dataElement}
                     event={record[a]}
                 />
             );
         }
-        return record[a];
+
+        return (
+            <Td>
+                <Box
+                    as="span"
+                    position="relative"
+                    _hover={{
+                        _after: {
+                            content: `"${record[a]}"`,
+                            position: "absolute",
+                            backgroundColor: "gray.100",
+                            border: "1px solid gray.300",
+                            width: "200px",
+                            padding: "8px",
+                            whiteSpace: "pre-line",
+                            zIndex: 1,
+                            left: "0",
+                            top: "100%",
+                            transform: "translateY(4px)",
+                            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+                        },
+                    }}
+                >
+                    {truncateText(record[a], 50)}
+                </Box>
+            </Td>
+        );
     };
 
     const handleChange = (value: string) => {
@@ -230,7 +247,7 @@ const Projects = () => {
         });
         //console.log(rows)
         const indicatorGroups = fromPairs(
-            options.map((o: any) => [o.code, o.name])
+            options.map((o: any) => [o.code, o.name]),
         );
         const onIndicatorGroupChange = (value: string) => {
             changeIndicatorGroup(value);
@@ -288,7 +305,11 @@ const Projects = () => {
                     <TabPanel>
                         <Stack bg="white" p="5px">
                             <Stack spacing="30px" flex={1}>
-                                <Stack direction="row" flex={1}>
+                                <Stack
+                                    direction="row"
+                                    flex={1}
+                                    alignItems="center"
+                                >
                                     <Text
                                         fontSize="xl"
                                         color="#0b72ef"
@@ -297,7 +318,7 @@ const Projects = () => {
                                     >
                                         Program Area
                                     </Text>
-                                    <Box w="50%">
+                                    <Box flex={1}>
                                         <IndicatorGroup
                                             value={store.indicatorGroup}
                                             onChange={onIndicatorGroupChange}
@@ -306,7 +327,8 @@ const Projects = () => {
                                     <Spacer />
                                     <Input
                                         placeholder="Search Project"
-                                        w="50%"
+                                        flex={1}
+                                        size="sm"
                                         value={realSearch.query}
                                         onChange={(e) =>
                                             setRealSearch((prev) => {
@@ -356,12 +378,6 @@ const Projects = () => {
                                                 value={store.ous || undefined}
                                                 onChange={changeOus}
                                             />
-
-                                            {/* <OrgUnitTreeSelect
-                                multiple={false}
-                                value={search.ou || undefined}
-                                onChange={changeOu}
-                            /> */}
                                         </Box>
                                     </Stack>
                                     <Stack direction="row" w="33vw">
@@ -410,6 +426,7 @@ const Projects = () => {
                                 overflow="auto"
                                 border="3px solid gray"
                                 h="800px"
+                                whiteSpace="nowrap"
                             >
                                 {isSuccess && (
                                     <Table
@@ -428,52 +445,152 @@ const Projects = () => {
                                                 {store.columns
                                                     .filter(
                                                         (s: any) =>
-                                                            s.displayInList
+                                                            s.displayInList,
                                                     )
-                                                    .map((column: any) => (
-                                                        <Th
-                                                            key={
-                                                                column
-                                                                    .trackedEntityAttribute
-                                                                    .id
-                                                            }
-                                                            minW="200px"
+                                                    .map((column: any) => {
+                                                        if (
+                                                            column
+                                                                .trackedEntityAttribute
+                                                                .id ===
+                                                            "kHRn35W3Gq4"
+                                                        ) {
+                                                            return (
+                                                                <>
+                                                                    <Th
+                                                                        key={
+                                                                            column
+                                                                                .trackedEntityAttribute
+                                                                                .id
+                                                                        }
+                                                                    >
+                                                                        <Heading
+                                                                            as="h6"
+                                                                            size="xs"
+                                                                            textTransform="none"
+                                                                        >
+                                                                            {
+                                                                                column
+                                                                                    .trackedEntityAttribute
+                                                                                    .name
+                                                                            }
+                                                                        </Heading>
+                                                                    </Th>
+                                                                    <Th
+                                                                        key={`${column.trackedEntityAttribute.id}n`}
+                                                                    >
+                                                                        <Heading
+                                                                            as="h6"
+                                                                            size="xs"
+                                                                            textTransform="none"
+                                                                        >
+                                                                            Numerator
+                                                                        </Heading>
+                                                                    </Th>
+                                                                    <Th
+                                                                        key={`${column.trackedEntityAttribute.id}d`}
+                                                                    >
+                                                                        <Heading
+                                                                            as="h6"
+                                                                            size="xs"
+                                                                            textTransform="none"
+                                                                        >
+                                                                            Denominator
+                                                                        </Heading>
+                                                                    </Th>
+                                                                </>
+                                                            );
+                                                        } else {
+                                                            return (
+                                                                <Th
+                                                                    key={
+                                                                        column
+                                                                            .trackedEntityAttribute
+                                                                            .id
+                                                                    }
+                                                                >
+                                                                    <Heading
+                                                                        as="h6"
+                                                                        size="xs"
+                                                                        textTransform="none"
+                                                                    >
+                                                                        {
+                                                                            column
+                                                                                .trackedEntityAttribute
+                                                                                .name
+                                                                        }
+                                                                    </Heading>
+                                                                </Th>
+                                                            );
+                                                        }
+                                                    })}
+
+                                                {range(12).map((i) => (
+                                                    <Th key={i} colSpan={2}>
+                                                        <Heading
+                                                            as="h6"
+                                                            size="xs"
+                                                            textTransform="none"
+                                                            textAlign="center"
                                                         >
-                                                            <Heading
-                                                                as="h6"
-                                                                size="xs"
-                                                                textTransform="none"
-                                                            >
-                                                                {
-                                                                    column
-                                                                        .trackedEntityAttribute
-                                                                        .name
-                                                                }
-                                                            </Heading>
-                                                        </Th>
-                                                    ))}
+                                                            {`Month ${i + 1}`}
+                                                        </Heading>
+                                                    </Th>
+                                                ))}
                                             </Tr>
                                         </Thead>
                                         <Tbody>
                                             {data.map((record: any) => (
-                                                <Tr key={record.instance}>
+                                                <Tr
+                                                    key={
+                                                        record.trackedEntityInstance
+                                                    }
+                                                >
                                                     {store.columns
                                                         .filter(
                                                             (s: any) =>
-                                                                s.displayInList
+                                                                s.displayInList,
                                                         )
-                                                        .map((column: any) => (
-                                                            <Td
-                                                                key={`${record.instance}${column.trackedEntityAttribute.id}`}
-                                                            >
-                                                                {display(
-                                                                    record,
-                                                                    column
-                                                                        .trackedEntityAttribute
-                                                                        .id
-                                                                )}
-                                                            </Td>
-                                                        ))}
+                                                        .map((column: any) =>
+                                                            display(
+                                                                record,
+                                                                column
+                                                                    .trackedEntityAttribute
+                                                                    .id,
+                                                            ),
+                                                        )}
+
+                                                    {range(12).map((i) => {
+                                                        const e =
+                                                            i <
+                                                            record.events.length
+                                                                ? record.events[
+                                                                      i
+                                                                  ]
+                                                                : {};
+
+                                                        return (
+                                                            <>
+                                                                <Td
+                                                                    key={`${record.trackedEntityInstance}${i}n`}
+                                                                >
+                                                                    {
+                                                                        e[
+                                                                            "rVZlkzOwWhi"
+                                                                        ]
+                                                                    }
+                                                                </Td>
+                                                                <Td
+                                                                    key={`${record.trackedEntityInstance}${i}d`}
+                                                                >
+                                                                    {
+                                                                        e[
+                                                                            "RgNQcLejbwX"
+                                                                        ]
+                                                                    }
+                                                                </Td>
+                                                            </>
+                                                        );
+                                                    })}
                                                 </Tr>
                                             ))}
                                         </Tbody>
@@ -509,7 +626,7 @@ const Projects = () => {
                                             <PaginationSeparator
                                                 onClick={() =>
                                                     console.warn(
-                                                        "I'm clicking the separator"
+                                                        "I'm clicking the separator",
                                                     )
                                                 }
                                                 bg="blue.300"

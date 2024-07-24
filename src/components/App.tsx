@@ -9,7 +9,7 @@ import {
     Router,
     stringifySearchWith,
 } from "@tanstack/react-location";
-import { changeUrl } from "../Events";
+import { changeIndicatorGroup, changeUrl } from "../Events";
 import {
     fetchInstances,
     fetchTrackedEntityInstance,
@@ -32,10 +32,10 @@ const history = createHashHistory();
 const location = new ReactLocation<LocationGenerics>({
     history,
     parseSearch: parseSearchWith((value) =>
-        JSON.parse(decodeFromBinary(value))
+        JSON.parse(decodeFromBinary(value)),
     ),
     stringifySearch: stringifySearchWith((value) =>
-        encodeToBinary(JSON.stringify(value))
+        encodeToBinary(JSON.stringify(value)),
     ),
 });
 
@@ -56,6 +56,7 @@ const App = () => {
         {
             path: "/layered-dashboard",
             loader: async () => {
+                changeIndicatorGroup("");
                 changeUrl("/layered-dashboard");
                 return {};
             },
@@ -64,6 +65,7 @@ const App = () => {
         {
             path: "/indicators",
             loader: async () => {
+                changeIndicatorGroup("");
                 changeUrl("/indicators");
                 return {};
             },
@@ -72,6 +74,7 @@ const App = () => {
         {
             path: "/data-entry",
             loader: async () => {
+                changeIndicatorGroup("");
                 changeUrl("/data-entry");
                 return {};
             },
@@ -80,6 +83,7 @@ const App = () => {
                     path: "/",
                     element: <TrackedEntityInstances />,
                     loader: ({ search }) => {
+                        changeIndicatorGroup("");
                         return (
                             queryClient.getQueryData([
                                 "tracked entity instances",
@@ -91,7 +95,7 @@ const App = () => {
                                         "tracked entity instances",
                                         ...Object.values(search),
                                     ],
-                                    () => fetchInstances(engine, search)
+                                    () => fetchInstances(engine, search),
                                 )
                                 .then(() => ({}))
                         );
@@ -116,6 +120,7 @@ const App = () => {
                     path: "/projects",
                     element: <Projects />,
                     loader: async () => {
+                        changeIndicatorGroup("");
                         changeUrl("/data-entry/projects");
                         return {};
                     },
@@ -130,7 +135,7 @@ const App = () => {
                         ]) ??
                         queryClient.fetchQuery(
                             ["tracked entity instances", tei],
-                            () => fetchTrackedEntityInstance(engine, tei)
+                            () => fetchTrackedEntityInstance(engine, tei),
                         ),
                 },
             ],
@@ -138,6 +143,7 @@ const App = () => {
         {
             path: "/admin-dashboard",
             loader: async () => {
+                changeIndicatorGroup("");
                 changeUrl("/admin-dashboard");
                 return {};
             },

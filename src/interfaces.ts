@@ -112,10 +112,10 @@ export interface QIProject {
 }
 
 export interface Project extends QIProject {
-    instance: string;
+    trackedEntityInstance: string;
     created: string;
     lastupdated: string;
-    ou: string;
+    orgUnit: string;
     ouname: string;
     te: string;
     inactive: string;

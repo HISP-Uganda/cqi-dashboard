@@ -50,10 +50,10 @@ const MultipleEvents: FC<MultipleProps> = ({
 }) => {
     const { isLoading, isError, data, error, isSuccess } = useEvent(
         "vPQxfsUQLEy",
-        project.kHRn35W3Gq4
+        project.kHRn35W3Gq4,
     );
     const [events, setEvents] = useState<Array<Partial<RunChart>>>(
-        () => stageData
+        () => stageData,
     );
     const store = useStore(dashboards);
     const engine = useDataEngine();
@@ -78,7 +78,7 @@ const MultipleEvents: FC<MultipleProps> = ({
             trackedEntityInstance: tei,
             program: store.program,
             programStage: stage,
-            orgUnit: project.ou,
+            orgUnit: project.orgUnit,
             eventDate: undefined,
             rVZlkzOwWhi: undefined,
             RgNQcLejbwX: undefined,
@@ -89,7 +89,7 @@ const MultipleEvents: FC<MultipleProps> = ({
     const changeIndicator = (
         event: string,
         value: string | number | undefined | null,
-        option: "rVZlkzOwWhi" | "RgNQcLejbwX" | "eventDate"
+        option: "rVZlkzOwWhi" | "RgNQcLejbwX" | "eventDate",
     ) =>
         setEvents((prev) =>
             prev.map((p) => {
@@ -97,7 +97,7 @@ const MultipleEvents: FC<MultipleProps> = ({
                     return { ...p, [option]: value };
                 }
                 return p;
-            })
+            }),
         );
 
     const onBlur =
@@ -154,11 +154,11 @@ const MultipleEvents: FC<MultipleProps> = ({
                                         if (e.RgNQcLejbwX && e.rVZlkzOwWhi) {
                                             return String(
                                                 (e.rVZlkzOwWhi * 100) /
-                                                    e.RgNQcLejbwX
+                                                    e.RgNQcLejbwX,
                                             );
                                         }
                                         return "-";
-                                    })
+                                    }),
                                 ),
                                 type: "scatter",
                                 mode: "lines+markers",
@@ -211,7 +211,7 @@ const MultipleEvents: FC<MultipleProps> = ({
                                             <DatePicker
                                                 picker={
                                                     reviewPeriodString(
-                                                        project.WQcY6nfPouv
+                                                        project.WQcY6nfPouv,
                                                     ).toLowerCase() as
                                                         | "time"
                                                         | "date"
@@ -223,7 +223,7 @@ const MultipleEvents: FC<MultipleProps> = ({
                                                 }
                                                 disabledDate={(current) =>
                                                     disabledDate(
-                                                        moment(current.date())
+                                                        moment(current.date()),
                                                     )
                                                 }
                                                 value={
@@ -237,7 +237,7 @@ const MultipleEvents: FC<MultipleProps> = ({
                                                         value
                                                             ? value.toISOString()
                                                             : undefined,
-                                                        "eventDate"
+                                                        "eventDate",
                                                     )
                                                 }
                                             />
@@ -256,7 +256,7 @@ const MultipleEvents: FC<MultipleProps> = ({
                                                     changeIndicator(
                                                         e.event || "",
                                                         value,
-                                                        "rVZlkzOwWhi"
+                                                        "rVZlkzOwWhi",
                                                     )
                                                 }
                                                 onBlur={onBlur(e)}
@@ -276,7 +276,7 @@ const MultipleEvents: FC<MultipleProps> = ({
                                                     changeIndicator(
                                                         e.event || "",
                                                         value,
-                                                        "RgNQcLejbwX"
+                                                        "RgNQcLejbwX",
                                                     )
                                                 }
                                                 onBlur={onBlur(e)}

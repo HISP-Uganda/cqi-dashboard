@@ -79,7 +79,7 @@ export default function InstanceForm({
                 columns.findIndex((c: string) => c === k) > -1
                     ? ((a[k] = v), a)
                     : a,
-            {}
+            {},
         );
         attributes = Object.entries(attributes).map(([attribute, value]) => {
             return { attribute, value };
@@ -148,7 +148,7 @@ export default function InstanceForm({
         onSuccess: async (data, variables) => {
             await queryClient.invalidateQueries(["userUnits"]);
             const grp = variables.dataValues.find(
-                (dv: any) => dv.dataElement === "kuVtv8R9n8q"
+                (dv: any) => dv.dataElement === "kuVtv8R9n8q",
             );
             changeIndicatorGroup(grp.value);
         },
@@ -186,7 +186,7 @@ export default function InstanceForm({
                 return { ...field, options: indicators, optionSetValue: true };
             }
             return field;
-        })
+        }),
     );
 
     const onInsert = async (values: any) => {
@@ -323,7 +323,7 @@ export default function InstanceForm({
                     render={({ field }) => {
                         let currentVal: Option | undefined;
                         const val: any = f.options?.find(
-                            (pt) => pt[0] === field.value
+                            (pt) => pt[0] === field.value,
                         );
                         if (val) {
                             currentVal = { label: val[1], value: val[0] };
@@ -340,7 +340,8 @@ export default function InstanceForm({
                                         const indicators = store.indicators
                                             .filter(
                                                 (row: any) =>
-                                                    row.kuVtv8R9n8q === e?.value
+                                                    row.kuVtv8R9n8q ===
+                                                    e?.value,
                                             )
                                             .map((row: any) => ({
                                                 value: row.event,
@@ -361,7 +362,7 @@ export default function InstanceForm({
                                                     };
                                                 }
                                                 return p;
-                                            })
+                                            }),
                                         );
                                     }
                                 }}

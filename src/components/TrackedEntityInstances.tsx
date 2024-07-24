@@ -43,7 +43,7 @@ import {
 import { LocationGenerics } from "../interfaces";
 import { useInstances } from "../Queries";
 import { $withOptionSet, dashboards } from "../Store";
-import { withAttributesAsEvent } from "../utils/common";
+import { truncateText, withAttributesAsEvent } from "../utils/common";
 import { generateUid } from "../utils/uid";
 import ColumnDrawer from "./ColumnDrawer";
 import DisplayEvent from "./DisplayEvent";
@@ -111,20 +111,44 @@ const TrackedEntityInstances = () => {
             return (
                 <DisplayEvent
                     programStage={withEvent.programStage}
-                    dataElement={withEvent.dataElement}
                     event={record[a]}
                 />
             );
         }
-        return record[a];
+        return (
+            <Td fontSize="16px" cursor="pointer">
+                <Box
+                    as="span"
+                    position="relative"
+                    _hover={{
+                        _after: {
+                            content: `"${record[a]}"`,
+                            position: "absolute",
+                            backgroundColor: "gray.100",
+                            border: "1px solid gray.300",
+                            width: "200px",
+                            padding: "8px",
+                            whiteSpace: "pre-line",
+                            zIndex: 1,
+                            left: "0",
+                            top: "100%",
+                            transform: "translateY(4px)",
+                            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+                        },
+                    }}
+                >
+                    {truncateText(record[a], 50)}
+                </Box>
+            </Td>
+        );
     };
 
     const add = () => {
         const trackedEntityInstance = generateUid();
         changeProject({
             TG1QzFgGTex: store.indicatorGroup,
-            ou: search.ou,
-            instance: trackedEntityInstance,
+            orgUnit: search.ou,
+            trackedEntityInstance,
         });
         navigate({
             to: "/data-entry/tracked-entity-form",
@@ -156,8 +180,8 @@ const TrackedEntityInstances = () => {
     };
     const onRowClick = (instance: any) => {
         changeProject(instance);
-        changeInstance(instance.instance);
-        navigate({ to: `/data-entry/${instance.instance}` });
+        changeInstance(instance.trackedEntityInstance);
+        navigate({ to: `/data-entry/${instance.trackedEntityInstance}` });
     };
 
     const handleChange = (value: string) => {
@@ -305,10 +329,10 @@ const TrackedEntityInstances = () => {
             )}
 
             {isSuccess && (
-                <Box overflow="auto" bg="white">
+                <Box overflow="auto" bg="white" whiteSpace="nowrap">
                     <Table
                         variant="striped"
-                        colorScheme="gray"
+                        colorScheme="facebook"
                         textTransform="none"
                     >
                         <Thead>
@@ -321,48 +345,99 @@ const TrackedEntityInstances = () => {
                             >
                                 {store.columns
                                     .filter((s: any) => s.displayInList)
-                                    .map((column: any) => (
-                                        <Th
-                                            key={
-                                                column.trackedEntityAttribute.id
-                                            }
-                                            minW="200px"
-                                        >
-                                            <Heading
-                                                as="h6"
-                                                size="xs"
-                                                textTransform="none"
-                                            >
-                                                {
-                                                    column
-                                                        .trackedEntityAttribute
-                                                        .name
-                                                }
-                                            </Heading>
-                                        </Th>
-                                    ))}
+                                    .map((column: any) => {
+                                        if (
+                                            column.trackedEntityAttribute.id ===
+                                            "kHRn35W3Gq4"
+                                        ) {
+                                            return (
+                                                <>
+                                                    <Th
+                                                        key={
+                                                            column
+                                                                .trackedEntityAttribute
+                                                                .id
+                                                        }
+                                                        minW="200px"
+                                                    >
+                                                        <Heading
+                                                            as="h6"
+                                                            size="xs"
+                                                            textTransform="none"
+                                                        >
+                                                            {
+                                                                column
+                                                                    .trackedEntityAttribute
+                                                                    .name
+                                                            }
+                                                        </Heading>
+                                                    </Th>
+                                                    <Th
+                                                        key={`${column.trackedEntityAttribute.id}n`}
+                                                        minW="200px"
+                                                    >
+                                                        <Heading
+                                                            as="h6"
+                                                            size="xs"
+                                                            textTransform="none"
+                                                        >
+                                                            Numerator
+                                                        </Heading>
+                                                    </Th>
+                                                    <Th
+                                                        key={`${column.trackedEntityAttribute.id}d`}
+                                                        minW="200px"
+                                                    >
+                                                        <Heading
+                                                            as="h6"
+                                                            size="xs"
+                                                            textTransform="none"
+                                                        >
+                                                            Denominator
+                                                        </Heading>
+                                                    </Th>
+                                                </>
+                                            );
+                                        } else {
+                                            return (
+                                                <Th
+                                                    key={
+                                                        column
+                                                            .trackedEntityAttribute
+                                                            .id
+                                                    }
+                                                    minW="200px"
+                                                >
+                                                    <Heading
+                                                        as="h6"
+                                                        size="xs"
+                                                        textTransform="none"
+                                                    >
+                                                        {
+                                                            column
+                                                                .trackedEntityAttribute
+                                                                .name
+                                                        }
+                                                    </Heading>
+                                                </Th>
+                                            );
+                                        }
+                                    })}
                                 <Th>Operations</Th>
                             </Tr>
                         </Thead>
                         <Tbody>
                             {data.map((record: any) => (
-                                <Tr key={record.instance}>
+                                <Tr key={record.trackedEntityInstance}>
                                     {store.columns
                                         .filter((s: any) => s.displayInList)
-                                        .map((column: any) => (
-                                            <Td
-                                                fontSize="16px"
-                                                cursor="pointer"
-                                                key={`${record.instance}${column.trackedEntityAttribute.id}`}
-                                            >
-                                                {display(
-                                                    record,
-                                                    column
-                                                        .trackedEntityAttribute
-                                                        .id
-                                                )}
-                                            </Td>
-                                        ))}
+                                        .map((column: any) =>
+                                            display(
+                                                record,
+                                                column.trackedEntityAttribute
+                                                    .id,
+                                            ),
+                                        )}
                                     <Td>
                                         <Stack direction="row">
                                             <Button
@@ -414,7 +489,7 @@ const TrackedEntityInstances = () => {
                                 <PaginationSeparator
                                     onClick={() =>
                                         console.warn(
-                                            "I'm clicking the separator"
+                                            "I'm clicking the separator",
                                         )
                                     }
                                     bg="blue.300"
